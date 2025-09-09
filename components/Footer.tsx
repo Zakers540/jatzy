@@ -1,7 +1,7 @@
 export default function Footer () {
     return (
         <footer className="flex justify-center mt-8 bg-green-50/20">
-            <div className="grid grid-cols-1 md:grid-cols-[2fr_3fr] w-full px-4 md:px-16 py-4 pb-8 md:pb-4">
+            <div className="grid grid-cols-1 md:grid-cols-[2fr_3fr] w-full px-4 md:px-16 py-4 pb-8">
                 <div className="flex flex-col justify-center md:block">
                     <p className="italic text-3xl font-semibold">yatzy</p>
                     <div className="flex flex-col items-center md:ml-4 md:block">
