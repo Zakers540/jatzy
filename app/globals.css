@@ -1,28 +1,51 @@
 @import "tailwindcss";
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+body {
+  @apply bg-gradient-to-tr from-white via-blue-50 to-green-50  dark:from-black dark:via-[#050A1F] dark:to-[#041F12]
+}
+@utility dropdown {
+  @apply relative inline-block;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+@utility navlink {
+  @apply text-black/75 hover:text-black/95 hover:underline cursor-pointer;
+}
+
+@utility dropdown-content {
+  @apply left-1/2 -translate-x-1/2 hidden space-y-2 absolute z-50 px-4 min-w-48 backdrop-blur-md bg-radial from-white/20 via-white/16 to-white/12 border-white/50 border-1 group-hover:block rounded-xl shadow-lg;
+}
+
+@layer components {
+  .dropdown-content a {
+    @apply leading-4 text-black/75 text-center px-2 py-2 block hover:text-black/95 hover:underline cursor-pointer;
+  }
+  .dropdown-content a:first-child {
+    @apply pt-6;
+  }
+  .dropdown-content a:last-child {
+    @apply pb-6;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@utility parent {
+  @apply text-black/75 group-hover:text-black/95 group-hover:scale-3d cursor-default;
 }
-@utility test {
-  @apply font-semibold text-3xl font-mono;
+
+@utility shownparent {
+  @apply text-black/95 scale-3d;
+}
+@utility shown {
+  @apply block;
+}
+
+@layer components {
+  .shown a {
+    @apply leading-4 text-black/75 text-center px-2 py-2 block hover:text-black/95 hover:underline cursor-pointer;
+  }
+  .shown a:first-child {
+    @apply pt-6;
+  }
+  .shown a:last-child {
+    @apply pb-6;
+  }
 }
