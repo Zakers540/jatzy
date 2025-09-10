@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "flask-dev": "cross-env FLASK_DEBUG=1 cmd /c python -m pip install -r requirements.txt && python -m flask --app api/index run -p 5328",
+    "flask-dev": "python -m pip install -r requirements.txt && python -m flask --app api/index run -p 5328",
     "next-dev": "next dev",
     "dev": "concurrently \"npm run next-dev\" \"npm run flask-dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
+
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^24.3.1",
