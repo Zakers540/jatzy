@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import Yatsy from "@/components/Yatsy";
 
 type PageProps = {
     params: Promise<{
@@ -29,6 +30,6 @@ export default async function Server({ params }: PageProps) {
     }
 
     return (
-        <main className="min-h-screen w-full flex justify-center items-center"><p>Det virker!</p></main>
+        <Yatsy instanceId={instanceId}/>
     )
 }

@@ -15,7 +15,7 @@ def rndURL():
     return s
 
 currentInstances = []
-
+players = ["Torben", "test"]
 @app.route("/api/opret")
 def gameInstance():
     instanceId = rndURL()
@@ -27,6 +27,9 @@ def instance_exists(instanceId):
     exists = instanceId in currentInstances
     return jsonify({"exists": exists})
 
-@app.route("/api/test")
-def test():
-    return "<p>Hello world!</p>"
+@app.route("/api/data/<instanceId>", methods=["GET"])
+def get_data(instanceId):
+    return jsonify({
+        "instanceId": instanceId,
+        "players": players
+    })
