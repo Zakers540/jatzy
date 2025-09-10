@@ -1,4 +1,4 @@
-from flask import Flask, redirect
+from flask import Flask, redirect, jsonify
 import jatzy
 
 app = Flask(__name__)
@@ -10,7 +10,8 @@ def gameInstance():
     instanceId = jatzy.rndURL()
     currentInstances.append(instanceId)
     return redirect(f"/server/{instanceId}", code=302)
-    
-@app.route("/api/python")
-def hello_world():
-    return "<p>Hello, World!</p>"
+
+@app.route("/api/tjek/<instanceId>")
+def instance_exists(instanceId):
+    if instanceId in currentInstances:
+        return jsonify({"exists": true})
