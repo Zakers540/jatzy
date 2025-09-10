@@ -9,5 +9,3 @@ def rndURL():
             s += chr(rndCh)
             i += 1
     return s
-
-print(rndURL())
