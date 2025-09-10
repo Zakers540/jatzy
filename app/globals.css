@@ -8,16 +8,16 @@ body {
 }
 
 @utility navlink {
-  @apply text-black/75 hover:text-black/95 hover:underline cursor-pointer;
+  @apply text-black/75 dark:text-white/75 hover:text-black/95 dark:hover:text-white/95 hover:underline cursor-pointer;
 }
 
 @utility dropdown-content {
-  @apply left-1/2 -translate-x-1/2 hidden space-y-2 absolute z-50 px-4 min-w-48 backdrop-blur-md bg-radial from-white/20 via-white/16 to-white/12 border-white/50 border-1 group-hover:block rounded-xl shadow-lg;
+  @apply left-1/2 -translate-x-1/2 hidden space-y-2 absolute z-50 px-4 min-w-48 backdrop-blur-md bg-radial from-white/20 via-white/16 to-white/12 border-white/50 dark:from-black/20 dark:via-black/16 dark:to-black/12 border-1 group-hover:block rounded-xl shadow-lg;
 }
 
 @layer components {
   .dropdown-content a {
-    @apply leading-4 text-black/75 text-center px-2 py-2 block hover:text-black/95 hover:underline cursor-pointer;
+    @apply leading-4 text-black/75 dark:text-white/75 dark:hover:text-white/95 text-center px-2 py-2 block hover:text-black/95 hover:underline cursor-pointer;
   }
   .dropdown-content a:first-child {
     @apply pt-6;
@@ -28,11 +28,11 @@ body {
 }
 
 @utility parent {
-  @apply text-black/75 group-hover:text-black/95 group-hover:scale-3d cursor-default;
+  @apply text-black/75 dark:text-white/75 dark:group-hover:text-white/95 group-hover:text-black/95 group-hover:scale-3d cursor-default;
 }
 
 @utility shownparent {
-  @apply text-black/95 scale-3d;
+  @apply text-black/95 dark:text-white/95 scale-3d;
 }
 @utility shown {
   @apply block;
@@ -40,7 +40,7 @@ body {
 
 @layer components {
   .shown a {
-    @apply leading-4 text-black/75 text-center px-2 py-2 block hover:text-black/95 hover:underline cursor-pointer;
+    @apply leading-4 text-black/75 dark:text-white/75 dark:hover:text-white/95 text-center px-2 py-2 block hover:text-black/95 hover:underline cursor-pointer;
   }
   .shown a:first-child {
     @apply pt-6;
