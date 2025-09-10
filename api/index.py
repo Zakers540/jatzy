@@ -13,5 +13,5 @@ def gameInstance():
 
 @app.route("/api/tjek/<instanceId>")
 def instance_exists(instanceId):
-    if instanceId in currentInstances:
-        return jsonify({"exists": true})
+    exists = instanceId in currentInstances
+    return jsonify({"exists": exists})
