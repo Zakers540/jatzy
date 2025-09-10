@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@custom-variant dark (&:where(.dark, .dark *));
 body {
   @apply bg-gradient-to-tr from-white via-blue-50 to-green-50  dark:from-black dark:via-[#050A1F] dark:to-[#041F12]
 }
