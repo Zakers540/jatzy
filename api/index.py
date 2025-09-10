@@ -1,7 +1,10 @@
 from flask import Flask, redirect, jsonify
 import jatzy
 
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 currentInstances = []
 
@@ -22,3 +25,4 @@ def test():
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5528, debug=True)
+    app.run(host="127.0.0.1", port=5328, debug=True)
