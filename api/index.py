@@ -19,3 +19,6 @@ def instance_exists(instanceId):
 @app.route("/api/test")
 def test():
     return "<p>Hello world!</p>"
+
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=5528, debug=True)
