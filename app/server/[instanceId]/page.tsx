@@ -1,13 +1,13 @@
 import { redirect } from 'next/navigation'
 
 type PageProps = {
-    params: {
+    params: Promise<{
         instanceId: string
-    }
+    }>
 }
 
 export default async function Server({ params }: PageProps) {
-    const { instanceId } = params
+    const { instanceId } = await params
 
     const maxWaitMs = 4000
     const retryDelayMs = 200
@@ -15,7 +15,7 @@ export default async function Server({ params }: PageProps) {
     const start = Date.now()
 
     while (Date.now() - start < maxWaitMs) {
-        const response = await fetch(`${apiBase}/api/tjek/${instanceId}`)
+        const response = await fetch(`${apiBase}/api/tjek/${instanceId}`, { cache: 'no-store' })
         if (response.ok) {
             const data = await response.json()
             if (data?.exists) {
