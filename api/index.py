@@ -9,7 +9,7 @@ currentInstances = []
 def gameInstance():
     instanceId = jatzy.rndURL()
     currentInstances.append(instanceId)
-    return redirect(f"localhost:3000/server/{instanceId}", code=302)
+    return redirect(f"/server/{instanceId}", code=302)
     
 @app.route("/api/python")
 def hello_world():
