@@ -15,3 +15,6 @@ def gameInstance():
 def instance_exists(instanceId):
     exists = instanceId in currentInstances
     return jsonify({"exists": exists})
+
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=5528, debug=True)
