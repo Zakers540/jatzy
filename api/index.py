@@ -1,8 +1,9 @@
 from flask import Flask, redirect, jsonify
+from flask_cors import CORS
 import random
 
 app = Flask(__name__)
-
+CORS(app)
 def rndURL():
     i = 0
     s = ""
