@@ -20,7 +20,7 @@ export default function Navbar () {
                             </a>
                             <div className={`${open === "server" ? "block my-8" : "hidden group-hover:block my-8"}`}/>
                             <div className={`dropdown-content ${open === "server" ? "!shown" : ""}`}>
-                                <a href="/server/opret">
+                                <a href="/api/opret">
                                     Opret server
                                 </a>
                                 <a href="/server/deltag">
