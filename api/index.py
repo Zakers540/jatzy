@@ -15,3 +15,7 @@ def gameInstance():
 def instance_exists(instanceId):
     exists = instanceId in currentInstances
     return jsonify({"exists": exists})
+
+@app.route("/api/test")
+def test():
+    return "<p>Hello world!</p>"
