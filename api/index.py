@@ -1,13 +1,23 @@
 from flask import Flask, redirect, jsonify
-import jatzy
+import random
 
 app = Flask(__name__)
+
+def rndURL():
+    i = 0
+    s = ""
+    while(i < 6):
+        rndNr = int(random.uniform(0, 9)) + 48 
+        if(rndNr >= 48 and rndNr <= 57):
+            s += chr(rndNr)
+            i += 1
+    return s
 
 currentInstances = []
 
 @app.route("/api/opret")
 def gameInstance():
-    instanceId = jatzy.rndURL()
+    instanceId = rndURL()
     currentInstances.append(instanceId)
     return redirect(f"/server/{instanceId}", code=302)
 
