@@ -17,7 +17,7 @@ currentInstances = []
 
 @app.route("/api/opret")
 def gameInstance():
-    instanceId = jatzy.rndURL()
+    instanceId = rndURL()
     currentInstances.append(instanceId)
     return redirect(f"/server/{instanceId}", code=302)
 
