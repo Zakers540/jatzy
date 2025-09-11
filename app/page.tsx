@@ -14,11 +14,14 @@ export default function Home() {
     }, []);
   return (
       <main className="min-h-screen w-full flex flex-col pt-40 px-20 md:grid md:grid-cols-2 md:items-start">
-          <div className="flex flex-col items-center mt-8">
-            <h1 className="text-black/80 text-4xl font-semibold bg-white/80 rounded-md p-2">
+          <div className="flex flex-col items-center -mt-8 md:mt-8">
+            <div className="md:hidden flex justify-center mb-12 md:mt-0">
+                <BigDice diceNumber={diceNumber}/>
+            </div>
+            <h1 className="text-center text-black/80 text-4xl font-semibold bg-white/80 rounded-md p-2">
                 Har du også lyst til yatzy?
             </h1>
-            <p className="mt-2 text-md text-neutral-500 bg-white/60 rounded-md p-1">
+            <p className="text-center mt-2 text-md text-neutral-500 bg-white/60 rounded-md p-1">
                 Det har du selvfølgelig!
             </p>
             <a href="/api/opret" className="p-4 border-2 border-blue-500 rounded-2xl text-xl mt-8 text-black/80
@@ -26,7 +29,7 @@ export default function Home() {
                 Start et spil yatzy
             </a>
           </div>
-          <div className="flex justify-center">
+          <div className="hidden md:flex justify-center mt-24 md:mt-0">
               <BigDice diceNumber={diceNumber}/>
           </div>
       </main>
