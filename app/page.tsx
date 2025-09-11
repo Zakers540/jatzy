@@ -13,7 +13,8 @@ export default function Home() {
         return () => clearInterval(interval);
     }, []);
   return (
-      <main className="min-h-screen w-full flex flex-col pt-40 px-20 md:grid md:grid-cols-2 md:items-start">
+      <div className="min-h-screen w-full flex flex-col items-center justify-center">
+      <main className="min-h-screen w-full max-w-[1200px] flex flex-col pt-40 px-20 md:grid md:grid-cols-2 md:items-start">
           <div className="flex flex-col items-center -mt-8 md:mt-8">
             <div className="md:hidden flex justify-center mb-12 md:mt-0">
                 <BigDice diceNumber={diceNumber}/>
@@ -33,5 +34,6 @@ export default function Home() {
               <BigDice diceNumber={diceNumber}/>
           </div>
       </main>
+      </div>
   )
 }
