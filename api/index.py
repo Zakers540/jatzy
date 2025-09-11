@@ -22,8 +22,8 @@ players = ["Torben", "test"]
 def gameInstance():
     instanceId = rndURL()
     currentInstances.append(instanceId)
-    day = datetime.datetime.date()
-    currentInstances.append(day)
+    day = datetime.datetime.now()
+    currentInstances.append(day.date)
     return redirect(f"/server/{instanceId}", code=302)
 
 @app.route("/api/tjek/<instanceId>")
@@ -37,13 +37,13 @@ def get_data(instanceId):
         "instanceId": instanceId,
         "players": players
     })
-"""
+
 @app.route("/api/tjek/<instanceId>/time")
 def serverTime(instanceId):
     if instanceId in currentInstances:
         index = currentInstances.index(instanceId)
-        currentDay = datetime.datetime.date()
-        if currentDay - currentInstances[index + 1] >= 7:
+        currentDay = datetime.datetime.now()
+        if currentDay.date - currentInstances[index + 1] >= 7:
             return redirect(f"/server/{instanceId}", code=302)
         else:
             currentInstances.remove(index)
@@ -57,4 +57,3 @@ def name_exists(instanceId, name):
         return jsonify({"exists": True})
     players.append(name)
     return jsonify({"exists":False})
-"""
