@@ -54,7 +54,7 @@ def serverTime():
             currentInstances.remove(i)
             currentInstances.remove(i + 1)
         i += 2
-    return 0
+    return redirect("/")
 
 
 @app.route("/api/tjek/<instanceId>/<name>")
