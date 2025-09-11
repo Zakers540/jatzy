@@ -37,7 +37,7 @@ def get_data(instanceId):
         "instanceId": instanceId,
         "players": players
     })
-
+"""
 @app.route("/api/tjek/<instanceId>/time")
 def serverTime(instanceId):
     if instanceId in currentInstances:
@@ -57,3 +57,4 @@ def name_exists(instanceId, name):
         return jsonify({"exists": True})
     players.append(name)
     return jsonify({"exists":False})
+"""
