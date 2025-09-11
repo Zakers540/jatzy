@@ -24,7 +24,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     }, [])
     return (
         <main className="min-h-screen w-full flex flex-col p-20">
-            <div className="rounded-lg border-2 border-black/20 w-40 flex flex-col p-4 bg-white/40 h-80">
+            <div className="rounded-lg border-2 border-black/20 w-52 flex flex-col p-4 bg-white/40 h-80">
             <h2 className="font-semibold text-xl text-black/80 mb-4">Spillere</h2>
             <ul className="w-full overflow-y-auto">
                 {currentPlayers.map((currentPlayer, i) => (
