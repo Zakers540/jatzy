@@ -1,6 +1,6 @@
 from flask import Flask, redirect, jsonify
 from flask_cors import CORS
-import datetime
+from time import localtime
 from random import uniform
 
 app = Flask(__name__)
@@ -22,8 +22,8 @@ players = ["Torben", "test"]
 def gameInstance():
     instanceId = rndURL()
     currentInstances.append(instanceId)
-    day = datetime.datetime.now()
-    currentInstances.append(day.date)
+    instanceStartTime = [localtime().tm_mday, localtime().tm_mon]
+    currentInstances.append(instanceStartTime)
     return redirect(f"/server/{instanceId}", code=302)
 
 @app.route("/api/tjek/<instanceId>")
@@ -42,8 +42,15 @@ def get_data(instanceId):
 def serverTime(instanceId):
     if instanceId in currentInstances:
         index = currentInstances.index(instanceId)
-        currentDay = datetime.datetime.now()
-        if currentDay.date - currentInstances[index + 1] >= 7:
+        currentDate = localtime().tm_mday
+        currentMonth = localtime().tm_mon
+        instanceMonth = currentInstances[index + 1][1]
+        instanceDate = currentInstances[index + 1][0]
+        if currentMonth > instanceMonth or (currentMonth == instanceMonth and currentDate < instanceDate):
+            instanceTime = (currentMonth - instanceMonth) * 30 + (instanceDate - currentDate)
+        else:
+            instanceTime = (12 - currentMonth + instanceMonth) * 30 + (instanceDate - currentDate)
+        if instanceTime >= 7:
             return redirect(f"/server/{instanceId}", code=302)
         else:
             currentInstances.remove(index)
