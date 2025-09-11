@@ -1,8 +1,8 @@
 export default function Server() {
     return (
-        <main className="min-h-screen w-full pt-8 flex items-center justify-center">
-            <form className="max-w-md w-full bg-white/20 backdrop-blur-lg border-3 border-black/80 rounded-2xl p-8 flex flex-col gap-6 shadow-md">
-                <h1 className="text-2xl font-semibold text-black/80 mb-4">Deltag i en server</h1>
+        <main className="min-h-screen w-full flex items-center justify-center">
+            <form className="max-w-md w-full flex flex-col gap-6 -mt-8">
+                <h1 className="text-4xl font-semibold text-black/80 mb-4">Deltag i en server</h1>
 
                 <div className="flex flex-col">
                     <label htmlFor="instanceId" className="text-black/60 mb-2">Hvad er server ID'et?</label>

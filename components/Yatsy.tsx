@@ -3,6 +3,7 @@
 //TODO: hvis også offline spillere evt eller gør de kan leave eller så kun online kan spille
 //TODO: evt lav en yatsy bræt med nuværende spiller og dig undtagen hvis det er dig så kun dig eller forrige og næste spiller også
 //TODO: næste tur knap
+//TODO: modal hvor man enten kan tilmelde sig spillet eller klikke på en af de røde navne (betyder det ikke er optaget) blå er optaget og spiller lige nu
 "use client"
 
 import {useEffect, useState} from "react";
