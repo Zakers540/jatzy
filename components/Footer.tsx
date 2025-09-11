@@ -6,7 +6,7 @@ export default function Footer () {
                     <p className="italic text-3xl font-semibold dark:text-white">yatzy</p>
                     <div className="flex flex-col items-center md:ml-4 md:block">
                         <div className="mt-6 flex flex-col items-center justify-center md:justify-start md:items-start space-y-4 font-extralight">
-                            <p>© 2025 yatsy</p>
+                            <p>© 2025 Chresten & Niklas</p>
                         </div>
                     </div>
                 </div>
