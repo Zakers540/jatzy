@@ -1,7 +1,12 @@
+//"For at tilføje et navn på en server skal det være unikt" måske? eller anden tekst bedre? Anden tekst kortere.
+
 export default function Server() {
     return (
-        <main className="min-h-screen w-full flex items-center justify-center">
-            <form className="max-w-md w-full flex flex-col gap-6 -mt-8">
+        <main className="min-h-screen w-full flex flex-col items-center pt-20">
+            <div className="flex flex-col items-center justify-center mb-12 bg-red-500/80 shadow-md rounded-md p-2">
+                <p className="text-center text-md font-medium text-red-50 tracking-wide"><span className="mr-2 font-mono text-lg font-semibold">OBS!</span> Alle navne på en server skal være unikke</p>
+            </div>
+            <form className="max-w-md w-full flex flex-col gap-6">
                 <h1 className="text-4xl font-semibold text-black/80 mb-4">Deltag i en server</h1>
 
                 <div className="flex flex-col">
