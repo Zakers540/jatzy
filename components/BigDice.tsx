@@ -12,11 +12,9 @@ export default function BigDice({ diceNumber }: DiceProps) {
         gsap.fromTo(".dot", {
             filter: "blur(25px)",
             duration: 0.4,
-            ease: "Power2.easeIn",
         }, {
             filter: "blur(0px)",
             duration: 0.4,
-            ease: "Power2.easeOut",
         })
     }, [diceNumber])
     return (
