@@ -15,7 +15,7 @@ def rndURL():
     return s
 
 players = []
-currentInstances = [] # evenIndex = gameInstance, unevenIndex = instanceTime
+currentInstances = [] # evenIndex = gameInstance, unevenIndex = instanceTime[date, month]
 
 players = ["Torben", "test"]
 @app.route("/api/opret")
@@ -38,29 +38,30 @@ def get_data(instanceId):
         "players": players
     })
 
-@app.route("/api/tjek/<instanceId>/time")
-def serverTime(instanceId):
-    if instanceId in currentInstances:
-        index = currentInstances.index(instanceId)
+@app.route("/api/tjek/time")
+def serverTime():
+    i = 0
+    while i > len(currentInstances):
         currentDate = localtime().tm_mday
         currentMonth = localtime().tm_mon
-        instanceMonth = currentInstances[index + 1][1]
-        instanceDate = currentInstances[index + 1][0]
+        instanceMonth = currentInstances[i + 1][1]
+        instanceDate = currentInstances[i + 1][0]
         if currentMonth > instanceMonth or (currentMonth == instanceMonth and currentDate < instanceDate):
             instanceTime = (currentMonth - instanceMonth) * 30 + (instanceDate - currentDate)
         else:
             instanceTime = (12 - currentMonth + instanceMonth) * 30 + (instanceDate - currentDate)
-        if instanceTime >= 7:
-            return redirect(f"/server/{instanceId}", code=302)
-        else:
-            currentInstances.remove(index)
-            currentInstances.remove(index + 1)
-    return jsonify({"exists":False})
+        if instanceTime > 7:
+            currentInstances.remove(i)
+            currentInstances.remove(i + 1)
+        i += 2
+    return 0
 
 
 @app.route("/api/tjek/<instanceId>/<name>")
 def name_exists(instanceId, name):
-    if name in players:
-        return jsonify({"exists": True})
-    players.append(name)
-    return jsonify({"exists":False})
+    if instanceId in currentInstances:
+        if name in players:
+            return jsonify({"exists": True})
+        players.append(name)
+        return jsonify({"exists":False})
+    return jsonify({"instanceExists":False})
