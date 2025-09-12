@@ -77,7 +77,7 @@ export default function Aside({position, digit, title, text}: AsideProps) {
                 <h2 className="font-mono font-semibold text-6xl text-black/80 mb-6 p-2 bg-white/80 rounded-md border-1 border-black/20 shadow-sm">{digit}</h2>
                 <div className="bg-white/80 p-8 rounded-md shadow-sm border-1 border-black/20">
                     <h3 className="text-6xl tracking-tighter font-medium mb-4 text-shadow-xs text-shadow-current">{title}</h3>
-                    <p className={`text-3xl ${position === "left" ? "w-160" : "w-160"}` }>{text}</p>
+                    <p className={`text-3xl text-black/72 ${position === "left" ? "w-160" : "w-160"}` }>{text}</p>
                 </div>
             </div>
         </aside>
