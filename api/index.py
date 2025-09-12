@@ -28,12 +28,12 @@ players = ["Torben", "test"]
 def gameInstance():
     instanceId = rndURL()
     instanceStartTime = [localtime().tm_mday, localtime().tm_mon]
-    response = (supabase.table("server").insert({"instanceId": instanceId, "timeCreated": instanceStartTime}))
+    response = (supabase.table("server").insert({"instanceId": instanceId, "timeCreated": instanceStartTime}).execute())
     return redirect(f"/server/{instanceId}", code=302)
 
 @app.route("/api/tjek/<instanceId>")
 def instance_exists(instanceId):
-    exists = supabase.table("server").select("*").in_("instanceId", [str(instanceId)])
+    exists = (supabase.table("server").select("*").in_("instanceId", [str(instanceId)]).execute())
     return jsonify({"exists": exists})
 
 @app.route("/api/data/<instanceId>", methods=["GET"])
@@ -46,8 +46,8 @@ def get_data(instanceId):
 @app.route("/api/tjek/<instanceId>/time")
 def serverTime(instanceId):
     i = 1
-    while supabase.table("server").select("instanceId").contains("id", [str(i)]) != None:
-        time = supabase.table("server").select("instanceId").contains("timeCreated",["timeCreated"])
+    while (supabase.table("server").select("instanceId").contains("id", [str(i)])) != None:
+        time = (supabase.table("server").select("instanceId").contains("timeCreated",["timeCreated"]).execute())
         currentDate = localtime().tm_mday
         currentMonth = localtime().tm_mon
         instanceMonth = time[1]
@@ -59,7 +59,7 @@ def serverTime(instanceId):
         if instanceTime >= 7:
             return redirect(f"/server/{instanceId}", code=302)
         else:
-            dltCollum = supabase.table("server").delete().eq("id", i).execute()
+            dltCollum = (supabase.table("server").delete().eq("id", i).execute())
     return jsonify({"exists":False})
 
 
