@@ -42,7 +42,7 @@ export default function YatzySheet({
     const renderRow = (category: YatzyCategory, label: string, seperatorAfter?: boolean) => (
         <>
         <tr key={category}>
-            <td className="tablecell text-left"><span className="pr-20">{label}</span></td>
+            <td className="border px-3 py-2 text-sm font-semibold text-black/80 text-left"><span className="pr-20">{label}</span></td>
             {currentPlayers.map((_, i) => {
                 const value = scores?.[category]?.[i];
                 const preview = previews?.[category]?.[i];
@@ -51,11 +51,17 @@ export default function YatzySheet({
                 return (
                     <td
                         key={i}
-                        className="tablecell cursor-pointer hover:bg-blue-50/40"
+                        className="tablecell cursor-pointer hover:bg-blue-50/40 group"
                         onClick={() => onCellClick(category, i)}
                     >
-                        <span className="px-5 text-black/80">{value ?? <span className="text-neutral-400 hover:text-black/80">{preview ?? ""}</span>}</span>
+                        <div className={`px-5 group-hover:text-black/80
+                            ${value ? "text-black/80" : preview ? "text-neutral-400" : ""} 
+                            ${!value && !preview ? "group-hover:line-through" : ""}`}
+                        >
+                            {value || preview || '\u00A0'}
+                        </div>
                     </td>
+
                 );
             })}
         </tr>
@@ -69,10 +75,10 @@ export default function YatzySheet({
 
     return (
         <div
-            className="flex items-center justify-center mt-12"
+            className="flex items-center justify-center"
             style={{ transform: `scale(${size})`, transformOrigin: "top left" }}
         >
-            <div className="bg-white/80 rounded-lg shadow-md p-4">
+            <div className="bg-white/80 rounded-lg shadow-sm p-4">
                 <table className="border-collapse">
                     <thead>
                     <tr>
@@ -93,8 +99,6 @@ export default function YatzySheet({
                     {renderRow("seksere", "Seksere", true)}
                     {renderRow("sum", "Sum")}
                     {renderRow("bonus", "Bonus", true)}
-                    {renderRow("1par", "1 par")}
-                    {renderRow("2par", "2 par")}
                     {renderRow("3ens", "3 ens")}
                     {renderRow("4ens", "4 ens")}
                     {renderRow("lillestraight", "Lille straight")}
