@@ -29,7 +29,7 @@ def gameInstance():
     instanceId = rndURL()
     instanceStartTime = [localtime().tm_mday, localtime().tm_mon]
     response = (supabase.table("server").insert({"instanceId": instanceId, "timeCreated": instanceStartTime}).execute())
-    create = supabase.rpc(f"CREATE TABLE {instanceId} (PRIMARY KEY id INT, username STRING, password STRING);")
+    #create = supabase.rpc(f"CREATE TABLE {instanceId} (PRIMARY KEY id INT, username STRING, password STRING);")
     return redirect(f"/server/{instanceId}", code=302)
 
 @app.route("/api/tjek/<instanceId>")
