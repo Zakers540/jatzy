@@ -75,7 +75,7 @@ export default function YatzySheet({
 
     return (
         <div
-            className="flex items-center justify-center"
+            className="flex items-center justify-center -z-10"
             style={{ transform: `scale(${size})`, transformOrigin: "top left" }}
         >
             <div className="bg-white/80 rounded-lg shadow-sm p-4">
