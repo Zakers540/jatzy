@@ -28,7 +28,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
             <h2 className="font-semibold text-xl text-black/80 mb-4">Spillere</h2>
             <ul className="w-full overflow-y-auto">
                 {currentPlayers.map((currentPlayer, i) => (
-                    <li key={i} className="flex items-center justify-between w-full py-2 px-2 rounded-md text-lg font-medium text-black/80 hover:bg-neutral-200 transition-colors cursor-pointer">{currentPlayer}<div className="w-3 h-3 rounded-full bg-blue-500"/></li>
+                    <li key={i} className="flex items-center justify-between w-full py-2 px-2 rounded-md text-lg font-medium text-black/80 hover:bg-blue-200/40 border-2 border-transparent hover:border-2 hover:border-blue-500/40 transition-colors cursor-pointer">{currentPlayer}<div className="w-3 h-3 rounded-full bg-blue-500"/></li>
                 ))}
             </ul>
             </div>
