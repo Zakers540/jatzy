@@ -49,3 +49,6 @@ body {
     @apply pb-6;
   }
 }
+@utility input {
+  @apply px-4 py-3 rounded-md border-2 border-black/64 bg-white/80 text-black placeholder-black/40 focus:outline-none focus:ring-1 focus:ring-black/64 transition
+}

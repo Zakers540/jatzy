@@ -21,7 +21,7 @@ def rndURL():
     return s
 
 players = []
-currentInstances = [] # evenIndex = gameInstance, unevenIndex = instanceTime
+currentInstances = [] # evenIndex = gameInstance, unevenIndex = instanceTime[date, month]
 
 players = ["Torben", "test"]
 @app.route("/api/opret")
@@ -63,9 +63,11 @@ def serverTime(instanceId):
     return jsonify({"exists":False})
 
 
-@app.route("/api/tjek/<instanceId>/<name>")
+@app.route("/api/tjek/<instanceId>/<name>/<password>")
 def name_exists(instanceId, name):
-    if name in players:
-        return jsonify({"exists": True})
-    players.append(name)
-    return jsonify({"exists":False})
+    if instanceId in currentInstances:
+        if name in players:
+            return jsonify({"exists": True})
+        players.append(name)
+        return jsonify({"exists":False})
+    return jsonify({"instanceExists":False})

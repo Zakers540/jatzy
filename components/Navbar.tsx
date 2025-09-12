@@ -12,7 +12,7 @@ export default function Navbar () {
                     <Link href="/">
                         <p className="italic text-3xl dark:text-white font-semibold">yatzy</p>
                     </Link>
-                    <div className={`h-24 space-x-5 z-10 items-center justify-center flex pt-12 pb-8 md:pb-0 md:pt-0 ${open === "" ? "-my-8" : "-my-8"}`}>
+                    <div className={`h-24 space-x-5 z-10 items-center justify-center flex flex-wrap pt-12 pb-8 md:pb-0 md:pt-0 ${open === "" ? "-my-8" : "-my-8"}`}>
                         <div className="dropdown group">
                             <div className={`${open === "server" ? "block my-8" : "hidden group-hover:block my-8"}`}/>
                             <a className={`parent ${open === "server" ? "!shownparent" : "cursor-default"}`} onClick={() => {if (open === "server") {setOpen("")} else {setOpen("server")}}}>
