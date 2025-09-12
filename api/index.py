@@ -29,6 +29,7 @@ def gameInstance():
     instanceId = rndURL()
     instanceStartTime = [localtime().tm_mday, localtime().tm_mon]
     response = (supabase.table("server").insert({"instanceId": instanceId, "timeCreated": instanceStartTime}).execute())
+    create = supabase.rpc(f"CREATE TABLE {instanceId} (PRIMARY KEY id INT, username STRING, password STRING);")
     return redirect(f"/server/{instanceId}", code=302)
 
 @app.route("/api/tjek/<instanceId>")
@@ -65,7 +66,7 @@ def serverTime(instanceId):
     return jsonify({"exists":False})
 
 
-@app.route("/api/tjek/<instanceId>/<name>/<password>")
+@app.route("/api/tjek/<instanceId>/<name>")
 def name_exists(instanceId, name):
     if instanceId in currentInstances:
         if name in players:
