@@ -20,6 +20,7 @@ def rndURL():
         i += 1
     return s
 
+
 players = []
 currentInstances = [] # evenIndex = gameInstance, unevenIndex = instanceTime[date, month]
 
@@ -29,7 +30,7 @@ def gameInstance():
     instanceId = rndURL()
     instanceStartTime = [localtime().tm_mday, localtime().tm_mon]
     response = (supabase.table("server").insert({"instanceId": instanceId, "timeCreated": instanceStartTime}).execute())
-    #create = supabase.rpc(f"CREATE TABLE {instanceId} (PRIMARY KEY id INT, username STRING, password STRING);")
+    create = supabase.rpc("instanceusers", {"instance_id": instanceId}).execute()
     return redirect(f"/server/{instanceId}", code=302)
 
 @app.route("/api/tjek/<instanceId>")
@@ -46,7 +47,7 @@ def get_data(instanceId):
 
 @app.route("/api/tjek/tid")
 def serverTime():
-    count = (supabase.table("server").select("*", count="exact", head=True).execute())
+    count = (supabase.table("server").select("*", count="exact").execute())
     i = 1
     while count >= i:
         time = (supabase.table("server").select("timeCreated").contains("id",[str(i)]).execute())
