@@ -46,7 +46,7 @@ def get_data(instanceId):
 @app.route("/api/tjek/<instanceId>/time")
 def serverTime(instanceId):
     i = 1
-    while (supabase.table("server").select("instanceId").contains("id", [str(i)])) != None:
+    while (supabase.table("server").select("instanceId").contains("id", [str(i)]).execute()) != None:
         time = (supabase.table("server").select("instanceId").contains("timeCreated",["timeCreated"]).execute())
         currentDate = localtime().tm_mday
         currentMonth = localtime().tm_mon
