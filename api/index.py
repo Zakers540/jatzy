@@ -43,26 +43,25 @@ def get_data(instanceId):
         "players": players
     })
 
-@app.route("/api/tjek/<instanceId>/time")
+@app.route("/api/tjek/tid")
 def serverTime(instanceId):
+    count = (supabase.table("server").select("*", count="exact", head=True).execute())
     i = 1
-    try:
-        while (supabase.table("server").select("id").contains("id", [str(i)]).execute()) != None:
-            time = (supabase.table("server").select("timeCreated").contains("id",[str(i)]).execute())
-            currentDate = localtime().tm_mday
-            currentMonth = localtime().tm_mon
-            instanceMonth = time[1]
-            instanceDate = time[0]
-            if currentMonth > instanceMonth or (currentMonth == instanceMonth and currentDate < instanceDate):
-                instanceTime = (currentMonth - instanceMonth) * 30 + (instanceDate - currentDate)
-            else:
-                instanceTime = (12 - currentMonth + instanceMonth) * 30 + (instanceDate - currentDate)
-            if instanceTime >= 7:
-                return redirect(f"/server/{instanceId}", code=302)
-            else:
-                dltCollum = (supabase.table("server").delete().eq("id", i).execute())
-    except:
-        exit
+    while count >= i:
+        time = (supabase.table("server").select("timeCreated").contains("id",[str(i)]).execute())
+        currentDate = localtime().tm_mday
+        currentMonth = localtime().tm_mon
+        instanceMonth = time[1]
+        instanceDate = time[0]
+        if currentMonth > instanceMonth or (currentMonth == instanceMonth and currentDate < instanceDate):
+            instanceTime = (currentMonth - instanceMonth) * 30 + (instanceDate - currentDate)
+        else:
+            instanceTime = (12 - currentMonth + instanceMonth) * 30 + (instanceDate - currentDate)
+        if instanceTime >= 7:
+            i += 1
+        else:
+            dltCollum = (supabase.table("server").delete().eq("id", i).execute())
+            i += 1
     return jsonify({"exists":False})
 
 
