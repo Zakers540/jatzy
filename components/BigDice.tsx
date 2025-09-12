@@ -5,9 +5,10 @@ import gsap from "gsap";
 
 type DiceProps = {
     diceNumber: number
+    size?: number
 }
 
-export default function BigDice({ diceNumber }: DiceProps) {
+export default function BigDice({ diceNumber, size }: DiceProps) {
     useGSAP(()=> {
         gsap.fromTo(".dot", {
             filter: "blur(5px)",
@@ -18,7 +19,7 @@ export default function BigDice({ diceNumber }: DiceProps) {
         })
     }, [diceNumber])
     return (
-        <div className="-z-10 flex justify-center items-center border-2 rounded-md w-32 h-32 md:rounded-lg md:w-64 md:h-64 bg-neutral-50">
+        <div className="-z-10 flex justify-center items-center border-2 rounded-md w-32 h-32 md:rounded-lg md:w-64 md:h-64 bg-neutral-50" style={{transform: `scale(${size})`}}>
             {(() => {
                 switch (diceNumber) {
                     case 1:

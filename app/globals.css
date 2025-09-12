@@ -57,5 +57,5 @@ body {
 }
 
 .tablecell:hover {
-  @apply bg-blue-200/40 border-blue-500/40;
+  @apply bg-blue-50/40 z-10;
 }
