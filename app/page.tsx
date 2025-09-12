@@ -5,11 +5,19 @@ import {useEffect, useState} from "react";
 
 export default function Home() {
     const [diceNumber, setDiceNumber] = useState(6);
+    const apiBase = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5328' : 'https://jatzy.vercel.app'
     useEffect(() => {
         const interval = setInterval(() => {
             setDiceNumber(Math.floor(Math.random() * 6) + 1); // random 1–6
         }, 2000);
+        const timeCheck = (): void => {
+            fetch(`${apiBase}/api/tjek/tid`)
+            setInterval(() => {
+                fetch(`${apiBase}/api/tjek/tid`)
+            }, 24 * 60 * 60 * 1000);
+        };
 
+        timeCheck();
         return () => clearInterval(interval);
     }, []);
   return (

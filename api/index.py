@@ -38,7 +38,7 @@ def get_data(instanceId):
         "players": players
     })
 
-@app.route("/api/tjek/time")
+@app.route("/api/tjek/tid")
 def serverTime():
     i = 0
     while i > len(currentInstances):
@@ -57,7 +57,7 @@ def serverTime():
     return redirect("/")
 
 
-@app.route("/api/tjek/<instanceId>/<name>")
+@app.route("/api/tjek/<instanceId>/<name>/<password>")
 def name_exists(instanceId, name):
     if instanceId in currentInstances:
         if name in players:
