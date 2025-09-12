@@ -42,7 +42,7 @@ export default function YatzySheet({
     const renderRow = (category: YatzyCategory, label: string, seperatorAfter?: boolean) => (
         <>
         <tr key={category}>
-            <td className="border border-l-0 px-3 py-2 text-sm font-semibold text-black/80 text-left"><span className="pr-20">{label}</span></td>
+            <td className={`border border-l-0 px-3 py-2 font-semibold text-left ${(label === "Sum" || label === "Bonus" || label === "Total") ? "text-sm text-black" : "text-sm text-black/80"}`}><span className="pr-20">{label}</span></td>
             {currentPlayers.map((_, i) => {
                 const value = scores?.[category]?.[i];
                 const preview = previews?.[category]?.[i];

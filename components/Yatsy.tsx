@@ -4,6 +4,7 @@
 //TODO: evt lav en yatsy bræt med nuværende spiller og dig undtagen hvis det er dig så kun dig eller forrige og næste spiller også
 //TODO: næste tur knap
 //TODO: modal hvor man enten kan tilmelde sig spillet eller klikke på en af de røde navne (betyder det ikke er optaget) blå er optaget og spiller lige nu
+//TODO: fyrværkeri hvis jatsy eller spil er slut
 "use client"
 
 import {useEffect, useState} from "react";
