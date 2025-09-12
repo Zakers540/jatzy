@@ -45,7 +45,7 @@ def get_data(instanceId):
     })
 
 @app.route("/api/tjek/tid")
-def serverTime(instanceId):
+def serverTime():
     count = (supabase.table("server").select("*", count="exact", head=True).execute())
     i = 1
     while count >= i:
