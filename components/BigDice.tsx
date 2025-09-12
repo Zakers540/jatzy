@@ -10,7 +10,7 @@ type DiceProps = {
 export default function BigDice({ diceNumber }: DiceProps) {
     useGSAP(()=> {
         gsap.fromTo(".dot", {
-            filter: "blur(10px)",
+            filter: "blur(5px)",
             duration: 1,
         }, {
             filter: "blur(0px)",
