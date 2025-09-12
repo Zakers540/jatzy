@@ -5,8 +5,8 @@ from supabase import create_client, Client
 from time import localtime
 from random import uniform
 
-url: str = os.environ.get('DATABASE_URL')
-key: str = os.environ.get('DATABASE_KEY')
+url: str = os.environ.get('https://whaiekidzkrnqiyykhjr.supabase.co')
+key: str = os.environ.get('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoYWlla2lkemtybnFpeXlraGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2NjE0NTQsImV4cCI6MjA3MzIzNzQ1NH0.luGyAzMASyma0kYS2n8kZs6MUrzEyneJTuM3LbX3AXc')
 supabase: Client = create_client(url, key)
 
 app = Flask(__name__)
@@ -20,6 +20,7 @@ def rndURL():
         i += 1
     return s
 
+
 players = []
 currentInstances = [] # evenIndex = gameInstance, unevenIndex = instanceTime[date, month]
 
@@ -29,7 +30,7 @@ def gameInstance():
     instanceId = rndURL()
     instanceStartTime = [localtime().tm_mday, localtime().tm_mon]
     response = (supabase.table("server").insert({"instanceId": instanceId, "timeCreated": instanceStartTime}).execute())
-    #create = supabase.rpc(f"CREATE TABLE {instanceId} (PRIMARY KEY id INT, username STRING, password STRING);")
+    create = supabase.rpc("instanceUsers", {"instance_id": instanceId2}).execute()
     return redirect(f"/server/{instanceId}", code=302)
 
 @app.route("/api/tjek/<instanceId>")
