@@ -69,7 +69,7 @@ export default function Aside({position, digit, title, text}: AsideProps) {
         })
     })
     return (
-        <aside className="grid-cols-2 min-h-[88vh]">
+        <aside className="-z-10 grid-cols-2 min-h-[88vh]">
             {position === "right" && (
                 <div className="flex flex-col w-full"></div>
             )}
