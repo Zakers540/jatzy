@@ -14,8 +14,8 @@ export default function Footer () {
                     <div className="flex flex-col space-y-4 mt-16 md:mt-0 justify-center items-center md:items-start md:justify-start">
                         <p className="cursor-default text-lg font-semibold text-center md:text-start">Server</p>
                         <div className="flex flex-col justify-center md:justify-start space-y-4 leading-4 text-neutral-500 dark:text-neutral-400 w-32">
-                            <a className="hover:text-neutral-800 dark:hover:text-neutral-100 cursor-pointer text-center md:text-start" href="/booking/bordresevationer">Opret en server</a>
-                            <a className="hover:text-neutral-800 dark:hover:text-neutral-100 cursor-pointer text-center md:text-start" href="/booking/billetsalg">Deltag i server</a>
+                            <a className="hover:text-neutral-800 dark:hover:text-neutral-100 cursor-pointer text-center md:text-start" href="/api/opret">Opret en server</a>
+                            <a className="hover:text-neutral-800 dark:hover:text-neutral-100 cursor-pointer text-center md:text-start" href="/server/deltag">Deltag i server</a>
                         </div>
                     </div>
                     <div className="flex flex-col space-y-4 mt-8 md:mt-0 justify-center md:justify-start">

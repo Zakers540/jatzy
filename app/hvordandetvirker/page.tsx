@@ -2,7 +2,7 @@ import Aside from "@/components/Aside";
 
 export default function Index() {
     return(
-        <main className="min-h-screen w-full pt-24 px-40">
+        <main className="min-h-screen w-full py-24 px-40">
             <Aside
                 digit="01"
                 title="Opret eller deltag"

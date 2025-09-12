@@ -1,4 +1,6 @@
 //"For at tilføje et navn på en server skal det være unikt" måske? eller anden tekst bedre? Anden tekst kortere.
+"use client"
+import YatzySheet from "@/components/YatzySheet";
 
 export default function Server() {
     return (
@@ -26,6 +28,22 @@ export default function Server() {
                         className="input"
                     />
                 </div>
+                <div className="flex flex-col">
+                    <label htmlFor="name" className="text-black/60 mb-2">Hvad skal din adgangskode være?</label>
+                    <input
+                        type="text"
+                        placeholder="Adgangskode"
+                        className="input"
+                    />
+                </div>
+                <div className="flex flex-col">
+                    <label htmlFor="name" className="text-black/60 mb-2">Bekræft din adgangskode.</label>
+                    <input
+                        type="text"
+                        placeholder="Bekræft adgangskode"
+                        className="input"
+                    />
+                </div>
 
                 <button
                     type="submit"
@@ -35,6 +53,22 @@ export default function Server() {
                     Deltag
                 </button>
             </form>
+            <YatzySheet
+                currentPlayers={["Alice", "Bob"]}
+                size={0.8}
+                scores={{
+                    ettere: { 0: 3 },
+                    bonus: { 1: 50 }
+                }}
+                previews={{
+                    toere: { 0: "8" },
+                    yatzy: { 1: "50" }
+                }}
+                onCellClick={(category, playerIndex) => {
+                    console.log(`Clicked ${category} for player ${playerIndex}`);
+                }}
+            />
+
         </main>
     )
 }

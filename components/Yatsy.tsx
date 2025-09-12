@@ -7,6 +7,7 @@
 "use client"
 
 import {useEffect, useState} from "react";
+import YatzySheet from "@/components/YatzySheet";
 
 type YatsyProps = {
     instanceId: string
@@ -32,6 +33,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                 ))}
             </ul>
             </div>
+            <YatzySheet/>
         </main>
     )
 }
