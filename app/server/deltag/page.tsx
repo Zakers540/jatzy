@@ -53,9 +53,9 @@ export default function Server() {
                     Deltag
                 </button>
             </form>
+            <div className="mt-12"/>
             <YatzySheet
-                currentPlayers={["Alice", "Bob"]}
-                size={1}
+                currentPlayers={["Dig (Poul)","Nuværende (Alice)", "Bedste (Bob)", "Værste (Peter)",]}
                 scores={{
                     ettere: { 0: 3 },
                     bonus: { 1: 50 }

@@ -1,4 +1,5 @@
 //TODO: hvis ingen preview, kryds over på hover
+//TODO: gør så de kun kan få hover effekter og sender videre til backend hvis det er dem selv altså f.eks altid kunne de være 0
 
 "use client";
 
@@ -51,7 +52,7 @@ export default function YatzySheet({
                 return (
                     <td
                         key={i}
-                        className="tablecell cursor-pointer hover:bg-blue-50/40 group"
+                        className="tablecell cursor-pointer hover:bg-blue-50/40 group text-center"
                         onClick={() => onCellClick(category, i)}
                     >
                         <div className={`px-4 group-hover:text-black/80
@@ -75,10 +76,9 @@ export default function YatzySheet({
 
     return (
         <div
-            className="flex items-center justify-center -z-10"
-            style={{ transform: `scale(${size})`, transformOrigin: "top left" }}
+            className="flex items-center justify-center overflow-x-auto"
         >
-            <div className="bg-white/80 rounded-lg shadow-sm p-4">
+            <div className="bg-white/80 rounded-lg shadow-sm p-4" style={{ transform: `scale(${size})`, transformOrigin: "center" }}>
                 <table className="border-collapse">
                     <thead>
                     <tr>
