@@ -30,10 +30,10 @@ def rndURL():
 def cleanUsername(name):
     nameLen = len(name)
     i = 0
-    while i < nameLen
+    while i < nameLen:
         if i = 0:
             continue
-        if name[i] == ' ' and name[i - 1] == ' '
+        if name[i] == ' ' and name[i - 1] == ' ':
             del name[i]
     return name.strip()
 
