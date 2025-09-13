@@ -76,7 +76,7 @@ export default function YatzySheet({
 
     return (
         <div
-            className="flex items-center justify-center overflow-x-auto"
+            className="flex items-start justify-center overflow-x-auto"
         >
             <div className="bg-white/80 rounded-lg shadow-sm p-4" style={{ transform: `scale(${size})`, transformOrigin: "center" }}>
                 <table className="border-collapse">
@@ -84,7 +84,7 @@ export default function YatzySheet({
                     <tr>
                         <th className="text-left font-semibold text-xl italic pb-2">yatzy</th>
                         {currentPlayers.map((currentPlayer, i) => (
-                            <th key={i} className="tablecell font-semibold">
+                            <th key={i} className=" px-3 py-1 text-xs text-black/70 font-semibold">
                                 {currentPlayer}
                             </th>
                         ))}

@@ -19,7 +19,18 @@ type YatsyProps = {
 
 export default function Yatsy({ instanceId }: YatsyProps) {
     const [currentPlayers, setCurrentPlayers] = useState<string[]>(["Alice", "Poul", "Peter", "Bob"])
+    const [dice1, setDice1] = useState<boolean>(false)
+    const [dice2, setDice2] = useState<boolean>(false)
+    const [dice3, setDice3] = useState<boolean>(false)
+    const [dice4, setDice4] = useState<boolean>(false)
+    const [dice5, setDice5] = useState<boolean>(false)
+    const [dice1Number, setDice1Number] = useState<number>(6)
+    const [dice2Number, setDice2Number] = useState<number>(6)
+    const [dice3Number, setDice3Number] = useState<number>(6)
+    const [dice4Number, setDice4Number] = useState<number>(6)
+    const [dice5Number, setDice5Number] = useState<number>(6)
     const apiBase = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5328' : 'https://jatzy.vercel.app'
+    const [totalDice, setTotalDice] = useState<number>(0)
     useEffect(() => {
         fetch(`${apiBase}/api/data/${instanceId}`)
             .then((response) => response.json())
@@ -27,20 +38,34 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                 setCurrentPlayers(data.players)
             })
     }, [])
+    useEffect(() => {
+        setTotalDice((dice1 ? 1 : 0) + (dice2 ? 1 : 0) + (dice3 ? 1 : 0) + (dice4 ? 1 : 0) + (dice5 ? 1 : 0));
+    }, [dice1, dice2, dice3, dice4, dice5]);
+
     return (
         <main className="min-h-screen w-full flex flex-col p-16 py-20">
             <div className="grid grid-cols-[1fr_4fr]">
-                <div className="grid grid-rows-[3fr_4fr]">
+                <div className="grid grid-rows-[3fr_4fr] justify-center">
                     <Players currentPlayers={currentPlayers}/>
-                    <div className="grid grid-cols-2 gap-2 p-8 pl-0">
-                        <Dice realDiceNumber={6}/>
-                        <Dice realDiceNumber={6}/>
-                        <Dice realDiceNumber={6}/>
-                        <Dice realDiceNumber={6}/>
-                        <Dice realDiceNumber={6}/>
+                    <div className="grid grid-cols-2 gap-x-2 p-4 pl-0">
+                        <Dice realDiceNumber={dice1Number} selected={dice1} setSelected={setDice1}/>
+                        <Dice realDiceNumber={dice2Number} selected={dice2} setSelected={setDice2}/>
+                        <Dice realDiceNumber={dice3Number} selected={dice3} setSelected={setDice3}/>
+                        <Dice realDiceNumber={dice4Number} selected={dice4} setSelected={setDice4}/>
+                        <Dice realDiceNumber={dice5Number} selected={dice5} setSelected={setDice5}/>
+                    </div>
+                    <div className="flex justify-center items-center h-12 w-46">
+                        {totalDice > 1 ? (
+                            <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50">Rul {totalDice} terninger</button>
+                        ): totalDice > 0 && (
+                            <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50">Rul {totalDice} terning</button>
+                        )}
                     </div>
                 </div>
                 <YatzySheet
+                    size={1}
                     currentPlayers={["Dig (Poul)","Nuværende (Alice)", "Bedste (Bob)", "Værste (Peter)",]}
                     scores={{
                         ettere: { 0: 3 },
