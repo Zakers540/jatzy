@@ -47,7 +47,7 @@ def get_data(instanceId):
 
 @app.route("/api/tjek/tid")
 def serverTime():
-    count = (supabase.table("server").select("*", count="exact", head=True).execute())
+    count = (supabase.table("server").select("*", count: "exact", head: True).execute())
     i = 1
     while count >= i:
         time = (supabase.table("server").select("timeCreated").contains("id",[str(i)]).execute())
@@ -64,8 +64,6 @@ def serverTime():
         else:
             dltCollum = (supabase.table("server").delete().eq("id", i).execute())
             i += 1
-    return jsonify({"exists":False})
-
 
 @app.route("/api/tjek/<instanceId>/<name>")
 def name_exists(instanceId, name):
