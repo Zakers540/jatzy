@@ -42,7 +42,7 @@ export default function YatzySheet({
     const renderRow = (category: YatzyCategory, label: string, seperatorAfter?: boolean) => (
         <>
         <tr key={category}>
-            <td className={`border border-l-0 px-3 py-2 font-semibold text-left ${(label === "Sum" || label === "Bonus" || label === "Total") ? "text-sm text-black" : "text-sm text-black/80"}`}><span className="pr-20">{label}</span></td>
+            <td className={`border border-l-0 px-3 py-1.5 font-semibold text-left ${(label === "Sum" || label === "Bonus" || label === "Total") ? "text-xs text-black" : "text-xs text-black/80"}`}><span className="pr-20">{label}</span></td>
             {currentPlayers.map((_, i) => {
                 const value = scores?.[category]?.[i];
                 const preview = previews?.[category]?.[i];
@@ -54,7 +54,7 @@ export default function YatzySheet({
                         className="tablecell cursor-pointer hover:bg-blue-50/40 group"
                         onClick={() => onCellClick(category, i)}
                     >
-                        <div className={`px-5 group-hover:text-black/80
+                        <div className={`px-4 group-hover:text-black/80
                             ${value ? "text-black/80" : preview ? "text-neutral-400" : ""} 
                             ${!value && !preview ? "group-hover:line-through" : ""}`}
                         >
@@ -82,7 +82,7 @@ export default function YatzySheet({
                 <table className="border-collapse">
                     <thead>
                     <tr>
-                        <th className="text-left font-semibold text-3xl italic pb-2">yatzy</th>
+                        <th className="text-left font-semibold text-xl italic pb-2">yatzy</th>
                         {currentPlayers.map((currentPlayer, i) => (
                             <th key={i} className="tablecell font-semibold">
                                 {currentPlayer}

@@ -55,7 +55,7 @@ export default function Server() {
             </form>
             <YatzySheet
                 currentPlayers={["Alice", "Bob"]}
-                size={0.8}
+                size={1}
                 scores={{
                     ettere: { 0: 3 },
                     bonus: { 1: 50 }
