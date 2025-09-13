@@ -29,15 +29,26 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     const [dice3Number, setDice3Number] = useState<number>(6)
     const [dice4Number, setDice4Number] = useState<number>(6)
     const [dice5Number, setDice5Number] = useState<number>(6)
+    const [opdatering, setOpdatering] = useState<number>(0)
     const apiBase = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5328' : 'https://jatzy.vercel.app'
     const [totalDice, setTotalDice] = useState<number>(0)
+    const [user, setUser] = useState<string>("")
+    const [loggedIn, setLoggedIn] = useState<boolean>(false)
+    const [password, setPassword] = useState<string>("")
     useEffect(() => {
         fetch(`${apiBase}/api/data/${instanceId}`)
             .then((response) => response.json())
             .then((data) => {
                 setCurrentPlayers(data.players)
             })
-    }, [])
+    }, [opdatering])
+    if (loggedIn) {
+        fetch(`${apiBase}/api/data/${instanceId}/${user}/${password}`)
+            .then((response) => response.json())
+            .then((data) => {
+                setCurrentPlayers(data.players)
+            })
+    }
     useEffect(() => {
         setTotalDice((dice1 ? 1 : 0) + (dice2 ? 1 : 0) + (dice3 ? 1 : 0) + (dice4 ? 1 : 0) + (dice5 ? 1 : 0));
     }, [dice1, dice2, dice3, dice4, dice5]);

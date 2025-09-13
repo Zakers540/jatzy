@@ -1,4 +1,5 @@
 //tilføj hurtigskiftende tilfældige number før endelig tal for gambling effekt
+//TODO: gør dice hover effekter og selected kun virker når det er brugerens tur
 "use client"
 
 import {useGSAP} from "@gsap/react";
