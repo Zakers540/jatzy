@@ -5,18 +5,20 @@
 //TODO: næste tur knap
 //TODO: modal hvor man enten kan tilmelde sig spillet eller klikke på en af de røde navne (betyder det ikke er optaget) blå er optaget og spiller lige nu
 //TODO: fyrværkeri hvis jatsy eller spil er slut
+//TODO: estimeret tid og når det er din tur så en lydeffekt
 "use client"
 
 import {useEffect, useState} from "react";
 import YatzySheet from "@/components/YatzySheet";
 import Players from "@/components/Players";
+import Dice from "@/components/Dice";
 
 type YatsyProps = {
     instanceId: string
 }
 
 export default function Yatsy({ instanceId }: YatsyProps) {
-    const [currentPlayers, setCurrentPlayers] = useState<string[]>([])
+    const [currentPlayers, setCurrentPlayers] = useState<string[]>(["Alice", "Poul", "Peter", "Bob"])
     const apiBase = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5328' : 'https://jatzy.vercel.app'
     useEffect(() => {
         fetch(`${apiBase}/api/data/${instanceId}`)
@@ -27,8 +29,32 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     }, [])
     return (
         <main className="min-h-screen w-full flex flex-col p-16 py-20">
-            <Players currentPlayers={currentPlayers}/>
-            <YatzySheet/>
+            <div className="grid grid-cols-[1fr_4fr]">
+                <div className="grid grid-rows-[3fr_4fr]">
+                    <Players currentPlayers={currentPlayers}/>
+                    <div className="grid grid-cols-2 gap-2 p-8 pl-0">
+                        <Dice realDiceNumber={6}/>
+                        <Dice realDiceNumber={6}/>
+                        <Dice realDiceNumber={6}/>
+                        <Dice realDiceNumber={6}/>
+                        <Dice realDiceNumber={6}/>
+                    </div>
+                </div>
+                <YatzySheet
+                    currentPlayers={["Dig (Poul)","Nuværende (Alice)", "Bedste (Bob)", "Værste (Peter)",]}
+                    scores={{
+                        ettere: { 0: 3 },
+                        bonus: { 1: 50 }
+                    }}
+                    previews={{
+                        toere: { 0: "8" },
+                        yatzy: { 1: "50" }
+                    }}
+                    onCellClick={(category, playerIndex) => {
+                        console.log(`Clicked ${category} for player ${playerIndex}`);
+                    }}
+                />
+            </div>
         </main>
-    )
+)
 }
