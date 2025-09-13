@@ -3,6 +3,8 @@
 import BigDice from "@/components/BigDice";
 import {useEffect, useState} from "react";
 import Dice from "@/components/Dice";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 
 export default function Home() {
     const [diceNumber, setDiceNumber] = useState(6);
@@ -22,6 +24,8 @@ export default function Home() {
         return () => clearInterval(interval);
     }, []);
     return (
+        <>
+            <Navbar/>
         <div className="min-h-screen w-full flex flex-col items-center justify-center">
             <main
                 className="min-h-screen w-full max-w-[1200px] flex flex-col pt-40 px-20 md:grid md:grid-cols-2 md:items-start">
@@ -45,5 +49,7 @@ export default function Home() {
                 </div>
             </main>
         </div>
+            <Footer/>
+        </>
     );
 }

@@ -1,10 +1,11 @@
 type PlayersProps = {
     currentPlayers: string[] | [""]
+    size?: number
 }
 
-export default function Players({currentPlayers}: PlayersProps) {
+export default function Players({currentPlayers, size}: PlayersProps) {
     return (
-        <div className="rounded-md border-1 border-black/20 w-40 flex flex-col p-2 bg-white/40 h-56">
+        <div className="rounded-md border-1 border-black/20 w-40 flex flex-col p-2 bg-white/40 h-56" style={{ transform: `scale(${size})`, transformOrigin: "center" }}>
             <h2 className="font-semibold text-lg text-black/80 mb-4">Spillere</h2>
             <ul className="w-full overflow-y-auto overflow-x-hidden">
                 {currentPlayers.map((currentPlayer, i) => (

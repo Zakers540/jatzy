@@ -3,14 +3,16 @@
 
 import {useGSAP} from "@gsap/react";
 import gsap from "gsap";
-import {useEffect, useState} from "react";
+import {Dispatch, SetStateAction, useEffect, useState} from "react";
 
 type DiceProps = {
     realDiceNumber: number
     size?: number
+    selected?: boolean
+    setSelected?: Dispatch<SetStateAction<boolean>>
 }
 
-export default function Dice({ realDiceNumber, size }: DiceProps) {
+export default function Dice({ realDiceNumber, size, selected, setSelected }: DiceProps) {
     const [gamblingEffect, setGamblingEffect] = useState(true)
     const [diceNumber, setDiceNumber] = useState(6)
     useEffect(() => {
@@ -31,7 +33,7 @@ export default function Dice({ realDiceNumber, size }: DiceProps) {
     }, [realDiceNumber]);
 
     return (
-        <div className="-z-10 flex justify-center items-center border-2 rounded-lg w-16 h-16 bg-neutral-50" style={{transform: `scale(${size})`}}>
+        <div className={`flex justify-center items-center border-2 rounded-lg w-16 h-16 group ${selected ? "bg-blue-200/40" : "bg-neutral-50 hover:bg-blue-200/40 "}`} style={{transform: `scale(${size})`}} onClick={() => {setGamblingEffect(false); setSelected && setSelected(!selected)}}>
             {(() => {
                 switch (diceNumber) {
                     case 1:
