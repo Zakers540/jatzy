@@ -2,7 +2,7 @@ from flask import Flask, redirect, jsonify
 from flask_cors import CORS
 import os
 from supabase import create_client, Client
-from datetime import date
+from datetime import date, datetime
 from random import uniform
 
 url: str = os.environ.get('DATABASE_URL')
@@ -28,9 +28,9 @@ players = ["Torben", "test"]
 @app.route("/api/opret")
 def gameInstance():
     instanceId = rndURL()
-    instanceStartTime = [date.day(), date.month()]
+    instanceStartTime = [datetime.day(), datetime.month()]
     response = (supabase.table("server").insert({"instanceId": instanceId, "timeCreated": instanceStartTime}).execute())
-    create = supabase.rpc("instanceusers", {"instance_id": instanceId}).execute()
+    create = supabase.rpc("instanceUsers", {"instance_id": instanceId}).execute()
     return redirect(f"/server/{instanceId}", code=302)
 
 @app.route("/api/tjek/<instanceId>")
