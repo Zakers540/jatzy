@@ -31,7 +31,7 @@ def cleanUsername(name):
     nameLen = len(name)
     i = 0
     while i < nameLen:
-        if i = 0:
+        if i == 0:
             continue
         if name[i] == ' ' and name[i - 1] == ' ':
             del name[i]
