@@ -2,7 +2,7 @@ from flask import Flask, redirect, jsonify
 from flask_cors import CORS
 import os
 from supabase import create_client, Client
-from time import localtime
+from datetime import date
 from random import uniform
 
 url: str = os.environ.get('DATABASE_URL')
@@ -28,7 +28,7 @@ players = ["Torben", "test"]
 @app.route("/api/opret")
 def gameInstance():
     instanceId = rndURL()
-    instanceStartTime = [localtime().tm_mday, localtime().tm_mon]
+    instanceStartTime = [date.day(), date.month()]
     response = (supabase.table("server").insert({"instanceId": instanceId, "timeCreated": instanceStartTime}).execute())
     create = supabase.rpc("instanceusers", {"instance_id": instanceId}).execute()
     return redirect(f"/server/{instanceId}", code=302)
@@ -47,23 +47,29 @@ def get_data(instanceId):
 
 @app.route("/api/tjek/tid")
 def serverTime():
-    count = (supabase.table("server").select("*", count="exact").execute())
-    i = 1
-    while int(count) >= i:
-        time = (supabase.table("server").select("timeCreated").contains("id",[str(i)]).execute())
-        currentDate = localtime().tm_mday
-        currentMonth = localtime().tm_mon
-        instanceMonth = time[1]
-        instanceDate = time[0]
-        if currentMonth > instanceMonth or (currentMonth == instanceMonth and currentDate < instanceDate):
-            instanceTime = (currentMonth - instanceMonth) * 30 + (instanceDate - currentDate)
-        else:
-            instanceTime = (12 - currentMonth + instanceMonth) * 30 + (instanceDate - currentDate)
-        if instanceTime >= 7:
-            i += 1
-        else:
-            dltCollum = (supabase.table("server").delete().eq("id", i).execute())
-            i += 1
+    resp = supabase.table("server").select("id,timeCreated").execute()
+    rows = getattr(resp, "data", None) or (resp.get("data") if isinstance(resp, dict) else None)
+    if not rows:
+        return jsonify({"deleted": 0, "checked": 0})
+    now = date.today()
+    deletedCount = 0
+    checked = 0
+    for row in rows:
+        checked += 1
+        tc = row.get("timeCreated") 
+        if not tc or not isinstance(tc, (list, tuple)) or len(tc) < 2:
+            continue
+        instanceDay, instanceMonth = int(tc[0]), int(tc[1])
+        year = now.year if instanceMonth <= now.month else now.year - 1
+        try:
+            instanceDate = date(year, instanceMonth, instanceDay)
+        except Exception:
+            continue
+        daysOld = (now - instanceDate).days
+        if daysOld >= 7:
+            supabase.table("server").delete().eq("id", row.get("id")).execute()
+            deletedCount += 1
+    return jsonify({"deleted": deletedCount, "checked": checked})
 
 @app.route("/api/tjek/<instanceId>/<name>")
 def name_exists(instanceId, name):
