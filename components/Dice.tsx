@@ -13,20 +13,10 @@ type DiceProps = {
 export default function Dice({ realDiceNumber, size }: DiceProps) {
     const [gamblingEffect, setGamblingEffect] = useState(true)
     const [diceNumber, setDiceNumber] = useState(6)
-    const [randomInterval, setRandomInterval] = useState(1)
-    const [randomTimeout, setRandomTimeout] = useState(1)
-    useGSAP(()=> {
-        gsap.fromTo(".dot", {
-            filter: "blur(2px)",
-            duration: 0.4,
-        }, {
-            filter: "blur(0px)",
-        })
-    }, [diceNumber])
     useEffect(() => {
+        const randomInterval: number = Math.floor(Math.random() * 50) + 200;
+        const randomTimeout: number = (250 - randomInterval) * 100;
         setGamblingEffect(true)
-        setRandomInterval(Math.floor(Math.random() * 250) + 150)
-        setRandomTimeout(400-randomInterval*10)
 
         const interval = setInterval(() => {
             setDiceNumber(Math.floor(Math.random() * 6) + 1);
