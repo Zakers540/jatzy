@@ -97,7 +97,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
 
     return (
         <>
-        <main className="min-h-screen w-full flex flex-col p-12">
+        <main className="min-h-screen lg:h-screen w-full flex flex-col p-12">
             <div className="grid grid-cols-[1fr_4fr]">
                 <div className="grid grid-rows-[3fr_4fr] justify-center">
                     <Players currentPlayers={currentPlayers}/>
