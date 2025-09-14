@@ -12,6 +12,7 @@ import {useEffect, useState} from "react";
 import YatzySheet from "@/components/YatzySheet";
 import Players from "@/components/Players";
 import Dice from "@/components/Dice";
+import LoginPortal from "@/components/LoginPortal";
 
 type YatsyProps = {
     instanceId: string
@@ -54,6 +55,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     }, [dice1, dice2, dice3, dice4, dice5]);
 
     return (
+        <>
         <main className="min-h-screen w-full flex flex-col p-12">
             <div className="grid grid-cols-[1fr_4fr]">
                 <div className="grid grid-rows-[3fr_4fr] justify-center">
@@ -94,5 +96,9 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                 </div>
             </div>
         </main>
+            {!loggedIn && (
+                <LoginPortal players={currentPlayers} setLogin={setLoggedIn} apiBase={apiBase} instanceId={instanceId} />
+            )}
+        </>
 )
 }

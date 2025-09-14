@@ -50,7 +50,7 @@ body {
   }
 }
 @utility input {
-  @apply px-4 py-3 rounded-md border-2 border-black/64 bg-white/80 text-black placeholder-black/40 focus:outline-none focus:ring-1 focus:ring-black/64 transition
+  @apply px-2 py-1.5 rounded-md border-2 border-black/64 bg-white/80 text-black placeholder-black/40 focus:outline-none focus:ring-1 focus:ring-black/64 transition
 }
 .tablecell {
   @apply border px-3 py-1 text-xs text-black/70;
