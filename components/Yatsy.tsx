@@ -54,7 +54,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     }, [dice1, dice2, dice3, dice4, dice5]);
 
     return (
-        <main className="min-h-screen w-full flex flex-col p-16 py-20">
+        <main className="min-h-screen w-full flex flex-col p-12">
             <div className="grid grid-cols-[1fr_4fr]">
                 <div className="grid grid-rows-[3fr_4fr] justify-center">
                     <Players currentPlayers={currentPlayers}/>
@@ -75,6 +75,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                         )}
                     </div>
                 </div>
+                <div className="mt-4">
                 <YatzySheet
                     size={1}
                     currentPlayers={["Dig (Poul)","Nuværende (Alice)", "Bedste (Bob)", "Værste (Peter)",]}
@@ -90,6 +91,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                         console.log(`Clicked ${category} for player ${playerIndex}`);
                     }}
                 />
+                </div>
             </div>
         </main>
 )
