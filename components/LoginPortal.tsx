@@ -1,0 +1,128 @@
+import {Dispatch, SetStateAction, useState} from "react";
+
+type LoginPortalProps = {
+    players?: string[] | false;
+    apiBase: string;
+    instanceId: string;
+    setLogin: Dispatch<SetStateAction<boolean>>;
+}
+
+export default function LoginPortal({players, apiBase, instanceId, setLogin}: LoginPortalProps) {
+    const [selectedOpret, setSelectedOpret] = useState<boolean>(false);
+    const [selectedPlayer, setSelectedPlayer] = useState<boolean>(false)
+    const [playerName, setPlayerName] = useState<string>("")
+    const [password, setPassword] = useState<string>("")
+    const [confirmPassword, setConfirmPassword] = useState<string>("")
+    const [error, setError] = useState<string>("")
+    const [errorExists, setErrorExists] = useState<boolean>(false)
+    return (
+        <main className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/5">
+            <div className="bg-white/64 p-8 max-w-lg w-full rounded-md max-h-124 border-1 border-white/80">
+                { players && !selectedOpret && !selectedPlayer ? (
+                    <div className="flex flex-col px-4">
+                        <div>
+                            <h2 className="font-medium text-center text-xl mb-6">Vælg bruger</h2>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                            {players.map((player, i) => (
+                                <button key={i} className="shadow-sm bg-white/20 hover:bg-blue-500/40 w-32 h-16 rounded-sm border-1 border-white/80 text-md text-black/80" onClick={() => {setSelectedPlayer(true); setPlayerName(player)}}>{player}</button>
+                                )
+                            )}
+                        </div>
+                        <div className="mt-6"><span className="text-black/80">Har du ikke en bruger?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(true)}}>Opret en</button> </div>
+                    </div>
+                ) : selectedOpret ? (
+                    <div>
+                        <h2 className="text-center text-xl font-medium mb-6">Opret en spiller</h2>
+                        <form className="w-full flex flex-col gap-4">
+                            <div className="flex flex-col">
+                                <label htmlFor="name" className="text-black/60 mb-2">Hvad ville du blive kaldt?</label>
+                                <input
+                                    type="text"
+                                    placeholder="Poul"
+                                    value={playerName}
+                                    className="input"
+                                    onChange={(e) => setPlayerName(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <label htmlFor="name" className="text-black/60 mb-2">Hvad skal din adgangskode være?</label>
+                                <input
+                                    type="password"
+                                    placeholder="Adgangskode"
+                                    value={password}
+                                    className="input"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <label htmlFor="name" className="text-black/60 mb-2">Bekræft din adgangskode.</label>
+                                <input
+                                    type="password"
+                                    placeholder="Bekræft adgangskode"
+                                    className="input"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="p-2 border-2 border-blue-500 rounded-2xl text-xl mt-6 text-black/80
+                                   font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50"
+                                onClick={() => {
+                                    if (password === confirmPassword) {
+                                    fetch(`${apiBase}/api/opret/${instanceId}/${playerName}/${password}`)
+                                        .then((response) => response.json())
+                                        .then((data) => {
+                                            setLogin(data.login)
+                                            setError(data.error)
+                                        })
+                                    } else {setErrorExists(true); setError("Adgangskode og bekræftet adgangskode er ikke det samme.")}
+                                }}
+                            >
+                                Opret
+                            </button>
+                        </form>
+                        { players && (
+                        <div className="mt-6"><span className="text-black/80">Ville du gå tilbage?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(false); setSelectedPlayer(false)}}>Gå tilbage</button> </div>
+                        )}
+                    </div>
+                ) : (
+                    <div>
+                        <h2 className="text-center text-xl font-medium mb-16">Deltag som {playerName}</h2>
+                        <form className="w-full flex flex-col gap-4">
+                            <div className="flex flex-col">
+                                <label htmlFor="name" className="text-black/60 mb-2">Hvad er din adgangskode?</label>
+                                <input
+                                    type="password"
+                                    placeholder="Adgangskode"
+                                    className="input"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="p-2 border-2 border-blue-500 rounded-2xl text-xl mt-16 text-black/80
+                                   font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50"
+                                onClick={() => {
+                                    fetch(`${apiBase}/api/tjek/${instanceId}/${playerName}/${password}`)
+                                        .then((response) => response.json())
+                                        .then((data) => {
+                                            setLogin(data.login)
+                                            setError(data.error)
+                                        })
+                                }}
+                            >
+                                Deltag
+                            </button>
+                        </form>
+                        <div className="mt-6"><span className="text-black/80">Ville du gå tilbage?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(false); setSelectedPlayer(false)}}>Gå tilbage</button> </div>
+                    </div>
+                )}
+            </div>
+        </main>
+    )
+}
