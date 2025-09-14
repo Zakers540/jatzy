@@ -54,7 +54,6 @@ export default function Server() {
                 </button>
             </form>
             <div className="mt-12"/>
-            <Yatsy instanceId="100" />
         </main>
     )
 }
