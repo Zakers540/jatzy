@@ -58,9 +58,6 @@ def decrypt(key, source, decode=True):
         raise ValueError("Invalid padding...")
     return data[:-padding]  # remove the padding
 
-players = []
-currentInstances = [] # evenIndex = gameInstance, unevenIndex = instanceTime[date, month]
-
 players = ["Torben", "test"]
 @app.route("/api/opret")
 def gameInstance():
@@ -76,6 +73,8 @@ def instance_exists(instanceId):
 
 @app.route("/api/data/<instanceId>", methods=["GET"])
 def get_data(instanceId):
+    resp = supabase.table("server").select("name").execute()
+    players = getattr(resp, "data", None)
     return jsonify({
         "instanceId": instanceId,
         "players": players
@@ -107,14 +106,16 @@ def serverTime():
             deletedCount += 1
     return jsonify({"deleted": deletedCount, "checked": checked})
 
-@app.route("/api/tjek/<instanceId>/<name>")
-def name_exists(instanceId, name):
-    if instanceId in currentInstances:
-        if name in players:
-            return jsonify({"exists": True})
-        return jsonify({"exists":False})
-    return jsonify({"instanceExists":False})
+@app.route("/api/tjek/<name>")
+def name_exists(name):
+    if name in players:
+        return jsonify({"exists": True})
+    return jsonify({"exists":False})
 
 @app.route("/api/tilfoej/{instanceId}/{user}/{password}")
 def addUser(instanceId, user, password):
-    user = (supabase.table("users").insert({"username": cleanUsername(user), "password": encrypt(cryptKey, password), "gameInstance": instanceId}))
+    if not subabase.table("users").select("*").in_("username", [cleanUsername(user)]).execute():
+        user = (supabase.table("users").insert({"username": cleanUsername(user), "password": encrypt(cryptKey, password), "gameInstance": instanceId}))
+        return redirect(f"/server/{instanceId}", code=302)
+    return jsonify({"nameExist":True})
+    
