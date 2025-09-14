@@ -48,7 +48,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                             <div className="flex flex-col">
                                 <label htmlFor="name" className="text-black/60 mb-2">Hvad skal din adgangskode være?</label>
                                 <input
-                                    type="text"
+                                    type="password"
                                     placeholder="Adgangskode"
                                     value={password}
                                     className="input"
@@ -58,7 +58,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                             <div className="flex flex-col">
                                 <label htmlFor="name" className="text-black/60 mb-2">Bekræft din adgangskode.</label>
                                 <input
-                                    type="text"
+                                    type="password"
                                     placeholder="Bekræft adgangskode"
                                     className="input"
                                     value={confirmPassword}
@@ -95,7 +95,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                             <div className="flex flex-col">
                                 <label htmlFor="name" className="text-black/60 mb-2">Hvad er din adgangskode?</label>
                                 <input
-                                    type="text"
+                                    type="password"
                                     placeholder="Adgangskode"
                                     className="input"
                                     value={password}
