@@ -33,6 +33,11 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                     </div>
                 ) : selectedOpret ? (
                     <div>
+                        {errorExists && (
+                            <div className="flex flex-col items-center justify-center mb-12 bg-red-500/80 shadow-md rounded-md p-2">
+                                <p className="text-center text-md font-medium text-red-50 tracking-wide"><span className="mr-2 font-mono text-lg font-semibold">OBS!</span> {error}</p>
+                            </div>
+                        )}
                         <h2 className="text-center text-xl font-medium mb-6">Opret en spiller</h2>
                         <form className="w-full flex flex-col gap-4">
                             <div className="flex flex-col">
@@ -76,6 +81,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                         .then((response) => response.json())
                                         .then((data) => {
                                             setLogin(data.login)
+                                            setErrorExists(data.error)
                                             setError(data.error)
                                         })
                                     } else {setErrorExists(true); setError("Adgangskode og bekræftet adgangskode er ikke det samme.")}
