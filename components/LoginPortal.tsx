@@ -1,4 +1,6 @@
-import {Dispatch, SetStateAction, useState} from "react";
+import {Dispatch, SetStateAction, useEffect, useState} from "react";
+import {useGSAP} from "@gsap/react";
+import gsap from "gsap";
 
 type LoginPortalProps = {
     players?: string[] | false;
@@ -15,10 +17,38 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
     const [confirmPassword, setConfirmPassword] = useState<string>("")
     const [error, setError] = useState<string>("")
     const [errorExists, setErrorExists] = useState<boolean>(false)
+    const [exit, setExit] = useState<boolean>(false)
+
+    useGSAP(()=>{
+        gsap.from(".alert", {
+            opacity: 0.5,
+            duration: 1,
+            ease: "easeOutExpo",
+            y: -10
+        })
+    }, [errorExists])
+
+    useGSAP(()=>{
+        gsap.to(".alert", {
+            opacity: 0,
+            duration: 1,
+            ease: "easeOutExpo",
+            y: 10
+        })
+    }, [exit])
+
+    useEffect(() => {
+        setTimeout(()=>{
+            setExit(!exit)
+            setTimeout(()=>{
+                setErrorExists(false)
+            }, 6000)
+        }, 14000)
+    }, [errorExists])
     return (
         <main className="fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm bg-black/5">
-            {errorExists && selectedOpret && (
-                <div className="fixed top-4 items-center justify-center mb-12 bg-red-500/80 shadow-md rounded-md p-2">
+            {errorExists && (selectedOpret || players && players[0]==="" || !players) && (
+                <div className="alert fixed top-4 items-center justify-center mb-12 bg-red-500/80 shadow-md rounded-md p-2">
                     <p className="text-center text-md font-medium text-red-50 tracking-wide"><span className="mr-2 font-mono text-lg font-semibold">OBS!</span> {error}</p>
                 </div>
             )}
