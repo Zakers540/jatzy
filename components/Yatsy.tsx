@@ -19,7 +19,7 @@ type YatsyProps = {
 }
 
 export default function Yatsy({ instanceId }: YatsyProps) {
-    const [currentPlayers, setCurrentPlayers] = useState<string[]>([])
+    const [currentPlayers, setCurrentPlayers] = useState<string[]>([""])
     const [dice1, setDice1] = useState<boolean>(false)
     const [dice2, setDice2] = useState<boolean>(false)
     const [dice3, setDice3] = useState<boolean>(false)
