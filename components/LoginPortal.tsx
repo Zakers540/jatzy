@@ -56,7 +56,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                 { players && !(players[0]==="") && !selectedOpret && !selectedPlayer ? (
                     <div className="flex flex-col px-4">
                         <div>
-                            <h2 className="font-medium text-center text-xl mb-6">Vælg bruger</h2>
+                            <h2 className="font-medium text-center text-xl mb-6 cursor-default">Vælg bruger</h2>
                         </div>
                         <div className="grid grid-cols-3 gap-4">
                             {players.map((player, i) => (
@@ -68,7 +68,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                     </div>
                 ) : selectedOpret || players && players[0]==="" || !players ? (
                     <div>
-                        <h2 className="text-center text-xl font-medium mb-6">Opret en spiller</h2>
+                        <h2 className="text-center text-xl font-medium mb-6 cursor-default">Opret en spiller</h2>
                         <div className="w-full flex flex-col gap-4">
                             <div className="flex flex-col">
                                 <label htmlFor="name" className="text-black/60 mb-2">Hvad ville du blive kaldt?</label>
@@ -111,7 +111,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                         .then((response) => response.json())
                                         .then((data) => {
                                             setLogin(data.login)
-                                            setErrorExists(data.error)
+                                            setErrorExists(data.errorExists)
                                             setError(data.error)
                                         })
                                     } else {setErrorExists(true); setError("Adgangskode og bekræftet adgangskode er ikke det samme.");}
@@ -126,8 +126,8 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                     </div>
                 ) : (
                     <div>
-                        <h2 className="text-center text-xl font-medium mb-16">Deltag som {playerName}</h2>
-                        <form className="w-full flex flex-col gap-4">
+                        <h2 className="text-center text-xl font-medium mb-16 cursor-default">Deltag som {playerName}</h2>
+                        <div className="w-full flex flex-col gap-4">
                             <div className="flex flex-col">
                                 <label htmlFor="name" className="text-black/60 mb-2">Hvad er din adgangskode?</label>
                                 <input
@@ -148,13 +148,14 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                         .then((response) => response.json())
                                         .then((data) => {
                                             setLogin(data.login)
+                                            setErrorExists(data.errorExists)
                                             setError(data.error)
                                         })
                                 }}
                             >
                                 Deltag
                             </button>
-                        </form>
+                        </div>
                         <div className="mt-6"><span className="text-black/80">Ville du gå tilbage?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(false); setSelectedPlayer(false)}}>Gå tilbage</button> </div>
                     </div>
                 )}
