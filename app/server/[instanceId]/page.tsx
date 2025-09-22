@@ -1,3 +1,5 @@
+//TODO: hvis server ikke findes så skriv at den ikke findes længere men hvis spillet er slutter for nyligt kan de prøve at gå ind på dens resultat side eller starte et nyt spil eller de har tastet forkert
+
 import { redirect } from 'next/navigation'
 import Yatsy from "@/components/Yatsy";
 
