@@ -1,4 +1,3 @@
-//TODO: hvis ingen preview, kryds over på hover
 //TODO: gør så de kun kan få hover effekter og sender videre til backend hvis det er dem selv altså f.eks altid kunne de være 0
 
 "use client";
