@@ -131,7 +131,7 @@ def name_exists(name):
     cleaned = cleanUsername(name)
     return jsonify({"exists": cleaned in players})
 
-@app.route("/api/tilfoej", methods=["GET"])
+@app.route("/api/tilfoej", methods=["POST"])
 def addUser():
     data = request.get_json(silent=True) or {}
     instanceId = data.get("instanceId")
