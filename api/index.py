@@ -77,7 +77,7 @@ def gameInstance():
 def instance_exists(instanceId):
     try:
         rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
-        data = getattr(rsp, "data", [])
+        data = getattr(rsp, "data", []) or []
         exists = bool(data and len(data) > 0)
         return jsonify({"exists": exists})
     except Exception as e:
@@ -87,8 +87,8 @@ def instance_exists(instanceId):
 @app.route("/api/data/<instanceId>", methods=["GET"])
 def get_data(instanceId):
     try:
-        rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
-        players = getattr(rsp, "data", [])
+        rsp = supabase.table("server").select("*").eq("instanceId": str(instanceId)).execute()
+        players = getattr(rsp, "data", []) or []
         return jsonify({
             "instanceId": instanceId,
             "players": players
