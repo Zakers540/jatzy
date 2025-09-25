@@ -88,8 +88,10 @@ def instance_exists(instanceId):
 def get_data(instanceId):
     try:
         rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
+        players = getattr(rsp, "data", []) or []
         return jsonify({
             "instanceId": instanceId,
+            "players": players
         })
     except Exception as e:
         app.logger.exception("Error getting data")
@@ -156,7 +158,7 @@ def addUser():
             "password": stored,
             "gameInstance": instanceId
         }).execute()
-        return jsonify({"nameExist": False,"login": True})
+        return redirect(f"/server/{instanceId}", code=302)
     except Exception as e:
         app.logger.exception("Error adding user")
         return jsonify({"error": "Failed to add user", "detail": str(e)}), 500
