@@ -63,7 +63,7 @@ def decrypt(key: bytes, source: str, decode: bool = True) -> bytes:
 
 players = ["Torben", "test"]
 
-@app.route("/api/opret", methods=["GET"])
+@app.route("/api/opret")
 def gameInstance():
     instanceId = rndURL()
     instanceStartTime = [localtime().tm_mday, localtime().tm_mon]
@@ -73,7 +73,7 @@ def gameInstance():
     except Exception as e:
         return jsonify({"error": "Failed to create instance", "detail": str(e)}), 500
 
-@app.route("/api/tjek/<instanceId>", methods=["GET"])
+@app.route("/api/tjek/<instanceId>")
 def instance_exists(instanceId):
     try:
         rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
@@ -84,7 +84,7 @@ def instance_exists(instanceId):
         app.logger.exception("Error checking instance")
         return jsonify({"exists": False, "error": str(e)}), 500
 
-@app.route("/api/data/<instanceId>", methods=["GET"])
+@app.route("/api/data/<instanceId>")
 def get_data(instanceId):
     try:
         rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
@@ -128,12 +128,12 @@ def serverTime():
         app.logger.exception("Error in serverTime")
         return jsonify({"error": "Failed to check server times", "deleted": 0, "checked": 0}), 500
 
-@app.route("/api/tjek/<name>", methods=["GET"])
+@app.route("/api/tjek/<name>")
 def name_exists(name):
     cleaned = cleanUsername(name)
     return jsonify({"exists": cleaned in players})
 
-@app.route("/api/tilfoej", methods=["GET"])
+@app.route("/api/tilfoej")
 def addUser():
     data = request.get_json(silent=True) or {}
     instanceId = data.get("instanceId")
