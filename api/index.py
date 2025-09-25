@@ -112,7 +112,7 @@ def name_exists(name):
         return jsonify({"exists": True})
     return jsonify({"exists":False})
 
-@app.route("/api/tilfoej/{instanceId}/{user}/{password}")
+@app.route("/api/tilfoej/<instanceId>/<user>/<password>")
 def addUser(instanceId, user, password):
     if not subabase.table("users").select("*").in_("username", [cleanUsername(user)]).execute() and len(cleanUsername(user))< 11:
         user = (supabase.table("users").insert({"username": cleanUsername(user), "password": encrypt(cryptKey, password), "gameInstance": instanceId}))
