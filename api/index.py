@@ -156,7 +156,7 @@ def addUser():
             "password": stored,
             "gameInstance": instanceId
         }).execute()
-        return redirect(f"/server/{instanceId}", code=302)
+        return jsonify({"login": True, "errorExists": False, "error": None})
     except Exception as e:
         app.logger.exception("Error adding user")
         return jsonify({"error": "Failed to add user", "detail": str(e)}), 500
