@@ -97,7 +97,7 @@ def get_data(instanceId):
         app.logger.exception("Error getting data")
         return jsonify({"error": "Failed to get instance data", "detail": str(e)}), 500
 
-@app.route("/api/tjek/tid", methods=["GET"])
+@app.route("/api/tjek/tid")
 def serverTime():
     try:
         rsp = supabase.table("server").select("id,timeCreated").execute()
