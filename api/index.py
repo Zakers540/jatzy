@@ -63,7 +63,7 @@ def decrypt(key: bytes, source: str, decode: bool = True) -> bytes:
 
 players = ["Torben", "test"]
 
-@app.route("/api/opret", methods=["POST"])
+@app.route("/api/opret", methods=["GET"])
 def gameInstance():
     instanceId = rndURL()
     instanceStartTime = [localtime().tm_mday, localtime().tm_mon]
@@ -133,7 +133,7 @@ def name_exists(name):
     cleaned = cleanUsername(name)
     return jsonify({"exists": cleaned in players})
 
-@app.route("/api/tilfoej", methods=["POST"])
+@app.route("/api/tilfoej", methods=["GET"])
 def addUser():
     data = request.get_json(silent=True) or {}
     instanceId = data.get("instanceId")
