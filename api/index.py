@@ -68,15 +68,15 @@ def gameInstance():
 
 @app.route("/api/tjek/<instanceId>")
 def instance_exists(instanceId):
-    rsp = (supabase.table("server").select("*").in_("instanceId", [str(instanceId)]).execute())
+    rsp = (supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute())
     rows = getattr(rsp, "data", None) or (rsp.get("data") if isinstance(rsp, dict) else None)
     exists = bool(rows and len(rows) > 0)
     return jsonify({"exists": exists})
 
 @app.route("/api/data/<instanceId>", methods=["GET"])
 def get_data(instanceId):
-    resp = supabase.table("server").select("*").in_("instanceId", [str(instanceId)]).execute()
-    players = getattr(resp, "data", None) or (resp.get("data") if isinstance(resp, dict) else None)
+    rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
+    players = getattr(rsp, "data", None) or (rsp.get("data") if isinstance(rsp, dict) else None)
     return jsonify({
         "instanceId": instanceId,
         "players": players
