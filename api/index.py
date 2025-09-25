@@ -68,19 +68,27 @@ def gameInstance():
 
 @app.route("/api/tjek/<instanceId>")
 def instance_exists(instanceId):
-    rsp = (supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute())
-    rows = getattr(rsp, "data", None) or (rsp.get("data") if isinstance(rsp, dict) else None)
-    exists = bool(rows and len(rows) > 0)
-    return jsonify({"exists": exists})
+    try:
+        rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
+        data = rsp.data if hasattr(rsp, 'data') else []
+        exists = bool(rows and len(rows) > 0)
+        return jsonify({"exists": exists})
+    except Exception as e:
+        print(f"Error checking instance {instanceId}: {str(e)}")
+        return jsonify({"exists": False, "error": "Failed to check instance"}), 500
 
 @app.route("/api/data/<instanceId>", methods=["GET"])
 def get_data(instanceId):
-    rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
-    players = getattr(rsp, "data", None) or (rsp.get("data") if isinstance(rsp, dict) else None)
-    return jsonify({
-        "instanceId": instanceId,
-        "players": players
-    })
+    try:
+        rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
+        players = rsp.data if hasattr(rsp, 'data') else []
+        return jsonify({
+            "instanceId": instanceId,
+            "players": players
+        })
+    except Exception as e:
+        print(f"Error getting data for instance {instanceId}: {str(e)}")
+        return jsonify({"error": "Failed to get instance data"}), 500
 
 @app.route("/api/tjek/tid")
 def serverTime():
@@ -116,7 +124,7 @@ def name_exists(name):
 
 @app.route("/api/tilfoej/<instanceId>/<user>/<password>")
 def addUser(instanceId, user, password):
-    if not subabase.table("users").select("*").in_("username", [cleanUsername(user)]).execute() and len(cleanUsername(user))< 11:
+    if not supabase.table("users").select("*").in_("username", [cleanUsername(user)]).execute() and len(cleanUsername(user))< 11:
         user = (supabase.table("users").insert({"username": cleanUsername(user), "password": encrypt(cryptKey, password), "gameInstance": instanceId}))
         return redirect(f"/server/{instanceId}", code=302)
     return jsonify({"nameExist":True})
