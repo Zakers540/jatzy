@@ -87,7 +87,7 @@ def instance_exists(instanceId):
 @app.route("/api/data/<instanceId>", methods=["GET"])
 def get_data(instanceId):
     try:
-        rsp = supabase.table("server").select("*").eq("instanceId": str(instanceId)).execute()
+        rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
         players = getattr(rsp, "data", []) or []
         return jsonify({
             "instanceId": instanceId,
