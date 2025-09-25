@@ -71,7 +71,7 @@ def instance_exists(instanceId):
     try:
         rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
         data = rsp.data if hasattr(rsp, 'data') else []
-        exists = bool(rows and len(rows) > 0)
+        exists = bool(data and len(data) > 0)
         return jsonify({"exists": exists})
     except Exception as e:
         print(f"Error checking instance {instanceId}: {str(e)}")
