@@ -73,7 +73,7 @@ def gameInstance():
     except Exception as e:
         return jsonify({"error": "Failed to create instance", "detail": str(e)}), 500
 
-@app.route("/api/tjek/instance/<instanceId>", methods=["GET"])
+@app.route("/api/tjek/<instanceId>", methods=["GET"])
 def instance_exists(instanceId):
     try:
         rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
@@ -128,7 +128,7 @@ def serverTime():
         app.logger.exception("Error in serverTime")
         return jsonify({"error": "Failed to check server times", "deleted": 0, "checked": 0}), 500
 
-@app.route("/api/tjek/name/<name>", methods=["GET"])
+@app.route("/api/tjek/<name>", methods=["GET"])
 def name_exists(name):
     cleaned = cleanUsername(name)
     return jsonify({"exists": cleaned in players})
