@@ -105,7 +105,7 @@ def serverTime():
             supabase.table("server").delete().eq("id", row.get("id")).execute()
             deletedCount += 1
     return jsonify({"deleted": deletedCount, "checked": checked})
-
+# @app.route("/api/tjek/<instanceId>/<name>/<password>")
 @app.route("/api/tjek/<name>")
 def name_exists(name):
     if name in players:
