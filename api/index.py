@@ -73,8 +73,8 @@ def instance_exists(instanceId):
 
 @app.route("/api/data/<instanceId>", methods=["GET"])
 def get_data(instanceId):
-    resp = supabase.table("server").select("name").execute()
-    players = getattr(resp, "data", None)
+    resp = supabase.table("server").select("*").in_("instanceId", [str(instanceId)]).execute()
+    players = getattr(resp, "data", None) or (response.get("data") if isinstance(response, dict) else None)
     return jsonify({
         "instanceId": instanceId,
         "players": players
@@ -105,7 +105,7 @@ def serverTime():
             supabase.table("server").delete().eq("id", row.get("id")).execute()
             deletedCount += 1
     return jsonify({"deleted": deletedCount, "checked": checked})
-# @app.route("/api/tjek/<instanceId>/<name>/<password>")
+
 @app.route("/api/tjek/<name>")
 def name_exists(name):
     if name in players:
@@ -114,7 +114,7 @@ def name_exists(name):
 
 @app.route("/api/tilfoej/{instanceId}/{user}/{password}")
 def addUser(instanceId, user, password):
-    if not supabase.table("users").select("*").in_("username", [cleanUsername(user)]).execute():
+    if not subabase.table("users").select("*").in_("username", [cleanUsername(user)]).execute() and len(cleanUsername(user))< 11:
         user = (supabase.table("users").insert({"username": cleanUsername(user), "password": encrypt(cryptKey, password), "gameInstance": instanceId}))
         return redirect(f"/server/{instanceId}", code=302)
     return jsonify({"nameExist":True})
