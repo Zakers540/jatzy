@@ -42,6 +42,37 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     const [worstPlayer, setWorstPlayer] = useState<string>("")
     //får variablerne fra backend hver gang const opdatering bliver opdateret
     useEffect(() => {
+        const makeAPICall = () => {
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(`${apiBase}/api/logud/`);
+            } else {
+                fetch(`${apiBase}/api/logud/`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        instanceId: instanceId,
+                        user: user,
+                        password: password,
+                    }),
+                    keepalive: true
+                });
+            }
+        };
+
+        const handleBeforeUnload = () => makeAPICall();
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') makeAPICall();
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [apiBase]);
+    useEffect(() => {
         fetch(`${apiBase}/api/data/${instanceId}`)
             .then((response) => response.json())
             .then((data) => {
