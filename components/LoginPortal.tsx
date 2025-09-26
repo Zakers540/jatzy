@@ -3,7 +3,7 @@ import {useGSAP} from "@gsap/react";
 import gsap from "gsap";
 
 type LoginPortalProps = {
-    players?: string[] | false;
+    players?: string[];
     apiBase: string;
     instanceId: string;
     setLogin: Dispatch<SetStateAction<boolean>>;
@@ -107,13 +107,13 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                    font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50"
                                 onClick={() => {
                                     if (password === confirmPassword) {
-                                    fetch(`${apiBase}/api/tilfoej`, {
+                                    fetch(`${apiBase}/api/tilfoej/`, {
                                         method: "POST",
                                         headers: {"Content-Type": "application/json"},
                                         body: JSON.stringify({
-                                            "instanceId": instanceId,
-                                            "user": playerName,
-                                            "password": password,
+                                            instanceId: instanceId,
+                                            user: playerName,
+                                            password: password,
                                         })
                                     })
                                         .then((response) => response.json())

@@ -42,6 +42,37 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     const [worstPlayer, setWorstPlayer] = useState<string>("")
     //får variablerne fra backend hver gang const opdatering bliver opdateret
     useEffect(() => {
+        const makeAPICall = () => {
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(`${apiBase}/api/logud/`);
+            } else {
+                fetch(`${apiBase}/api/logud/`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        instanceId: instanceId,
+                        user: user,
+                        password: password,
+                    }),
+                    keepalive: true
+                });
+            }
+        };
+
+        const handleBeforeUnload = () => makeAPICall();
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'hidden') makeAPICall();
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, [apiBase]);
+    useEffect(() => {
         fetch(`${apiBase}/api/data/${instanceId}`)
             .then((response) => response.json())
             .then((data) => {
@@ -55,6 +86,9 @@ export default function Yatsy({ instanceId }: YatsyProps) {
             .then((data) => {
             })
     }}, [opdatering])
+    useEffect(()=> {
+        setOpdatering(!opdatering)
+    }, [loggedIn])
     //hver gang en af terningerne opdateres finder den total antal terninger
     useEffect(() => {
         setTotalDice((dice1 ? 1 : 0) + (dice2 ? 1 : 0) + (dice3 ? 1 : 0) + (dice4 ? 1 : 0) + (dice5 ? 1 : 0));
@@ -122,9 +156,10 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                     </div>
                 </div>
                 <div className="mt-4">
+                    { user && currentPlayers && bestPlayer && worstPlayer ? (
                 <YatzySheet
                     size={1}
-                    currentPlayers={[`Dig (${user})","Nuværende (${currentPlayers[0]})", "Bedste (${bestPlayer})", "Værste (${worstPlayer})`,]}
+                    currentPlayers={[`Dig (${user})`,`Nuværende (${currentPlayers[0]})`, `Bedste (${bestPlayer})`, `Værste (${worstPlayer})`]}
                     scores={{
                         ettere: { 0: 3 },
                         bonus: { 1: 50 }
@@ -136,7 +171,25 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                     onCellClick={(category, playerIndex) => {
                         console.log(`Clicked ${category} for player ${playerIndex}`);
                     }}
-                />
+                />):
+                        (
+                            <YatzySheet
+                                size={1}
+                                currentPlayers={[`Dig (Poul)`,`Nuværende (Peter)`, `Bedste (Poul)`, `Værste (Pil)`]}
+                                scores={{
+                                    ettere: { 0: 3 },
+                                    bonus: { 1: 50 }
+                                }}
+                                previews={{
+                                    toere: { 0: "8" },
+                                    yatzy: { 1: "50" }
+                                }}
+                                onCellClick={(category, playerIndex) => {
+                                    console.log(`Clicked ${category} for player ${playerIndex}`);
+                                }}
+                            />
+                        )
+                    }
                 </div>
             </div>
         </main>
