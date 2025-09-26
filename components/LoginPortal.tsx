@@ -111,9 +111,9 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                         method: "POST",
                                         headers: {"Content-Type": "application/json"},
                                         body: JSON.stringify({
-                                            instanceId: instanceId,
-                                            user: playerName,
-                                            password: password,
+                                            "instanceId": instanceId,
+                                            "user": playerName,
+                                            "password": password,
                                         })
                                     })
                                         .then((response) => response.json())
