@@ -84,12 +84,31 @@ def instance_exists(instanceId):
         app.logger.exception("Error checking instance")
         return jsonify({"exists": False, "error": str(e)}), 500
 
+@app.route("api/logud", methods=["GET"])
+def logud():
+    try:
+        data = request.get_json(silent=True) or {}
+        user = data.get("user", "")
+        supabase.table("users").update({"online": False}).eq("user", user).execute()
+    except Exception as e:
+        app.logger.exception("error logout")
+        return jsonify({"error": "failed to logout", "detail": str(e)}), 500
+    
 @app.route("/api/data/<instanceId>", methods=["GET"])
 def get_data(instanceId):
     try:
-        rsp = supabase.table("server").select("*").eq("instanceId", str(instanceId)).execute()
+        currentPlayers = []
+        rsp = supabase.table("users").select("*").eq("instanceId", str(instanceId)).order("score", desc=True).execute()
+        rows = getattr(rsp, "data", []) or []
+        bestPlayer = rows[0][1]
+        worstPlayer = rows[len(rows) - 1][1]
+        for i in range(len(rows) - 1):
+            if rows[i][5] == True:
+                currentPlayers.append(rows[i][1])
         return jsonify({
-            "instanceId": instanceId,
+            "bestPlayer": bestPlayer,
+            "worstPlayer": worstPlayer,
+            "players": currentPlayers
         })
     except Exception as e:
         app.logger.exception("Error getting data")
@@ -126,7 +145,7 @@ def serverTime():
         app.logger.exception("Error in serverTime")
         return jsonify({"error": "Failed to check server times", "deleted": 0, "checked": 0}), 500
 
-@app.route("/api/tjek/name/<name>", methods=["GET"])
+@app.route("/api/tjek/<name>", methods=["GET"])
 def name_exists(name):
     cleaned = cleanUsername(name)
     return jsonify({"exists": cleaned in players})
@@ -139,14 +158,14 @@ def addUser():
     password = data.get("password", "")
     user_clean = cleanUsername(user)
     if not instanceId or not user_clean or not password:
-        return jsonify({"error": "instanceId, user and password are required"}), 400
+        return jsonify({"error": "instanceId, user og password er tvunget"}), 400
     if len(user_clean) >= 30:
-        return jsonify({"error": "username too long"}), 400
+        return jsonify({"error": "username for langt"}), 400
     try:
         rsp = supabase.table("users").select("*").eq("username", user_clean).execute()
         existing = getattr(rsp, "data", []) or []
         if existing:
-            return jsonify({"nameExist": True}), 409
+            return jsonify({"error": "navnet eksistere alerrede"}), 409
         if HAVE_BCRYPT:
             stored = bcrypt.hash(password)
         else:
@@ -156,8 +175,8 @@ def addUser():
             "password": stored,
             "gameInstance": instanceId
         }).execute()
-        return jsonify({"login": True, "errorExists": False, "error": None})
+        return jsonify({"login": True, "errorExists": False, "error": ""})
     except Exception as e:
         app.logger.exception("Error adding user")
-        return jsonify({"error": "Failed to add user", "detail": str(e)}), 500
+        return jsonify({"error": "kunne ikke tilfoeje bruger", "detail": str(e)}), 500
 
