@@ -55,6 +55,9 @@ export default function Yatsy({ instanceId }: YatsyProps) {
             .then((data) => {
             })
     }}, [opdatering])
+    useEffect(()=> {
+        setOpdatering(!opdatering)
+    }, [loggedIn])
     //hver gang en af terningerne opdateres finder den total antal terninger
     useEffect(() => {
         setTotalDice((dice1 ? 1 : 0) + (dice2 ? 1 : 0) + (dice3 ? 1 : 0) + (dice4 ? 1 : 0) + (dice5 ? 1 : 0));
