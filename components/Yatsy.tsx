@@ -125,7 +125,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                     { user && currentPlayers && bestPlayer && worstPlayer ? (
                 <YatzySheet
                     size={1}
-                    currentPlayers={[`"Dig (${user})","Nuværende (${currentPlayers[0]})", "Bedste (${bestPlayer})", "Værste (${worstPlayer})"`,]}
+                    currentPlayers={[`Dig (${user})`,`Nuværende (${currentPlayers[0]})`, `Bedste (${bestPlayer})`, `Værste (${worstPlayer})`]}
                     scores={{
                         ettere: { 0: 3 },
                         bonus: { 1: 50 }
@@ -141,7 +141,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                         (
                             <YatzySheet
                                 size={1}
-                                currentPlayers={[`"Dig (Poul)","Nuværende (Peter)", "Bedste (Poul)", "Værste (Pil)"`,]}
+                                currentPlayers={[`Dig (Poul)`,`Nuværende (Peter)`, `Bedste (Poul)`, `Værste (Pil)`]}
                                 scores={{
                                     ettere: { 0: 3 },
                                     bonus: { 1: 50 }
