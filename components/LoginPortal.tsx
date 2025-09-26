@@ -47,13 +47,13 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
     }, [errorExists])
     return (
         <main className="fixed inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-sm bg-black/5">
-            {errorExists && (selectedOpret || players && players[0]==="" && Array.isArray(players) || !players) && (
+            {errorExists && (selectedOpret || players && players[0]==="" || !players) && (
                 <div className="alert fixed top-4 items-center justify-center mb-12 bg-red-500/80 shadow-md rounded-md p-2">
                     <p className="text-center text-md font-medium text-red-50 tracking-wide"><span className="mr-2 font-mono text-lg font-semibold">OBS!</span> {error}</p>
                 </div>
             )}
             <div className="bg-white/64 p-8 max-w-lg w-full rounded-md max-h-124 border-1 border-white/80">
-                { players && !(players[0]==="") && Array.isArray(players) && !selectedOpret && !selectedPlayer ? (
+                { players && !(players[0]==="") && !selectedOpret && !selectedPlayer ? (
                     <div className="flex flex-col px-4">
                         <div>
                             <h2 className="font-medium text-center text-xl mb-6 cursor-default">Vælg bruger</h2>
@@ -66,7 +66,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                         </div>
                         <div className="mt-6"><span className="text-black/80">Har du ikke en bruger?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(true)}}>Opret en</button> </div>
                     </div>
-                ) : selectedOpret || players && players[0]==="" && Array.isArray(players) || !players ? (
+                ) : selectedOpret || players && players[0]==="" || !players ? (
                     <div>
                         <h2 className="text-center text-xl font-medium mb-6 cursor-default">Opret en spiller</h2>
                         <div className="w-full flex flex-col gap-4">
@@ -107,15 +107,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                    font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50"
                                 onClick={() => {
                                     if (password === confirmPassword) {
-                                    fetch(`${apiBase}/api/tilfoej`, {
-                                        method: "POST",
-                                        headers: {"Content-Type": "application/json"},
-                                        body: JSON.stringify({
-                                            "instanceId": instanceId,
-                                            "user": playerName,
-                                            "password": password,
-                                        })
-                                    })
+                                    fetch(`${apiBase}/api/tilfoej/${instanceId}/${playerName}/${password}`)
                                         .then((response) => response.json())
                                         .then((data) => {
                                             setLogin(data.login)
@@ -128,7 +120,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                 Opret
                             </button>
                         </div>
-                        { players && !(players[0]==="") && Array.isArray(players) && (
+                        { players && !(players[0]==="") && (
                         <div className="mt-6"><span className="text-black/80">Ville du gå tilbage?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(false); setSelectedPlayer(false)}}>Gå tilbage</button> </div>
                         )}
                     </div>

@@ -19,7 +19,7 @@ type YatsyProps = {
 
 export default function Yatsy({ instanceId }: YatsyProps) {
     // laver variabler, som ville blive opdateret ift backend ved mindre det udelukkende er for udseende eller bare til frontend
-    const [currentPlayers, setCurrentPlayers] = useState<string[]>(["Test"])
+    const [currentPlayers, setCurrentPlayers] = useState<string[]>([""])
     const [dice1, setDice1] = useState<boolean>(false)
     const [dice2, setDice2] = useState<boolean>(false)
     const [dice3, setDice3] = useState<boolean>(false)
