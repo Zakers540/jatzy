@@ -84,7 +84,7 @@ def instance_exists(instanceId):
         app.logger.exception("Error checking instance")
         return jsonify({"exists": False, "error": str(e)}), 500
 
-@app.route("api/logud", methods=["GET"])
+@app.route("/api/logud", methods=["GET"])
 def logud():
     try:
         data = request.get_json(silent=True) or {}
