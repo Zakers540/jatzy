@@ -122,9 +122,10 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                     </div>
                 </div>
                 <div className="mt-4">
+                    { user && currentPlayers && bestPlayer && worstPlayer ? (
                 <YatzySheet
                     size={1}
-                    currentPlayers={[`Dig (${user})","Nuværende (${currentPlayers[0]})", "Bedste (${bestPlayer})", "Værste (${worstPlayer})`,]}
+                    currentPlayers={[`"Dig (${user})","Nuværende (${currentPlayers[0]})", "Bedste (${bestPlayer})", "Værste (${worstPlayer})"`,]}
                     scores={{
                         ettere: { 0: 3 },
                         bonus: { 1: 50 }
@@ -136,7 +137,25 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                     onCellClick={(category, playerIndex) => {
                         console.log(`Clicked ${category} for player ${playerIndex}`);
                     }}
-                />
+                />):
+                        (
+                            <YatzySheet
+                                size={1}
+                                currentPlayers={[`"Dig (Poul)","Nuværende (Peter)", "Bedste (Poul)", "Værste (Pil)"`,]}
+                                scores={{
+                                    ettere: { 0: 3 },
+                                    bonus: { 1: 50 }
+                                }}
+                                previews={{
+                                    toere: { 0: "8" },
+                                    yatzy: { 1: "50" }
+                                }}
+                                onCellClick={(category, playerIndex) => {
+                                    console.log(`Clicked ${category} for player ${playerIndex}`);
+                                }}
+                            />
+                        )
+                    }
                 </div>
             </div>
         </main>

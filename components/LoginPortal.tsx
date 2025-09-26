@@ -3,7 +3,7 @@ import {useGSAP} from "@gsap/react";
 import gsap from "gsap";
 
 type LoginPortalProps = {
-    players?: string[] | false;
+    players?: string[];
     apiBase: string;
     instanceId: string;
     setLogin: Dispatch<SetStateAction<boolean>>;
