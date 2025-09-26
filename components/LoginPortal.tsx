@@ -107,7 +107,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                    font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50"
                                 onClick={() => {
                                     if (password === confirmPassword) {
-                                    fetch(`${apiBase}/api/tilfoej/${instanceId}/${playerName}/${password}`, {
+                                    fetch(`${apiBase}/api/tilfoej/`, {
                                         method: "POST",
                                         headers: {"Content-Type": "application/json"},
                                         body: JSON.stringify({
