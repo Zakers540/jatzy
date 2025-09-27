@@ -88,8 +88,8 @@ def instance_exists(instanceId):
 def logud():
     try:
         data = request.get_json(silent=True) or {}
-        user = data.get("user", "")
-        supabase.table("users").update({"online": False}).eq("user", user).execute()
+        user = data.get("username", "")
+        supabase.table("users").update({"online": False}).eq("username", user).execute()
     except Exception as e:
         app.logger.exception("error logout")
         return jsonify({"error": "failed to logout", "detail": str(e)}), 500
