@@ -39,7 +39,7 @@ def cleanUsername(name: str) -> str:
         return ""
     name = re.sub(r'\s+', ' ', name).strip()
     name = re.sub(r'[^A-Za-z0-9 _\-]', '', name)
-    return name[:30]
+    return name
 
 def encrypt(key: bytes, source: bytes, encode: bool = True) -> str:
     key_h = SHA256.new(key).digest()
@@ -98,7 +98,7 @@ def logud():
 def get_data(instanceId):
     try:
         currentPlayers = []
-        rsp = supabase.table("users").select("*").eq("instanceId", str(instanceId)).order("score", desc=True).execute()
+        rsp = supabase.table("users").select("*").eq("gameInstance", str(instanceId)).order("score", desc=True).execute()
         rows = getattr(rsp, "data", []) or []
         bestPlayer = rows[0][1]
         worstPlayer = rows[len(rows) - 1][1]
@@ -156,13 +156,13 @@ def addUser():
     instanceId = data.get("instanceId")
     user = data.get("user", "")
     password = data.get("password", "")
-    user_clean = cleanUsername(user)
-    if not instanceId or not user_clean or not password:
+    userClean = cleanUsername(user)
+    if not instanceId or not userClean or not password:
         return jsonify({"error": "instanceId, user og password er tvunget"}), 400
-    if len(user_clean) >= 30:
+    if len(userClean) >= 15:
         return jsonify({"error": "username for langt"}), 400
     try:
-        rsp = supabase.table("users").select("*").eq("username", user_clean).execute()
+        rsp = supabase.table("users").select("*").eq("username", userClean).execute()
         existing = getattr(rsp, "data", []) or []
         if existing:
             return jsonify({"error": "navnet eksistere alerrede"}), 409
@@ -171,7 +171,7 @@ def addUser():
         else:
             stored = encrypt(cryptKey, password.encode('utf-8'))
         insert_rsp = supabase.table("users").insert({
-            "username": user_clean,
+            "username": userClean,
             "password": stored,
             "gameInstance": instanceId
         }).execute()
