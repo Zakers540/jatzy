@@ -88,8 +88,9 @@ def instance_exists(instanceId):
 def logud():
     try:
         data = request.get_json(silent=True) or {}
-        user = data.get("user", "")
-        supabase.table("users").update({"online": False}).eq("user", user).execute()
+        user = data.get("username", "")
+        supabase.table("users").update({"online": False}).eq("username", user).execute()
+        return redirect("/")
     except Exception as e:
         app.logger.exception("error logout")
         return jsonify({"error": "failed to logout", "detail": str(e)}), 500
@@ -100,11 +101,19 @@ def get_data(instanceId):
         currentPlayers = []
         rsp = supabase.table("users").select("*").eq("gameInstance", str(instanceId)).order("score", desc=True).execute()
         rows = getattr(rsp, "data", []) or []
-        bestPlayer = rows[0][1]
-        worstPlayer = rows[len(rows) - 1][1]
-        for i in range(len(rows)):
-            if rows[i][5] == True:
-                currentPlayers.append(rows[i][1])
+
+        if not rows:
+            return jsonify({
+            "bestPlayer": None,
+            "worstPlayer": None,
+            "players": []
+        })
+
+        bestPlayer = rows[0].get("username")
+        worstPlayer = rows[len(rows) - 1].get("username")
+        for i in range(len(rows) - 1):
+            if rows[i].get("online") == True:
+                currentPlayers.append(rows[i].get("username"))
         return jsonify({
             "bestPlayer": bestPlayer,
             "worstPlayer": worstPlayer,
