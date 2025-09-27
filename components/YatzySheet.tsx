@@ -33,7 +33,7 @@ interface YatzySheetProps {
 }
 
 export default function YatzySheet({
-                                       currentPlayers = ["Spiller 1", "Spiller 2"],
+                                       currentPlayers = ["Dig (Poul)", "Nuværende (Peter)", "Bedste (Poul)", "Værste (Pil)"],
                                        size = 1,
                                        scores = {},
                                        previews = {},

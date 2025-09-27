@@ -173,7 +173,6 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                         (
                             <YatzySheet
                                 size={1}
-                                currentPlayers={[`Dig (Poul)`,`Nuværende (Peter)`, `Bedste (Poul)`, `Værste (Pil)`]}
                                 scores={{
                                     ettere: { 0: 3 },
                                     bonus: { 1: 50 }
