@@ -1,6 +1,6 @@
 //"For at tilføje et navn på en server skal det være unikt" måske? eller anden tekst bedre? Anden tekst kortere.
 "use client"
-import Yatsy from "@/components/Yatsy";
+
 import {useState} from "react";
 
 export default function Server() {
