@@ -122,25 +122,25 @@ def get_data(instanceId):
     except Exception as e:
         app.logger.exception("Error getting data")
         return jsonify({"error": "Failed to get instance data", "detail": str(e)}), 500
-"""
-@app.route("/api/data/score/<username>")
-def userScore(username):
-    try;
 
-    except Exception as e:
+#@app.route("/api/data/score/<username>")
+#def userScore(username):
+#    try;
+#
+#    except Exception as e:
 
-@app.route("/api/jatzySheet/<instanceId>")
-def scoreSheet(instanceId):
-    try:
-        
-    except Exception as e:
+#@app.route("/api/jatzySheet/<instanceId>")
+#def scoreSheet(instanceId):
+#    try:
+#       
+#    except Exception as e:
 
-@app.route("/api/<instanceid>/opdatering")
-def update(instanceId):
-    try:
-    
-    except Exception as e:
-"""
+#@app.route("/api/<instanceid>/opdatering")
+#def update(instanceId):
+#    try:
+#   
+#    except Exception as e:
+
 @app.route("/api/tjek/tid", methods=["GET"])
 def serverTime():
     try:
@@ -198,29 +198,29 @@ def addUser():
             stored = bcrypt.hash(password)
         else:
             stored = encrypt(cryptKey, password.encode('utf-8'))
-"""
-        score = {
-            "ettere": {0},
-            "toere": {0},
-            "treere": {0},
-            "firere": {0},
-            "femmere": {0},
-            "seksere": {0},
-            "sum": {0},
-            "bonus": {0},
-            "1par": {0},
-            "2par": {0},
-            "2par": {0},
-            "3ens": {0},
-            "4ens": {0},
-            "lilleStraight": {0},
-            "storeStraight": {0},
-            "fuldtHus": {0},
-            "chance": {0},
-            "jatzy": {0},
-            "total": {0}
-        }
-"""
+        
+#       score = {
+#            "ettere": {0},
+#            "toere": {0},
+#            "treere": {0},
+#            "firere": {0},
+#            "femmere": {0},
+#            "seksere": {0},
+#            "sum": {0},
+#            "bonus": {0},
+#            "1par": {0},
+#            "2par": {0},
+#           "2par": {0},
+#            "3ens": {0},
+#            "4ens": {0},
+#            "lilleStraight": {0},
+#            "storeStraight": {0},
+#            "fuldtHus": {0},
+#            "chance": {0},
+#            "jatzy": {0},
+#            "total": {0}
+#        }
+        
         insert_rsp = supabase.table("users").insert({
             "username": userClean,
             "password": stored,
