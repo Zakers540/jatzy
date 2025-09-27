@@ -79,7 +79,7 @@ body {
   position: absolute;
   top: 70%;
   right: 20%;
-  background-color: black;
+  background-color: transparent;
   border-radius: 40px 10px;
   filter: blur(10px);
   opacity: 0.3;
