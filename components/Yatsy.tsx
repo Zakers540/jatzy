@@ -12,6 +12,7 @@ import YatzySheet from "@/components/YatzySheet";
 import Players from "@/components/Players";
 import Dice from "@/components/Dice";
 import LoginPortal from "@/components/LoginPortal";
+import ClickedPlayer from "@/components/ClickedPlayer";
 
 type YatsyProps = {
     instanceId: string
