@@ -60,16 +60,11 @@ export default function Yatsy({ instanceId }: YatsyProps) {
         };
 
         const handleBeforeUnload = () => makeAPICall();
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'hidden') makeAPICall();
-        };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
-        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
     }, [apiBase]);
     useEffect(() => {
