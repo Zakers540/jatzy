@@ -12,6 +12,7 @@ import YatzySheet from "@/components/YatzySheet";
 import Players from "@/components/Players";
 import Dice from "@/components/Dice";
 import LoginPortal from "@/components/LoginPortal";
+import ClickedPlayer from "@/components/ClickedPlayer";
 
 type YatsyProps = {
     instanceId: string
@@ -40,6 +41,8 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     const [password, setPassword] = useState<string>("")
     const [bestPlayer, setBestPlayer] = useState<string>("")
     const [worstPlayer, setWorstPlayer] = useState<string>("")
+    const [clickedPlayer, setClickedPlayer] = useState<boolean>(false)
+    const [clickedPlayerName, setClickedPlayerName] = useState<string>("")
     //får variablerne fra backend hver gang const opdatering bliver opdateret
     useEffect(() => {
         const makeAPICall = () => {
@@ -190,6 +193,9 @@ export default function Yatsy({ instanceId }: YatsyProps) {
         </main>
             {!loggedIn && (
                 <LoginPortal players={currentPlayers} setLogin={setLoggedIn} apiBase={apiBase} instanceId={instanceId} />
+            )}
+            {clickedPlayer && clickedPlayer && (
+                <ClickedPlayer/>
             )}
         </>
 )
