@@ -109,8 +109,8 @@ def get_data(instanceId):
         })
 
         bestPlayer = rows[0].get("username")
-        worstPlayer = rows[len(rows)].get("username")
-        for i in range(len(rows)):
+        worstPlayer = rows[len(rows) - 1].get("username")
+        for i in range(len(rows) - 1):
             if rows[i].get("online") == True:
                 currentPlayers.append(rows[i].get("username"))
         return jsonify({
