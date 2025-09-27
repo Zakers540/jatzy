@@ -156,6 +156,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                     className="p-2 border-2 border-blue-500 rounded-2xl text-xl mt-16 text-black/80
                                        font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50"
                                     onClick={() => {
+                                        setLoading(true)
                                         fetch(`${apiBase}/api/tjek/${instanceId}/${playerName}/${password}`)
                                             .then((response) => response.json())
                                             .then((data) => {
@@ -163,6 +164,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                                 setErrorExists(data.errorExists)
                                                 setError(data.error)
                                             })
+                                            .then(function (data) {setLoading(false)})
                                     }}
                                 >
                                     Deltag
