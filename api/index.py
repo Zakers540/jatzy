@@ -102,7 +102,7 @@ def get_data(instanceId):
         rows = getattr(rsp, "data", []) or []
         bestPlayer = rows[0][1]
         worstPlayer = rows[len(rows) - 1][1]
-        for i in range(len(rows) - 1):
+        for i in range(len(rows)):
             if rows[i][5] == True:
                 currentPlayers.append(rows[i][1])
         return jsonify({
@@ -179,4 +179,3 @@ def addUser():
     except Exception as e:
         app.logger.exception("Error adding user")
         return jsonify({"error": "kunne ikke tilfoeje bruger", "detail": str(e)}), 500
-
