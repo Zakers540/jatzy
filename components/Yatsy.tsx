@@ -139,11 +139,11 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                 <div className="grid grid-rows-[3fr_4fr] justify-center">
                     <Players currentPlayers={currentPlayers}/>
                     <div className="grid grid-cols-2 gap-x-2 p-4 pl-0">
-                        <Dice realDiceNumber={dice1Number} selected={dice1} setSelected={setDice1}/>
-                        <Dice realDiceNumber={dice2Number} selected={dice2} setSelected={setDice2}/>
-                        <Dice realDiceNumber={dice3Number} selected={dice3} setSelected={setDice3}/>
-                        <Dice realDiceNumber={dice4Number} selected={dice4} setSelected={setDice4}/>
-                        <Dice realDiceNumber={dice5Number} selected={dice5} setSelected={setDice5}/>
+                        <Dice realDiceNumber={dice1Number} selected={dice1} setSelected={setDice1} currentPlayers={currentPlayers} user={user}/>
+                        <Dice realDiceNumber={dice2Number} selected={dice2} setSelected={setDice2} currentPlayers={currentPlayers} user={user}/>
+                        <Dice realDiceNumber={dice3Number} selected={dice3} setSelected={setDice3} currentPlayers={currentPlayers} user={user}/>
+                        <Dice realDiceNumber={dice4Number} selected={dice4} setSelected={setDice4} currentPlayers={currentPlayers} user={user}/>
+                        <Dice realDiceNumber={dice5Number} selected={dice5} setSelected={setDice5} currentPlayers={currentPlayers} user={user}/>
                     </div>
                     <div className="flex justify-center items-center h-12 w-46">
                         {totalDice > 1 ? (
