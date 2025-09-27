@@ -34,7 +34,7 @@ export default function Dice({ realDiceNumber, size, selected, setSelected, user
     }, [realDiceNumber]);
 
     return (
-        <> { currentPlayers && user && user == currentPlayers[0] ? (
+        <> { currentPlayers && user && user === currentPlayers[0] ? (
             <div className={`flex justify-center items-center border-2 rounded-lg w-16 h-16 group ${selected ? "bg-blue-200/40" : "bg-neutral-50 hover:cursor-not-allowed hover:bg-red-200/40"}`} style={{transform: `scale(${size})`}}>
                 {(() => {
                     switch (diceNumber) {

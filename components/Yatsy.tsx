@@ -135,7 +135,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
         <main className="min-h-screen lg:h-screen w-full flex flex-col p-12">
             <div className="grid grid-cols-[1fr_4fr]">
                 <div className="grid grid-rows-[3fr_4fr] justify-center">
-                    <Players currentPlayers={currentPlayers}/>
+                    <Players currentPlayers={currentPlayers} setClickedPlayer={setClickedPlayer} setClickedPlayerName={setClickedPlayerName} />
                     <div className="grid grid-cols-2 gap-x-2 p-4 pl-0">
                         <Dice realDiceNumber={dice1Number} selected={dice1} setSelected={setDice1} currentPlayers={currentPlayers} user={user}/>
                         <Dice realDiceNumber={dice2Number} selected={dice2} setSelected={setDice2} currentPlayers={currentPlayers} user={user}/>
@@ -144,7 +144,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                         <Dice realDiceNumber={dice5Number} selected={dice5} setSelected={setDice5} currentPlayers={currentPlayers} user={user}/>
                     </div>
                     <div className="flex justify-center items-center h-12 w-46">
-                        {totalDice > 1 ? (
+                        {totalDice > 1 && user===currentPlayers[0] ? (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
             font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul)}}>Rul {totalDice} terninger</button>
                         ): totalDice > 0 && (
