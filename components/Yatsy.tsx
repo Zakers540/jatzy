@@ -154,7 +154,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                     </div>
                 </div>
                 <div className="mt-4">
-                    { user && currentPlayers && bestPlayer && worstPlayer ? (
+                    { user && currentPlayers[0] && bestPlayer && worstPlayer ? (
                 <YatzySheet
                     size={1}
                     currentPlayers={[`Dig (${user})`,`Nuværende (${currentPlayers[0]})`, `Bedste (${bestPlayer})`, `Værste (${worstPlayer})`]}
