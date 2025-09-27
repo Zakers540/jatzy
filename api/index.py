@@ -100,11 +100,19 @@ def get_data(instanceId):
         currentPlayers = []
         rsp = supabase.table("users").select("*").eq("gameInstance", str(instanceId)).order("score", desc=True).execute()
         rows = getattr(rsp, "data", []) or []
-        bestPlayer = rows[0][1]
-        worstPlayer = rows[len(rows) - 1][1]
+
+        if not rows:
+            return jsonify({
+            "bestPlayer": None,
+            "worstPlayer": None,
+            "players": []
+        })
+
+        bestPlayer = rows[0].get("username")
+        worstPlayer = rows[len(rows)].get("username")
         for i in range(len(rows)):
-            if rows[i][5] == True:
-                currentPlayers.append(rows[i][1])
+            if rows[i].get("online") == True:
+                currentPlayers.append(rows[i].get("username"))
         return jsonify({
             "bestPlayer": bestPlayer,
             "worstPlayer": worstPlayer,
