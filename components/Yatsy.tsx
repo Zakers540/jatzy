@@ -195,7 +195,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                 <LoginPortal players={currentPlayers} setLogin={setLoggedIn} apiBase={apiBase} instanceId={instanceId} />
             )}
             {clickedPlayer && clickedPlayer && (
-                <ClickedPlayer/>
+                <ClickedPlayer clickedPlayerName={clickedPlayerName} setClickedPlayer={setClickedPlayer} />
             )}
         </>
 )
