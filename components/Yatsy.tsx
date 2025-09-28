@@ -5,6 +5,8 @@
 //TODO: modal hvor man enten kan tilmelde sig spillet eller klikke på en af de røde navne (betyder det ikke er optaget) blå er optaget og spiller lige nu
 //TODO: fyrværkeri hvis jatsy eller spil er slut
 //TODO: estimeret tid og når det er din tur så en lydeffekt
+//TODO: lyt på et url f.eks. /api/opdatering og opdater når den siger du skal
+//TODO: tilføj reload til logud
 "use client"
 
 import {useEffect, useState} from "react";
@@ -16,6 +18,24 @@ import ClickedPlayer from "@/components/ClickedPlayer";
 
 type YatsyProps = {
     instanceId: string
+}
+
+function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number, dice4Number:number, dice5Number:number) {
+    const playerIndex = 1
+    const allDice: number[] = [dice1Number, dice2Number, dice3Number, dice4Number, dice5Number]
+    const numberOfNumbers: number[] = [0, 0, 0, 0,0, 0]
+    let chance = 0;
+
+    for (let i=0; i<5; i++) {
+        const value = allDice[i]
+        numberOfNumbers[value] = numberOfNumbers[value] + 1;
+    }
+    for (let i=0; i<5; i++) {
+        chance = chance + allDice[i]
+    }
+    return {
+    chance: {[playerIndex]: chance.toString()}
+    }
 }
 
 export default function Yatsy({ instanceId }: YatsyProps) {
@@ -158,13 +178,12 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                     size={1}
                     currentPlayers={[`Dig (${user || "Poul"})`,`Nuværende (${currentPlayers[0] || "Peter"})`, `Bedste (${bestPlayer || "Poul"})`, `Værste (${worstPlayer || "Pil"})`]}
                     scores={{
-                        ettere: { 0: 3 },
+                        ettere: { 0: 3, 1: 4 },
                         bonus: { 1: 50 }
                     }}
-                    previews={{
-                        toere: { 0: "8" },
-                        yatzy: { 1: "50" }
-                    }}
+                    previews={
+                        YatzyPreview(dice1Number, dice2Number, dice3Number, dice4Number, dice5Number)
+                    }
                     onCellClick={(category, playerIndex) => {
                         console.log(`Clicked ${category} for player ${playerIndex}`);
                     }}
@@ -176,7 +195,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                 <LoginPortal players={currentPlayers} setLogin={setLoggedIn} apiBase={apiBase} instanceId={instanceId} />
             )}
             {clickedPlayer && clickedPlayer && (
-                <ClickedPlayer clickedPlayerName={clickedPlayerName} setClickedPlayer={setClickedPlayer} />
+                <ClickedPlayer instanceId={instanceId} apiBase={apiBase} clickedPlayerName={clickedPlayerName} setClickedPlayer={setClickedPlayer} />
             )}
         </>
 )

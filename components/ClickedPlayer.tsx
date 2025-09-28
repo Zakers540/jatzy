@@ -1,9 +1,13 @@
-import {Dispatch, SetStateAction, useState} from "react";
+"use effect"
+
+import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import YatzySheet from "@/components/YatzySheet";
 
 type ClickedPlayerProps = {
     clickedPlayerName: string;
     setClickedPlayer: Dispatch<SetStateAction<boolean>>;
+    apiBase: string;
+    instanceId: string;
 }
 
 type YatzyCategory =
@@ -26,8 +30,15 @@ type YatzyCategory =
     | "yatzy"
     | "total";
 
-export default function ClickedPlayer({clickedPlayerName, setClickedPlayer}: ClickedPlayerProps) {
+export default function ClickedPlayer({clickedPlayerName, setClickedPlayer, apiBase, instanceId}: ClickedPlayerProps) {
     const [playerNameScores, setPlayerNameScores] = useState<Record<YatzyCategory, Record<number, number>>>();
+    useEffect(() => {
+        fetch(`${apiBase}/api/yatzysheet/${instanceId}/${clickedPlayerName}`)
+            .then((response) => response.json())
+            .then((data) => {
+                setPlayerNameScores(data.yatzyscore)
+            })
+    }, [clickedPlayerName]);
     return (
         <div className="fixed inset-0 flex flex-col z-50 items-center justify-center backdrop-blur-sm bg-black/5">
             <div className="relative bg-white/64 max-w-lg w-full rounded-md max-h-180 border-1 border-white/80">
