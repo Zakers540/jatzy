@@ -28,7 +28,7 @@ export default function Dice({ realDiceNumber, size, selected, setSelected, user
         const timeout = setTimeout(() => {
             clearInterval(interval);
             setGamblingEffect(false)
-            setDiceNumber(1);
+            setDiceNumber(realDiceNumber);
             clearTimeout(timeout)
         }, randomTimeout);
     }, [realDiceNumber]);
