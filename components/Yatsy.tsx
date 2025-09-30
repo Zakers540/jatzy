@@ -20,11 +20,37 @@ type YatsyProps = {
     instanceId: string
 }
 
+type YatzyCategory =
+    | "ettere"
+    | "toere"
+    | "treere"
+    | "firere"
+    | "femmere"
+    | "seksere"
+    | "sum"
+    | "bonus"
+    | "treens"
+    | "fireens"
+    | "lillestraight"
+    | "storstraight"
+    | "fuldthus"
+    | "chance"
+    | "yatzy"
+    | "total";
+
 function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number, dice4Number:number, dice5Number:number) {
     const playerIndex = 1
     const allDice: number[] = [dice1Number, dice2Number, dice3Number, dice4Number, dice5Number]
     const numberOfNumbers: number[] = [0, 0, 0, 0,0, 0]
+    let hasThree = false
+    let hasThreeVariable = 6
+    let hasFour = false
+    let hasFourVariable = 6
+    let hasTwo = false
+    let hasTwoVariable = 6
     let chance = 0;
+    let hasYatzy = false;
+    let hasYatzyVariable = 6;
 
     for (let i=0; i<5; i++) {
         const value = allDice[i]
@@ -33,9 +59,77 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
     for (let i=0; i<5; i++) {
         chance = chance + allDice[i]
     }
-    const result = {}
+    let result: Partial<Record<YatzyCategory, Record<number, string | number>>> = {}
+
+    if (numberOfNumbers[0] > 0) {
+        result.ettere = {[playerIndex]: (numberOfNumbers[0]).toString()}
+    }
+    if (numberOfNumbers[1] > 0) {
+        result.toere = {[playerIndex]: (numberOfNumbers[1] * 2).toString()}
+    }
+    if (numberOfNumbers[2] > 0) {
+        result.treere = {[playerIndex]: (numberOfNumbers[2] * 3).toString()}
+    }
+    if (numberOfNumbers[3] > 0) {
+        result.firere = {[playerIndex]: (numberOfNumbers[3] * 4).toString()}
+    }
+    if (numberOfNumbers[4] > 0) {
+        result.femmere = {[playerIndex]: (numberOfNumbers[4] * 5).toString()}
+    }
+    if (numberOfNumbers[5] > 0) {
+        result.seksere = {[playerIndex]: (numberOfNumbers[5] * 6).toString()}
+    }
+
+    while (!hasThree && hasThreeVariable > 0) {
+        if (numberOfNumbers[hasThreeVariable-1] > 2) {
+            result.treens = {[playerIndex]: hasThreeVariable*3}
+            hasThree = true
+        } else {
+            hasThreeVariable = hasThreeVariable - 1;
+        }
+    }
+    while (!hasFour && hasFourVariable > 0) {
+        if (numberOfNumbers[hasFourVariable-1] > 3) {
+            result.fireens = {[playerIndex]: hasFourVariable*4}
+            hasFour = true
+        } else {
+            hasFourVariable = hasFourVariable - 1;
+        }
+    }
+
+    if (numberOfNumbers[0] && numberOfNumbers[1] && numberOfNumbers[2] && numberOfNumbers[3] && numberOfNumbers[4]) {
+        result.lillestraight = {[playerIndex]: "15"}
+    }
+    if (numberOfNumbers[1] && numberOfNumbers[2] && numberOfNumbers[3] && numberOfNumbers[4] && numberOfNumbers[5]) {
+        result.storstraight = {[playerIndex]: "20"}
+    }
+
+    while (!hasTwo && hasTwoVariable > 0) {
+        if (numberOfNumbers[hasTwoVariable-1] > 1 && hasThreeVariable !== hasTwoVariable) {
+            hasTwo = true
+        } else {
+            hasTwoVariable = hasTwoVariable - 1;
+        }
+    }
+    if (hasTwo && hasThree && hasTwoVariable > 0 && hasThreeVariable > 0) {
+        result.fuldthus = {[playerIndex]: hasTwoVariable*2+hasThreeVariable*3}
+    }
+
+    if (chance > 0) {
+        result.chance = {[playerIndex]: chance.toString()}
+    }
+
+    while (!hasYatzy && hasYatzyVariable > 0) {
+        if (numberOfNumbers[hasYatzyVariable-1] > 4) {
+            result.yatzy = {[playerIndex]: hasYatzyVariable*6+50}
+            hasYatzy = true
+        } else {
+            hasYatzyVariable = hasYatzyVariable - 1;
+        }
+    }
+
     return {
-    chance: {[playerIndex]: chance.toString()}
+    result
     }
 }
 
