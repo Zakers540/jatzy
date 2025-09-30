@@ -1,6 +1,5 @@
 from flask import Flask, request, redirect, jsonify
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit
 import os
 from supabase import create_client, Client
 from datetime import date
@@ -30,7 +29,6 @@ if not url or not key:
 supabase: Client = create_client(url, key)
 
 app = Flask(__name__)
-socektio = SocketIO(app,debug=True,cors_allowed_origins='*', async_mode='eventlet')
 CORS(app)
 
 def rndURL(length: int = 6) -> str:
