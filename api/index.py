@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, jsonify
 from flask_cors import CORS
 import os
-from supabase import create_client, Client, acreate_client
+from supabase import create_client, Client
 from datetime import date
 from time import localtime
 import asyncio
