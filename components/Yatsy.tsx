@@ -59,7 +59,8 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
     for (let i=0; i<5; i++) {
         chance = chance + allDice[i]
     }
-    let result: Partial<Record<YatzyCategory, Record<number, string | number>>> = {}
+
+    const result: Partial<Record<YatzyCategory, Record<number, string | number>>> = {};
 
     if (numberOfNumbers[0] > 0) {
         result.ettere = {[playerIndex]: (numberOfNumbers[0]).toString()}
@@ -128,9 +129,7 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
         }
     }
 
-    return {
-    result
-    }
+    return result
 }
 
 export default function Yatsy({ instanceId }: YatsyProps) {
@@ -148,7 +147,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     const [dice5Number, setDice5Number] = useState<number>(6)
     const [opdatering, setOpdatering] = useState<boolean>(false)
     const [rul, setRul] = useState<boolean>(false)
-    //url til hjemmeside. skal være absolut. dev server har andet url end prod.
+    //URL til hjemmeside skal være absolut dev server har andet url end prod.
     const apiBase = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5328' : 'https://jatzy.vercel.app'
     const [totalDice, setTotalDice] = useState<number>(0)
     const [user, setUser] = useState<string>("")
