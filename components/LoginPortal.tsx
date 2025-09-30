@@ -30,7 +30,6 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
     }, [errorExists])
 
     useGSAP(()=>{
-            setExit(!exit)
             gsap.to(".alert", {
                 opacity: 0,
                 duration: 1,

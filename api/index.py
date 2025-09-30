@@ -4,6 +4,7 @@ import os
 from supabase import create_client, Client
 from datetime import date
 from time import localtime
+import asyncio
 import random
 import string
 import base64
