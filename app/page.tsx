@@ -26,34 +26,29 @@ export default function Home() {
     return (
         <>
             <Navbar/>
-        <div className="min-h-screen w-full flex flex-col items-center justify-center">
-            <main
-                className="w-full max-w-[1200px] flex flex-col pt-40 md:pt-32 px-20 md:grid md:grid-cols-2 md:items-start">
-                <div className="flex flex-col items-center -mt-8 md:mt-8">
-                    <div className="md:hidden flex justify-center mb-12 md:mt-0">
+            <div className="min-h-screen w-full flex flex-col items-center justify-center">
+                <main
+                    className="min-h-screen w-full max-w-[1200px] flex flex-col pt-40 px-20 md:grid md:grid-cols-2 md:items-start">
+                    <div className="flex flex-col items-center -mt-8 md:mt-8">
+                        <div className="md:hidden flex justify-center mb-12 md:mt-0">
+                            <BigDice diceNumber={diceNumber}/>
+                        </div>
+                        <h1 className="text-center text-black/80 text-4xl font-semibold bg-white/80 rounded-md p-2">
+                            Har du også lyst til yatzy?
+                        </h1>
+                        <p className="text-center mt-2 text-md text-neutral-500 bg-white/60 rounded-md p-1">
+                            Det har du selvfølgelig!
+                        </p>
+                        <a href="/api/opret" className="p-4 border-2 border-blue-500 rounded-2xl text-xl mt-8 text-black/80
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50">
+                            Start et spil yatzy
+                        </a>
+                    </div>
+                    <div className="hidden md:flex justify-center mt-24 md:mt-0">
                         <BigDice diceNumber={diceNumber}/>
                     </div>
-                    <h1 className="text-center text-black/80 text-4xl font-semibold bg-white/80 rounded-md p-2">
-                        Har du også lyst til yatzy?
-                    </h1>
-                    <p className="text-center mt-2 text-md text-neutral-500 bg-white/60 rounded-md p-1">
-                        Det har du selvfølgelig!
-                    </p>
-                    <a href="/api/opret" className="p-4 border-2 border-blue-500 rounded-2xl text-xl mt-8 text-black/80
-            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50">
-                        Start et spil yatzy
-                    </a>
-                </div>
-                <div className="hidden md:flex justify-center mt-24 md:mt-0">
-                    <BigDice diceNumber={diceNumber}/>
-                </div>
-            </main>
-            <section className="grid md:grid-cols-3 pt-16 pb-16 space-x-4 space-y-4">
-                <Card title="Spil med venner" description="Opret et spil og inviter dine venner!"/>
-                <Card title="Automatisk pointberegning" description="Du behøver ikke at være en matematiker for at spille yatzy."/>
-                <Card title="Gem dine spil" description="Du behøver ikke at køre en lang session for at spille færdig."/>
-            </section>
-        </div>
+                </main>
+            </div>
             <Footer/>
         </>
     );
