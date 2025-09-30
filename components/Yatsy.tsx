@@ -28,11 +28,12 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
 
     for (let i=0; i<5; i++) {
         const value = allDice[i]
-        numberOfNumbers[value] = numberOfNumbers[value] + 1;
+        numberOfNumbers[value-1] = numberOfNumbers[value-1] + 1;
     }
     for (let i=0; i<5; i++) {
         chance = chance + allDice[i]
     }
+    const result = {}
     return {
     chance: {[playerIndex]: chance.toString()}
     }
