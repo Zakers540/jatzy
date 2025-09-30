@@ -36,7 +36,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                 ease: "easeOutExpo",
                 y: 10
             })
-        }, [exit])
+        }, [errorExists])
 
         useEffect(() => {
             setTimeout(()=>{
