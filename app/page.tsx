@@ -2,9 +2,9 @@
 
 import BigDice from "@/components/BigDice";
 import {useEffect, useState} from "react";
-import Dice from "@/components/Dice";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import Card from "@/components/Card";
 
 export default function Home() {
     const [diceNumber, setDiceNumber] = useState(6);
@@ -28,7 +28,7 @@ export default function Home() {
             <Navbar/>
         <div className="min-h-screen w-full flex flex-col items-center justify-center">
             <main
-                className="min-h-screen w-full max-w-[1200px] flex flex-col pt-40 px-20 md:grid md:grid-cols-2 md:items-start">
+                className="w-full max-w-[1200px] flex flex-col pt-40 px-20 md:grid md:grid-cols-2 md:items-start">
                 <div className="flex flex-col items-center -mt-8 md:mt-8">
                     <div className="md:hidden flex justify-center mb-12 md:mt-0">
                         <BigDice diceNumber={diceNumber}/>
@@ -48,6 +48,14 @@ export default function Home() {
                     <BigDice diceNumber={diceNumber}/>
                 </div>
             </main>
+            <section className="grid md:grid-cols-3 pt-16 pb-16 space-x-4 space-y-4">
+                <Card title="Spil med venner" description="Opret et spil og inviter dine venner!"/>
+                <Card title="Automatisk pointberegning" description="Du behøver ikke at være en matematiker for at spille yatzy."/>
+                <Card title="Gem dine spil" description="Du behøver ikke at køre en lang session for at spille færdig."/>
+                <Card title="Ingen skjulte omkostninger" description="Alle features er gratis."/>
+                <Card title="Personlig server" description="Du får din egen personlige server."/>
+                <Card title="Lavet fra bunden" description="Vi bruger ikke en skabelon. Alt er lavet fra bunden specielt til dig."/>
+            </section>
         </div>
             <Footer/>
         </>
