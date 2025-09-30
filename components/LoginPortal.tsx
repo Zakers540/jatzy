@@ -30,17 +30,17 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
     }, [errorExists])
 
     useGSAP(()=>{
-        gsap.to(".alert", {
-            opacity: 0,
-            duration: 1,
-            ease: "easeOutExpo",
-            y: 10
-        })
-    }, [exit])
-
-    useEffect(() => {
-        setTimeout(()=>{
             setExit(!exit)
+            gsap.to(".alert", {
+                opacity: 0,
+                duration: 1,
+                ease: "easeOutExpo",
+                y: 10
+            })
+        }, [exit])
+
+        useEffect(() => {
+            setTimeout(()=>{
             setTimeout(()=>{
                 setErrorExists(false)
             }, 6000)

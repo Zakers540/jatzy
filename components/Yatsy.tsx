@@ -28,11 +28,12 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
 
     for (let i=0; i<5; i++) {
         const value = allDice[i]
-        numberOfNumbers[value] = numberOfNumbers[value] + 1;
+        numberOfNumbers[value-1] = numberOfNumbers[value-1] + 1;
     }
     for (let i=0; i<5; i++) {
         chance = chance + allDice[i]
     }
+    const result = {}
     return {
     chance: {[playerIndex]: chance.toString()}
     }
@@ -91,19 +92,25 @@ export default function Yatsy({ instanceId }: YatsyProps) {
         };
     }, [apiBase]);
     useEffect(() => {
-        fetch(`${apiBase}/api/data/${instanceId}`)
+        fetch(`${apiBase}/api/data/${instanceId}`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                user: user,
+            })
+        })
             .then((response) => response.json())
             .then((data) => {
                 setCurrentPlayers(data.players)
                 setBestPlayer(data.bestPlayer)
                 setWorstPlayer(data.worstPlayer)
+                setDice1Number(data.dice1)
+                setDice2Number(data.dice2)
+                setDice3Number(data.dice3)
+                setDice4Number(data.dice4)
+                setDice5Number(data.dice5)
             })
-    if (loggedIn) {
-        fetch(`${apiBase}/api/data/${instanceId}/${user}/${password}`)
-            .then((response) => response.json())
-            .then((data) => {
-            })
-    }}, [opdatering])
+    }, [opdatering])
     useEffect(()=> {
         setOpdatering(!opdatering)
     }, [loggedIn])
@@ -167,7 +174,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                         {totalDice > 1 && user===currentPlayers[0] ? (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
             font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul)}}>Rul {totalDice} terninger</button>
-                        ): totalDice > 0 && (
+                        ): totalDice > 0 && user===currentPlayers[0] && (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
             font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul)}}>Rul {totalDice} terning</button>
                         )}
