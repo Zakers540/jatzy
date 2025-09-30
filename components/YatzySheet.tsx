@@ -98,8 +98,8 @@ export default function YatzySheet({
                     {renderRow("seksere", "Seksere", true)}
                     {renderRow("sum", "Sum")}
                     {renderRow("bonus", "Bonus", true)}
-                    {renderRow("3ens", "3 ens")}
-                    {renderRow("4ens", "4 ens")}
+                    {renderRow("treens", "3 ens")}
+                    {renderRow("fireens", "4 ens")}
                     {renderRow("lillestraight", "Lille straight")}
                     {renderRow("storstraight", "Stor straight")}
                     {renderRow("fuldthus", "Fuldt hus")}
