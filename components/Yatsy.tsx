@@ -15,6 +15,7 @@ import Players from "@/components/Players";
 import Dice from "@/components/Dice";
 import LoginPortal from "@/components/LoginPortal";
 import ClickedPlayer from "@/components/ClickedPlayer";
+import { createClient } from '@supabase/supabase-js'
 
 type YatsyProps = {
     instanceId: string
@@ -37,6 +38,80 @@ type YatzyCategory =
     | "chance"
     | "yatzy"
     | "total";
+
+let DATABASE_URL: string
+let DATABASE_KEY: string
+
+if (process.env.DATABASE_URL && process.env.DATABASE_KEY) {
+    DATABASE_URL = process.env.SUPABASE_URL
+    DATABASE_KEY = process.env.SUPABASE_KEY
+}
+
+const supabase = createClient(DATABASE_URL, DATABASE_KEY)
+
+let currentPlayers = []
+let bestPlayer = null
+let worstPlayer = null
+let dice1Number = 6
+let dice2Number = 6
+let dice3Number = 6
+let dice4Number = 6
+let dice5Number = 6
+let yatzyResults: Partial<Record<YatzyCategory, Record<number, string | number>>> = {}
+
+async function updateInstanceStats(instanceId: string) {
+    const {data: playerData, error} = await supabase
+        .from("user")
+        .select("*")
+        .eq("gameInstance", instanceId)
+        .order("turn", {ascending: true})
+    const {data: serverData} = await supabase
+        .from("server")
+        .select("dice1, dice2, dice3, dice4, dice5")
+        .eq("gameInstance", instanceId)
+        .single()
+
+    if (error) {
+        console.error(error)
+        return
+    }
+    players = playerData
+
+    if (playerData.length > 0) {
+        bestPlayer = [...playerData].sort((a, b) => b.score - a.score)
+        worstPlayer = [...playerData].sort((a, b) => a.score - b.score)
+    }
+
+    if (serverData.dice1) {
+        dice1Number = serverData.dice1
+    }
+    if (serverData.dice2) {
+        dice2Number = serverData.dice2
+    }
+    if (serverData.dice3) {
+        dice3Number = serverData.dice3
+    }
+    if (serverData.dice4) {
+        dice4Number = serverData.dice4
+    }
+    if (serverData.dice5) {
+        dice5Number = serverData.dice5
+    }
+    if (serverData.yatzysheet) {
+        yatzyResults = serverData.yatzysheet
+    }
+}
+
+function listenForChanges(instanceId: string) {
+    supabase
+        .channel("opdatering")
+        .on(
+            "postgres_changes",
+            {event: "*", schema: "public", table: "user"},
+            ()=> updateInstanceStats(instanceId)
+        )
+        .subscribe()
+}
 
 function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number, dice4Number:number, dice5Number:number) {
     const playerIndex = 1
@@ -134,18 +209,11 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
 
 export default function Yatsy({ instanceId }: YatsyProps) {
     // laver variabler, som ville blive opdateret ift backend ved mindre det udelukkende er for udseende eller bare til frontend
-    const [currentPlayers, setCurrentPlayers] = useState<string[]>([""])
     const [dice1, setDice1] = useState<boolean>(false)
     const [dice2, setDice2] = useState<boolean>(false)
     const [dice3, setDice3] = useState<boolean>(false)
     const [dice4, setDice4] = useState<boolean>(false)
     const [dice5, setDice5] = useState<boolean>(false)
-    const [dice1Number, setDice1Number] = useState<number>(6)
-    const [dice2Number, setDice2Number] = useState<number>(6)
-    const [dice3Number, setDice3Number] = useState<number>(6)
-    const [dice4Number, setDice4Number] = useState<number>(6)
-    const [dice5Number, setDice5Number] = useState<number>(6)
-    const [opdatering, setOpdatering] = useState<boolean>(false)
     const [rul, setRul] = useState<boolean>(false)
     //URL til hjemmeside skal være absolut dev server har andet url end prod.
     const apiBase = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5328' : 'https://jatzy.vercel.app'
@@ -153,12 +221,13 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     const [user, setUser] = useState<string>("")
     const [loggedIn, setLoggedIn] = useState<boolean>(false)
     const [password, setPassword] = useState<string>("")
-    const [bestPlayer, setBestPlayer] = useState<string>("")
-    const [worstPlayer, setWorstPlayer] = useState<string>("")
     const [clickedPlayer, setClickedPlayer] = useState<boolean>(false)
     const [clickedPlayerName, setClickedPlayerName] = useState<string>("")
+
     //får variablerne fra backend hver gang const opdatering bliver opdateret
     useEffect(() => {
+        listenForChanges(instanceId)
+        updateInstanceStats(instanceId)
         const makeAPICall = () => {
             if (navigator.sendBeacon) {
                 navigator.sendBeacon(`${apiBase}/api/logud/`);
@@ -184,29 +253,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
             window.removeEventListener('beforeunload', handleBeforeUnload);
         };
     }, [apiBase]);
-    useEffect(() => {
-        fetch(`${apiBase}/api/data/${instanceId}`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                user: user,
-            })
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                setCurrentPlayers(data.players)
-                setBestPlayer(data.bestPlayer)
-                setWorstPlayer(data.worstPlayer)
-                setDice1Number(data.dice1)
-                setDice2Number(data.dice2)
-                setDice3Number(data.dice3)
-                setDice4Number(data.dice4)
-                setDice5Number(data.dice5)
-            })
-    }, [opdatering])
-    useEffect(()=> {
-        setOpdatering(!opdatering)
-    }, [loggedIn])
+
     //hver gang en af terningerne opdateres finder den total antal terninger
     useEffect(() => {
         setTotalDice((dice1 ? 1 : 0) + (dice2 ? 1 : 0) + (dice3 ? 1 : 0) + (dice4 ? 1 : 0) + (dice5 ? 1 : 0));
@@ -277,10 +324,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                 <YatzySheet
                     size={1}
                     currentPlayers={[`Dig (${user || "Poul"})`,`Nuværende (${currentPlayers[0] || "Peter"})`, `Bedste (${bestPlayer || "Poul"})`, `Værste (${worstPlayer || "Pil"})`]}
-                    scores={{
-                        ettere: { 0: 3, 1: 4 },
-                        bonus: { 1: 50 }
-                    }}
+                    scores={yatzyResults}
                     previews={
                         YatzyPreview(dice1Number, dice2Number, dice3Number, dice4Number, dice5Number)
                     }
