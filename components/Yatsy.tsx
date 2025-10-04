@@ -43,8 +43,8 @@ let DATABASE_URL: string
 let DATABASE_KEY: string
 
 if (process.env.DATABASE_URL && process.env.DATABASE_KEY) {
-    DATABASE_URL = process.env.SUPABASE_URL
-    DATABASE_KEY = process.env.SUPABASE_KEY
+    DATABASE_URL = process.env.DATABASE_URL
+    DATABASE_KEY = process.env.DATABASE_KEY
 }
 
 const supabase = createClient(DATABASE_URL, DATABASE_KEY)
