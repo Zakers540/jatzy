@@ -67,7 +67,7 @@ async function updateInstanceStats(instanceId: string) {
         .order("turn", {ascending: true})
     const {data: serverData} = await supabase
         .from("server")
-        .select("dice1, dice2, dice3, dice4, dice5")
+        .select("dice")
         .eq("gameInstance", instanceId)
         .single()
 
@@ -75,7 +75,7 @@ async function updateInstanceStats(instanceId: string) {
         console.error(error)
         return
     }
-    players = playerData
+    currentPlayers = playerData
 
     if (playerData.length > 0) {
         bestPlayer = [...playerData].sort((a, b) => b.score - a.score)
@@ -83,19 +83,19 @@ async function updateInstanceStats(instanceId: string) {
     }
 
     if (serverData.dice1) {
-        dice1Number = serverData.dice1
+        dice1Number = serverData.dice[0]
     }
     if (serverData.dice2) {
-        dice2Number = serverData.dice2
+        dice2Number = serverData.dice[1]
     }
     if (serverData.dice3) {
-        dice3Number = serverData.dice3
+        dice3Number = serverData.dice[2]
     }
     if (serverData.dice4) {
-        dice4Number = serverData.dice4
+        dice4Number = serverData.dice[3]
     }
     if (serverData.dice5) {
-        dice5Number = serverData.dice5
+        dice5Number = serverData.dice[4]
     }
     if (serverData.yatzysheet) {
         yatzyResults = serverData.yatzysheet
@@ -264,35 +264,35 @@ export default function Yatsy({ instanceId }: YatsyProps) {
             fetch(`${apiBase}/api/rul/${instanceId}/${user}/${password}/terning1`)
                 .then((response) => response.json())
                 .then((data) => {
-                    setDice1Number(data.dice)
+                    dice1Number = data.dice
                 })
         }
         if (dice2) {
             fetch(`${apiBase}/api/rul/${instanceId}/${user}/${password}/terning2`)
                 .then((response) => response.json())
                 .then((data) => {
-                    setDice2Number(data.dice)
+                    dice2Number = data.dice
                 })
         }
         if (dice3) {
             fetch(`${apiBase}/api/rul/${instanceId}/${user}/${password}/terning3`)
                 .then((response) => response.json())
                 .then((data) => {
-                    setDice3Number(data.dice)
+                    dice3Number = data.dice
                 })
         }
         if (dice4) {
             fetch(`${apiBase}/api/rul/${instanceId}/${user}/${password}/terning4`)
                 .then((response) => response.json())
                 .then((data) => {
-                    setDice4Number(data.dice)
+                    dice4Number = data.dice
                 })
         }
         if (dice5) {
             fetch(`${apiBase}/api/rul/${instanceId}/${user}/${password}/terning5`)
                 .then((response) => response.json())
                 .then((data) => {
-                    setDice5Number(data.dice)
+                    dice5Number = data.dice
                 })
         }
     }, [rul])
