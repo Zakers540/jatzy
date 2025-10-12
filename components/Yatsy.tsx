@@ -67,7 +67,7 @@ async function updateInstanceStats(instanceId: string) {
         .order("turn", {ascending: true})
     const {data: serverData} = await supabase
         .from("server")
-        .select("dice")
+        .select("dice, yatzysheet")
         .eq("gameInstance", instanceId)
         .single()
 
@@ -82,22 +82,15 @@ async function updateInstanceStats(instanceId: string) {
         worstPlayer = [...playerData].sort((a, b) => a.score - b.score)
     }
 
-    if (serverData.dice1) {
+    if (serverData?.dice) {
         dice1Number = serverData.dice[0]
-    }
-    if (serverData.dice2) {
         dice2Number = serverData.dice[1]
-    }
-    if (serverData.dice3) {
         dice3Number = serverData.dice[2]
-    }
-    if (serverData.dice4) {
         dice4Number = serverData.dice[3]
-    }
-    if (serverData.dice5) {
         dice5Number = serverData.dice[4]
     }
-    if (serverData.yatzysheet) {
+
+    if (serverData?.yatzysheet) {
         yatzyResults = serverData.yatzysheet
     }
 }
