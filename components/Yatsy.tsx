@@ -1,11 +1,7 @@
-//TODO: aktive spillere liste som dropdown ligesom i navbar på sm screens og tilføj tooltip til online spiller dot og lav nuværende spiller font-semibold eller order efter tur og lav modal boks til når man klikker på en spiller senere hvor man kan se deres stats
-//TODO: vis current spillers yatzy stats og indtil det er din tur er dine yatzy stats små i et hjørne eller lign med titel over
 //TODO: hvis også offline spillere evt eller gør de kan leave eller så kun online kan spille
-//TODO: næste tur knap
 //TODO: modal hvor man enten kan tilmelde sig spillet eller klikke på en af de røde navne (betyder det ikke er optaget) blå er optaget og spiller lige nu
 //TODO: fyrværkeri hvis jatsy eller spil er slut
 //TODO: estimeret tid og når det er din tur så en lydeffekt
-//TODO: lyt på et url f.eks. /api/opdatering og opdater når den siger du skal
 //TODO: tilføj reload til logud
 "use client"
 
@@ -49,14 +45,14 @@ if (process.env.DATABASE_URL && process.env.DATABASE_KEY) {
 
 const supabase = createClient(DATABASE_URL, DATABASE_KEY)
 
-let currentPlayers = []
-let bestPlayer = null
-let worstPlayer = null
-let dice1Number = 6
-let dice2Number = 6
-let dice3Number = 6
-let dice4Number = 6
-let dice5Number = 6
+let currentPlayers: string[] = []
+let bestPlayer: string = ""
+let worstPlayer: string = ""
+let dice1Number: number = 6
+let dice2Number: number = 6
+let dice3Number: number = 6
+let dice4Number: number = 6
+let dice5Number: number = 6
 let yatzyResults: Partial<Record<YatzyCategory, Record<number, string | number>>> = {}
 
 async function updateInstanceStats(instanceId: string) {
