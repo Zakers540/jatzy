@@ -7,9 +7,11 @@ type LoginPortalProps = {
     apiBase: string;
     instanceId: string;
     setLogin: Dispatch<SetStateAction<boolean>>;
+    setUser?: Dispatch<SetStateAction<string>>;
+    setUserPassword?: Dispatch<SetStateAction<string>>;
 }
 
-export default function LoginPortal({players, apiBase, instanceId, setLogin}: LoginPortalProps) {
+export default function LoginPortal({players, apiBase, instanceId, setLogin, setUser, setUserPassword}: LoginPortalProps) {
     const [selectedOpret, setSelectedOpret] = useState<boolean>(false);
     const [selectedPlayer, setSelectedPlayer] = useState<boolean>(false)
     const [playerName, setPlayerName] = useState<string>("")
@@ -123,6 +125,9 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                                 setLogin(data.login)
                                                 setErrorExists(data.errorExists)
                                                 setError(data.error)
+                                                if (data.login) {
+                                                    try { setUser && setUser(playerName); setUserPassword && setUserPassword(password); } catch (e) {}
+                                                }
                                             })
                                             .then(function (data) {setLoading(false)})
                                         } else {setErrorExists(true); setError("Adgangskode og bekræftet adgangskode er ikke det samme.");}
@@ -162,6 +167,9 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin}: Lo
                                                 setLogin(data.login)
                                                 setErrorExists(data.errorExists)
                                                 setError(data.error)
+                                                if (data.login) {
+                                                    try { setUser && setUser(playerName); setUserPassword && setUserPassword(password); } catch (e) {}
+                                                }
                                             })
                                             .then(function (data) {setLoading(false)})
                                     }}

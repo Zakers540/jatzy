@@ -8,6 +8,7 @@ type ClickedPlayerProps = {
     setClickedPlayer: Dispatch<SetStateAction<boolean>>;
     apiBase: string;
     instanceId: string;
+    players?: string[];
 }
 
 type YatzyCategory =

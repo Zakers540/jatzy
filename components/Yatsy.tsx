@@ -35,72 +35,13 @@ type YatzyCategory =
     | "yatzy"
     | "total";
 
-let DATABASE_URL: string
-let DATABASE_KEY: string
-
-if (process.env.DATABASE_URL && process.env.DATABASE_KEY) {
-    DATABASE_URL = process.env.DATABASE_URL
-    DATABASE_KEY = process.env.DATABASE_KEY
+// Use NEXT_PUBLIC environment variables on the client
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://whaiekidzkrnqiyykhjr.supabase.co'
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoYWlla2lkemtybnFpeXlraGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2NjE0NTQsImV4cCI6MjA3MzIzNzQ1NH0.luGyAzMASyma0kYS2n8kZs6MUrzEyneJTuM3LbX3AXc'
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.warn('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY - realtime will not work')
 }
-
-const supabase = createClient(DATABASE_URL, DATABASE_KEY)
-
-let currentPlayers: string[] = []
-let bestPlayer: string = ""
-let worstPlayer: string = ""
-let dice1Number: number = 6
-let dice2Number: number = 6
-let dice3Number: number = 6
-let dice4Number: number = 6
-let dice5Number: number = 6
-let yatzyResults: Partial<Record<YatzyCategory, Record<number, string | number>>> = {}
-
-async function updateInstanceStats(instanceId: string) {
-    const {data: playerData, error} = await supabase
-        .from("user")
-        .select("*")
-        .eq("gameInstance", instanceId)
-        .order("turn", {ascending: true})
-    const {data: serverData} = await supabase
-        .from("server")
-        .select("dice, yatzysheet")
-        .eq("gameInstance", instanceId)
-        .single()
-
-    if (error) {
-        console.error(error)
-        return
-    }
-    currentPlayers = playerData
-
-    if (playerData.length > 0) {
-        bestPlayer = [...playerData].sort((a, b) => b.score - a.score)
-        worstPlayer = [...playerData].sort((a, b) => a.score - b.score)
-    }
-
-    if (serverData?.dice) {
-        dice1Number = serverData.dice[0]
-        dice2Number = serverData.dice[1]
-        dice3Number = serverData.dice[2]
-        dice4Number = serverData.dice[3]
-        dice5Number = serverData.dice[4]
-    }
-
-    if (serverData?.yatzysheet) {
-        yatzyResults = serverData.yatzysheet
-    }
-}
-
-function listenForChanges(instanceId: string) {
-    supabase
-        .channel("opdatering")
-        .on(
-            "postgres_changes",
-            {event: "*", schema: "public", table: "user"},
-            ()=> updateInstanceStats(instanceId)
-        )
-        .subscribe()
-}
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number, dice4Number:number, dice5Number:number) {
     const playerIndex = 1
@@ -213,77 +154,170 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     const [clickedPlayer, setClickedPlayer] = useState<boolean>(false)
     const [clickedPlayerName, setClickedPlayerName] = useState<string>("")
 
-    //får variablerne fra backend hver gang const opdatering bliver opdateret
+    // app state (moved from module-level mutable variables)
+    const [playersState, setPlayersState] = useState<string[]>([])
+    const [bestPlayerState, setBestPlayerState] = useState<string>("")
+    const [worstPlayerState, setWorstPlayerState] = useState<string>("")
+    const [diceNumbersState, setDiceNumbersState] = useState<number[]>([6,6,6,6,6])
+    const [yatzysheetState, setYatzysheetState] = useState<any>({scores:{}, previews:{}})
+    const [currentTurnIndex, setCurrentTurnIndex] = useState<number>(0)
+    const [currentTurnUser, setCurrentTurnUser] = useState<string>("")
+
+    // fetch initial data and subscribe to Supabase realtime updates for this instance
     useEffect(() => {
-        listenForChanges(instanceId)
-        updateInstanceStats(instanceId)
+        let mounted = true
+
+        const fetchInitial = async () => {
+            try {
+                const { data: users } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('gameInstance', instanceId)
+                    .order('turn', { ascending: true })
+
+                const { data: serverData } = await supabase
+                    .from('server')
+                    .select('dice,yatzysheet,currentTurn,instanceId')
+                    .eq('instanceId', instanceId)
+                    .single()
+
+                if (!mounted) return
+                setPlayersState((users || []).map((u: any) => u.username))
+                if (users && users.length > 0) {
+                    const sorted = [...users].sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
+                    setBestPlayerState(sorted[0]?.username || "")
+                    setWorstPlayerState(sorted[sorted.length-1]?.username || "")
+                }
+                if (serverData?.dice) setDiceNumbersState(serverData.dice)
+                if (serverData?.yatzysheet) setYatzysheetState(serverData.yatzysheet)
+                if (serverData?.currentTurn !== undefined) setCurrentTurnIndex(serverData.currentTurn)
+            } catch (e) {
+                console.error('Failed to fetch initial instance data', e)
+            }
+        }
+
+        fetchInitial()
+
+        const serverChannel = supabase.channel(`server-instance-${instanceId}`)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'server', filter: `instanceId=eq.${instanceId}` }, (payload) => {
+                console.debug('supabase server change payload', payload)
+                const record = (payload as any).new || (payload as any).record || null
+                if (record) {
+                    console.debug('server record update', record)
+                    if (record.dice) setDiceNumbersState(record.dice)
+                    if (record.yatzysheet) setYatzysheetState(record.yatzysheet)
+                    if (record.currentTurn !== undefined) setCurrentTurnIndex(record.currentTurn)
+                }
+            })
+            .subscribe()
+
+        const usersChannel = supabase.channel(`users-instance-${instanceId}`)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'users', filter: `gameInstance=eq.${instanceId}` }, async (payload) => {
+                console.debug('supabase users change payload', payload)
+                try {
+                    const { data: users } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('gameInstance', instanceId)
+                        .order('turn', { ascending: true })
+                    setPlayersState((users || []).map((u: any) => u.username))
+                } catch (e) {
+                    console.error('Failed to refresh users on change', e)
+                }
+            })
+            .subscribe()
+
         const makeAPICall = () => {
             if (navigator.sendBeacon) {
-                navigator.sendBeacon(`${apiBase}/api/logud/`);
+                navigator.sendBeacon(`${apiBase}/api/logud/`)
             } else {
                 fetch(`${apiBase}/api/logud/`, {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({
-                        instanceId: instanceId,
-                        user: user,
-                        password: password,
-                    }),
-                    keepalive: true
-                });
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ instanceId: instanceId, user: user, password: password }), keepalive: true
+                })
             }
-        };
+        }
 
-        const handleBeforeUnload = () => makeAPICall();
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
+        const handleBeforeUnload = () => makeAPICall()
+        window.addEventListener('beforeunload', handleBeforeUnload)
 
         return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, [apiBase]);
+            mounted = false
+            window.removeEventListener('beforeunload', handleBeforeUnload)
+            try { serverChannel.unsubscribe() } catch (e) {}
+            try { usersChannel.unsubscribe() } catch (e) {}
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [instanceId])
+
+        // read saved login from localStorage
+        useEffect(() => {
+            try {
+                const savedUser = localStorage.getItem('jatzy_user') || ''
+                const savedPass = localStorage.getItem('jatzy_password') || ''
+                if (savedUser) {
+                    setUser(savedUser)
+                    setPassword(savedPass)
+                    setLoggedIn(true)
+                }
+            } catch (e) {
+                // ignore
+            }
+        }, [])
+
+        const doLogout = async () => {
+            try {
+                await fetch(`${apiBase}/api/logud`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user })
+                })
+            } catch (e) {
+                console.error('logout failed', e)
+            }
+            try { localStorage.removeItem('jatzy_user'); localStorage.removeItem('jatzy_password') } catch (e) {}
+            setUser(''); setPassword(''); setLoggedIn(false)
+        }
 
     //hver gang en af terningerne opdateres finder den total antal terninger
     useEffect(() => {
         setTotalDice((dice1 ? 1 : 0) + (dice2 ? 1 : 0) + (dice3 ? 1 : 0) + (dice4 ? 1 : 0) + (dice5 ? 1 : 0));
     }, [dice1, dice2, dice3, dice4, dice5]);
-    //finder terningers værdier fra backend hver gang der bliver rullet
+    // when rolling, request dice updates from the backend for the selected dice
     useEffect(()=> {
-        if (dice1) {
-            fetch(`${apiBase}/api/rul/${instanceId}/${user}/${password}/terning1`)
-                .then((response) => response.json())
-                .then((data) => {
-                    dice1Number = data.dice
+        if (!rul) return
+        const fetchDie = async (which: number) => {
+            try {
+                const res = await fetch(`${apiBase}/api/rul/terning${which}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ instanceId, user, password })
                 })
+                const ct = res.headers.get('content-type') || ''
+                if (!ct.includes('application/json')) {
+                    console.error('Non-JSON response for die', which, await res.text())
+                    return null
+                }
+                const data = await res.json()
+                return data?.dice ?? null
+            } catch (e) {
+                console.error('fetch die error', e)
+                return null
+            }
         }
-        if (dice2) {
-            fetch(`${apiBase}/api/rul/${instanceId}/${user}/${password}/terning2`)
-                .then((response) => response.json())
-                .then((data) => {
-                    dice2Number = data.dice
-                })
-        }
-        if (dice3) {
-            fetch(`${apiBase}/api/rul/${instanceId}/${user}/${password}/terning3`)
-                .then((response) => response.json())
-                .then((data) => {
-                    dice3Number = data.dice
-                })
-        }
-        if (dice4) {
-            fetch(`${apiBase}/api/rul/${instanceId}/${user}/${password}/terning4`)
-                .then((response) => response.json())
-                .then((data) => {
-                    dice4Number = data.dice
-                })
-        }
-        if (dice5) {
-            fetch(`${apiBase}/api/rul/${instanceId}/${user}/${password}/terning5`)
-                .then((response) => response.json())
-                .then((data) => {
-                    dice5Number = data.dice
-                })
-        }
+
+        ;(async () => {
+            const results = await Promise.all([
+                dice1 ? fetchDie(1) : null,
+                dice2 ? fetchDie(2) : null,
+                dice3 ? fetchDie(3) : null,
+                dice4 ? fetchDie(4) : null,
+                dice5 ? fetchDie(5) : null,
+            ])
+            setDiceNumbersState((prev) => {
+                const copy = [...prev]
+                results.forEach((val, idx) => { if (val !== null && val !== undefined) copy[idx] = val })
+                return copy
+            })
+        })()
     }, [rul])
 
     return (
@@ -291,19 +325,19 @@ export default function Yatsy({ instanceId }: YatsyProps) {
         <main className="min-h-screen lg:h-screen w-full flex flex-col p-12">
             <div className="grid grid-cols-[1fr_4fr]">
                 <div className="grid grid-rows-[3fr_4fr] justify-center">
-                    <Players currentPlayers={currentPlayers} setClickedPlayer={setClickedPlayer} setClickedPlayerName={setClickedPlayerName} />
+                    <Players currentPlayers={playersState} setClickedPlayer={setClickedPlayer} setClickedPlayerName={setClickedPlayerName} />
                     <div className="grid grid-cols-2 gap-x-2 p-4 pl-0">
-                        <Dice realDiceNumber={dice1Number} selected={dice1} setSelected={setDice1} currentPlayers={currentPlayers} user={user}/>
-                        <Dice realDiceNumber={dice2Number} selected={dice2} setSelected={setDice2} currentPlayers={currentPlayers} user={user}/>
-                        <Dice realDiceNumber={dice3Number} selected={dice3} setSelected={setDice3} currentPlayers={currentPlayers} user={user}/>
-                        <Dice realDiceNumber={dice4Number} selected={dice4} setSelected={setDice4} currentPlayers={currentPlayers} user={user}/>
-                        <Dice realDiceNumber={dice5Number} selected={dice5} setSelected={setDice5} currentPlayers={currentPlayers} user={user}/>
+                        <Dice realDiceNumber={diceNumbersState[0]} selected={dice1} setSelected={setDice1} currentPlayers={playersState} user={user}/>
+                        <Dice realDiceNumber={diceNumbersState[1]} selected={dice2} setSelected={setDice2} currentPlayers={playersState} user={user}/>
+                        <Dice realDiceNumber={diceNumbersState[2]} selected={dice3} setSelected={setDice3} currentPlayers={playersState} user={user}/>
+                        <Dice realDiceNumber={diceNumbersState[3]} selected={dice4} setSelected={setDice4} currentPlayers={playersState} user={user}/>
+                        <Dice realDiceNumber={diceNumbersState[4]} selected={dice5} setSelected={setDice5} currentPlayers={playersState} user={user}/>
                     </div>
                     <div className="flex justify-center items-center h-12 w-46">
-                        {totalDice > 1 && user===currentPlayers[0] ? (
+                        {totalDice > 1 && user===playersState[0] ? (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
             font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul)}}>Rul {totalDice} terninger</button>
-                        ): totalDice > 0 && user===currentPlayers[0] && (
+                        ): totalDice > 0 && user===playersState[0] && (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
             font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul)}}>Rul {totalDice} terning</button>
                         )}
@@ -312,11 +346,9 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                 <div className="mt-4">
                 <YatzySheet
                     size={1}
-                    currentPlayers={[`Dig (${user || "Poul"})`,`Nuværende (${currentPlayers[0] || "Peter"})`, `Bedste (${bestPlayer || "Poul"})`, `Værste (${worstPlayer || "Pil"})`]}
-                    scores={yatzyResults}
-                    previews={
-                        YatzyPreview(dice1Number, dice2Number, dice3Number, dice4Number, dice5Number)
-                    }
+                    currentPlayers={[`Dig (${user || "Poul"})`,`Nuværende (${playersState[0] || "Peter"})`, `Bedste (${bestPlayerState || "Poul"})`, `Værste (${worstPlayerState || "Pil"})`]}
+                    scores={yatzysheetState.scores || {}}
+                    previews={ YatzyPreview(diceNumbersState[0], diceNumbersState[1], diceNumbersState[2], diceNumbersState[3], diceNumbersState[4]) }
                     onCellClick={(category, playerIndex) => {
                         console.log(`Clicked ${category} for player ${playerIndex}`);
                     }}
@@ -325,10 +357,10 @@ export default function Yatsy({ instanceId }: YatsyProps) {
             </div>
         </main>
             {!loggedIn && (
-                <LoginPortal players={currentPlayers} setLogin={setLoggedIn} apiBase={apiBase} instanceId={instanceId} />
+                <LoginPortal players={playersState} setLogin={setLoggedIn} apiBase={apiBase} instanceId={instanceId} setUser={setUser} setUserPassword={setPassword} />
             )}
             {clickedPlayer && clickedPlayer && (
-                <ClickedPlayer instanceId={instanceId} apiBase={apiBase} clickedPlayerName={clickedPlayerName} setClickedPlayer={setClickedPlayer} />
+                <ClickedPlayer instanceId={instanceId} apiBase={apiBase} clickedPlayerName={clickedPlayerName} setClickedPlayer={setClickedPlayer} players={playersState} />
             )}
         </>
 )
