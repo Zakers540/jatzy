@@ -358,7 +358,7 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                                     body: JSON.stringify({ username: user, category: category })
                                 })
                             case 1:
-                                if (playersState===user) {
+                                if (playersState[0]===user) {
                                     fetch(`${apiBase}/api/${instanceId}`, {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ username: user, category: category })
