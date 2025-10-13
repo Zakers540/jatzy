@@ -58,7 +58,7 @@ export default function Server() {
                     className="p-2 border-2 border-blue-500 rounded-2xl text-xl mt-8 text-black/80
             font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50"
                     onClick={() => {
-                        fetch(`https://jatzy.vercel.app/api/tjek/${instanceId}/${name}/${password}`)
+                        fetch(`https://jatzy.vercel.app/api/tjek/${instanceId}/${name}`)
                             .then((response) => response.json())
                             .then((data) => {
                                 setExists(data.exists)

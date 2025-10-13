@@ -161,7 +161,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                        font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50"
                                     onClick={() => {
                                         setLoading(true)
-                                        fetch(`${apiBase}/api/tjek/${instanceId}/${playerName}/${password}`)
+                                        fetch(`${apiBase}/api/tjek/${instanceId}/${encodeURIComponent(playerName)}`)
                                             .then((response) => response.json())
                                             .then((data) => {
                                                 setLogin(data.login)
