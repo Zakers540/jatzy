@@ -353,10 +353,12 @@ export default function Yatsy({ instanceId }: YatsyProps) {
 
                         switch(playerIndex) {
                             case 0:
-                                fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
-                                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ category: category })
-                                })
+                                if (playersState[0]===user) {
+                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ category: category })
+                                    })
+                                }
                             case 1:
                                 if (playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
@@ -365,14 +367,14 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                                     })
                                 }
                             case 2:
-                                if (bestPlayerState===user) {
+                                if (bestPlayerState===user && playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category })
                                     })
                                 }
                             case 3:
-                                if (worstPlayerState===user) {
+                                if (worstPlayerState===user && playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category })
