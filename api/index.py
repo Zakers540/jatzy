@@ -212,9 +212,9 @@ def serverTime():
         app.logger.exception("Error in serverTime")
         return jsonify({"error": "Failed to check server times", "deleted": 0, "checked": 0}), 500
 
-@app.route("/api/tjek/<name>", methods=["GET"])
-def name_exists(name):
-    cleaned = cleanUsername(name)
+@app.route("/api/tjek/<instanceId>/<playerName>", methods=["GET"])
+def name_exists(playerName, instanceId):
+    cleaned = cleanUsername(playerName)
     return jsonify({"exists": True, "errorExists": False, "error": ""})
 
 @app.route("/api/tilfoej", methods=["POST"])
