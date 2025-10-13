@@ -350,6 +350,35 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                     scores={yatzysheetState.scores || {}}
                     previews={ YatzyPreview(diceNumbersState[0], diceNumbersState[1], diceNumbersState[2], diceNumbersState[3], diceNumbersState[4]) }
                     onCellClick={(category, playerIndex) => {
+
+                        switch(playerIndex) {
+                            case 0:
+                                fetch(`${apiBase}/api/${instanceId}`, {
+                                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ username: user, category: category })
+                                })
+                            case 1:
+                                if (playersState===user) {
+                                    fetch(`${apiBase}/api/${instanceId}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ username: user, category: category })
+                                    })
+                                }
+                            case 2:
+                                if (bestPlayerState===user) {
+                                    fetch(`${apiBase}/api/${instanceId}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ username: user, category: category })
+                                    })
+                                }
+                            case 3:
+                                if (worstPlayerState===user) {
+                                    fetch(`${apiBase}/api/${instanceId}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ username: user, category: category })
+                                    })
+                                }
+                        }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
                     }}
                 />
