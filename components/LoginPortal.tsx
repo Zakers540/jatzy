@@ -111,7 +111,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                     onClick={() => {
                                         if (password === confirmPassword) {
                                         setLoading(true)
-                                        fetch(`${apiBase}/api/tilfoej/`, {
+                                        fetch(`${apiBase}/api/tilfoej`, {
                                             method: "POST",
                                             headers: {"Content-Type": "application/json"},
                                             body: JSON.stringify({

@@ -15,7 +15,7 @@ import re
 
 try:
     from passlib.hash import bcrypt
-    HAVE_BCRYPT = True
+    HAVE_BCRYPT = False
 except Exception:
     HAVE_BCRYPT = False
     print("passlib not available: falling back to AES")
@@ -215,7 +215,7 @@ def serverTime():
 @app.route("/api/tjek/<instanceId>/<playerName>", methods=["GET"])
 def name_exists(playerName, instanceId):
     cleaned = cleanUsername(playerName)
-    return jsonify({"login": True, "errorExists": False, "error": ""})
+    return jsonify({"exists": True, "errorExists": False, "error": ""})
 
 @app.route("/api/tilfoej", methods=["POST"])
 def addUser():
