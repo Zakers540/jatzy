@@ -99,7 +99,6 @@ def logud():
         app.logger.exception("error logout")
         return jsonify({"error": "failed to logout", "detail": str(e)}), 500
 
-
 @app.route("/api/whoami", methods=["GET"]) 
 def whoami():
     try:
@@ -143,42 +142,152 @@ def get_data(instanceId):
     except Exception as e:
         app.logger.exception("Error getting data")
         return jsonify({"errorExists": True ,"error": "Failed to get instance data", "detail": str(e)}), 500
-"""
-@app.route("/api/tur/<instancId>")
+
+@app.route("/api/tur/<instanceId>")
 def turn(instanceId):
     try:
         rsp = supabase.table("server").select("turn").eq("instanceId", str(instanceId)).execute()
         rows = getattr(rsp, "data", []) or []
-        return jsonify("turn": rows[0].get("turn"))
+
+        if not rows:
+            return jsonify({"errorExists": True, "error": "No data found for this instanceId"}), 404
+
+        tur = rows[0].get("turn")
+        return jsonify({"turn": tur})
     except Exception as e:
         return jsonify({"errorExists": True ,"error": "tur Failed", "detail": str(e)}), 500
-"""
-@app.route("/api/jatzySheet/<instanceId>")
-def scoreSheet(instanceId):
+
+
+@app.route("/api/jatzySheet/<instanceId>/<clickedPlayerName>", methods=["GET", "POST"])
+def scoreSheet(instanceId, clickedPlayerName):
     try:
         data = request.get_json(silent=True) or {}
         rsp = supabase.table("users").select("score, username, turn").eq("gameInstance", str(instanceId)).order("score", desc=True).execute()
         rows = getattr(rsp, "data", []) or []
-        bestPlayer = rows[0].get("score")
-        worstPlayer = rows[len(rows) - 1].get("score")
-        currentTurn = supabase.table("server").select("turn").eq("instanceId", str(instanceId)).execute()
-        cRows = getattr(currentTurn, "data", []) or []
-        i = 0
-        while cRows[0].get("turn") != rows[i].get("turn"):
-            currentPlayer = rows[i].get("turn")
-            i += 1
-        j = 0
-        while data.get("user") != rows[j].get("username"):
-            user = rows[j].get("username")
-            j += 1
-        
+        if not rows:
+            return jsonify({"error": "no users for instance", "players": []}), 404
+
+        bestPlayer = rows[0]
+        worstPlayer = rows[-1]
+
+        srv_rsp = supabase.table("server").select("currentTurn").eq("instanceId", str(instanceId)).limit(1).execute()
+        srv_rows = getattr(srv_rsp, "data", []) or []
+        current_turn_val = srv_rows[0].get("currentTurn") if srv_rows else None
+
+        current_index = 0
+        if current_turn_val is not None:
+            for idx, r in enumerate(rows):
+                if r.get("turn") == current_turn_val:
+                    current_index = idx
+                    break
+        currentPlayer = rows[current_index]
+
+        req_username = data.get("user") or request.args.get("user") or rows[0].get("username")
+        user_index = 0
+        for idx, r in enumerate(rows):
+            if r.get("username") == req_username:
+                user_index = idx
+                break
+        user = clickedPlayerName
+
+        def get_score_field(record, field):
+            score_obj = record.get("score") or {}
+            val = score_obj.get(field, 0)
+            try:
+                return int(val)
+            except Exception:
+                return 0
+
+        players_list = [
+            user,
+            currentPlayer.get("username"),
+            bestPlayer.get("username"),
+            worstPlayer.get("username"),
+        ]
+
+        fields = [
+            "ettere","toere","treere","firere","femmere","seksere",
+            "sum","bonus","1par","2par","treens","fireens",
+            "lillestraight","storstraight","fuldthus","chance","yatzy","total"
+        ]
+
+        sheet = {}
+        for f in fields:
+            sheet[f] = {
+                "0": get_score_field(user, f),
+                "1": get_score_field(currentPlayer, f),
+                "2": get_score_field(bestPlayer, f),
+                "3": get_score_field(worstPlayer, f),
+            }
+
+        result = {"players": players_list, "yatzySheet": sheet}
+        return jsonify({result})
     except Exception as e:
-        return jsonify({"errorExists": True ,"error": "yatzySheet Failed", "detail": str(e)}), 500
-#@app.route("/api/<instanceid>/opdatering")
-#def update(instanceId):
-#    try:
-#   
-#    except Exception as e:
+        app.logger.exception("yatzySheet Failed")
+        return jsonify({"errorExists": True, "error": "yatzySheet Failed", "detail": str(e)}), 500
+
+@app.route("/api/rul/terning<int:which>", methods=["POST"])
+def roll_die(which):
+    try:
+        data = request.get_json() or {}
+        instanceId = data.get("instanceId")
+        user = data.get("user")
+
+        if not instanceId or not user:
+            return jsonify({"error": "Missing instanceId or user"}), 400
+
+        rsp = supabase.table("server").select("dice").eq("instanceId", str(instanceId)).single().execute()
+        dice = rsp.data.get("dice", [1, 1, 1, 1, 1])  # default 5 dice
+
+        dice[which - 1] = random.randint(1, 6)
+        supabase.table("server").update({"dice": dice}).eq("instanceId", str(instanceId)).execute()
+
+        return jsonify({"dice": dice[which - 1]})
+    
+    except Exception as e:
+        app.logger.exception("Roll die failed")
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/tryk/<instanceId>/<name>")
+def update(instanceId, name):
+    try:
+        data = request.get_json(silent=True) or {}
+        rsp = supabase.table("users").select("score, username").eq("gameInstance", str(instanceId)).execute()
+        srv = supabase.table("server").select("turn").eq("instanceId", str(instanceId)).execute()
+        
+        sRows = getattr(srv, "data", []) or []
+        if not sRows:
+            return jsonify({"errorExists": True, "error": "gameInstance not found"}), 404
+
+        rows = getattr(rsp, "data", []) or []
+        if not rows:
+            return jsonify({"errorExists": True, "error": "User not found"}), 404
+
+        field = data.get("field")
+        i = 0
+        score = rows[i].get("score") or {}
+        while rows[i].get("username") != name:
+            score = rows[i].get("score") or {}
+            i += 1
+        
+        turn = sRows[0].get("turn")
+        if turn < len(rows) - 1:
+            updatedTurn = turn + 1
+        else:
+            updatedTurn = 0
+
+        if field in score:
+            score[field] = data.get("fieldScore")
+        else:
+            return jsonify({"errorExists": True, "error": f"Invalid field: {field}"}), 400
+        
+        supabase.table("users").update({"score": score}).eq("username", name).eq("gameInstance", str(instanceId)).execute()
+        supabase.table("server").update({"turn": updatedTurn}).eq("instanceId", str(instanceId)).execute()
+
+        return jsonify({"errorExists": False, "error": ""})
+    except Exception as e:
+        app.logger.exception("score update Failed")
+        return jsonify({"errorExists": True, "error": "score update Failed", "detail": str(e)}), 500
 
 @app.route("/api/tjek/tid", methods=["GET"])
 def serverTime():
@@ -215,7 +324,7 @@ def serverTime():
 @app.route("/api/tjek/<instanceId>/<playerName>", methods=["GET"])
 def name_exists(playerName, instanceId):
     cleaned = cleanUsername(playerName)
-    return jsonify({"exists": True, "errorExists": False, "error": ""})
+    return jsonify({"login": True, "errorExists": False, "error": ""})
 
 @app.route("/api/tilfoej", methods=["POST"])
 def addUser():
@@ -231,11 +340,13 @@ def addUser():
     try:
         rsp = supabase.table("users").select("username").eq("gameInstance", str(instanceId)).execute()
         rows = getattr(rsp, "data", []) or []
-        for i in range(len(rows) - 1):
+        existing = None
+        for i in range(len(rows)):
             if userClean == rows[i].get("username"):
-                existing = rows
+                existing = True
+                break
             else:
-                existing = []
+                existing = False
         if existing:
             return jsonify({"error": "navnet eksistere alerrede"}), 409
         if HAVE_BCRYPT:
@@ -244,25 +355,24 @@ def addUser():
             stored = encrypt(cryptKey, password.encode('utf-8'))
         
         score = {
-            "ettere": {"0": 0},
-            "toere": {"0": 0},
-            "treere": {"0": 0},
-            "firere": {"0": 0},
-            "femmere": {"0": 0},
-            "seksere": {"0": 0},
-            "sum": {"0": 0},
-            "bonus": {"0": 0},
-            "1par": {"0": 0},
-            "2par": {"0": 0},
-            "2par": {"0": 0},
-            "3ens": {"0": 0},
-            "4ens": {"0": 0},
-            "lilleStraight": {"0": 0},
-            "storeStraight": {"0": 0},
-            "fuldtHus": {"0": 0},
-            "chance": {"0": 0},
-            "jatzy": {"0": 0},
-            "total": {"0": 0}
+            "ettere": 0,
+            "toere": 0,
+            "treere": 0,
+            "firere": 0,
+            "femmere": 0,
+            "seksere": 0,
+            "sum": 0,
+            "bonus": 0,
+            "1par": 0,
+            "2par": 8,
+            "treens": 0,
+            "fireens": 0,
+            "lillestraight": 0,
+            "storstraight": 0,
+            "fuldthus": 0,
+            "chance": 0,
+            "yatzy": 0,
+            "total": 0
         }
         
         insert_rsp = supabase.table("users").insert({
@@ -282,6 +392,4 @@ def addUser():
 
 
 if __name__ == "__main__":
-    # Run the Flask dev server for local development on port 5328 to match the Next proxy
-    # Ensure DATABASE_URL and DATABASE_KEY are set in the environment before running.
     app.run(host="127.0.0.1", port=5328, debug=True)

@@ -280,45 +280,49 @@ export default function Yatsy({ instanceId }: YatsyProps) {
 
     //hver gang en af terningerne opdateres finder den total antal terninger
     useEffect(() => {
-        setTotalDice((dice1 ? 1 : 0) + (dice2 ? 1 : 0) + (dice3 ? 1 : 0) + (dice4 ? 1 : 0) + (dice5 ? 1 : 0));
-    }, [dice1, dice2, dice3, dice4, dice5]);
-    // when rolling, request dice updates from the backend for the selected dice
-    useEffect(()=> {
-        if (!rul) return
-        const fetchDie = async (which: number) => {
-            try {
-                const res = await fetch(`${apiBase}/api/rul/terning${which}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ instanceId, user, password })
-                })
-                const ct = res.headers.get('content-type') || ''
-                if (!ct.includes('application/json')) {
-                    console.error('Non-JSON response for die', which, await res.text())
-                    return null
-                }
-                const data = await res.json()
-                return data?.dice ?? null
-            } catch (e) {
-                console.error('fetch die error', e)
-                return null
-            }
-        }
+    if (!rul) return;
 
-        ;(async () => {
-            const results = await Promise.all([
-                dice1 ? fetchDie(1) : null,
-                dice2 ? fetchDie(2) : null,
-                dice3 ? fetchDie(3) : null,
-                dice4 ? fetchDie(4) : null,
-                dice5 ? fetchDie(5) : null,
-            ])
-            setDiceNumbersState((prev) => {
-                const copy = [...prev]
-                results.forEach((val, idx) => { if (val !== null && val !== undefined) copy[idx] = val })
-                return copy
-            })
-        })()
-    }, [rul])
+    const fetchDie = async (which: number) => {
+        try {
+            const res = await fetch(`${apiBase}/api/rul/terning${which}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ instanceId, user })
+            });
+
+            if (!res.ok) {
+                console.error(`Failed to fetch die ${which}:`, res.statusText);
+                return null;
+            }
+
+            const data = await res.json();
+            return data?.dice ?? null;
+        } catch (e) {
+            console.error(`fetch die ${which} error`, e);
+            return null;
+        }
+    };
+
+    (async () => {
+        const results = await Promise.all([
+            dice1 ? fetchDie(1) : null,
+            dice2 ? fetchDie(2) : null,
+            dice3 ? fetchDie(3) : null,
+            dice4 ? fetchDie(4) : null,
+            dice5 ? fetchDie(5) : null,
+        ]);
+
+        setDiceNumbersState((prev) => {
+            const copy = [...prev];
+            results.forEach((val, idx) => { 
+                if (val !== null && val !== undefined) copy[idx] = val;
+            });
+            return copy;
+        });
+
+        setRul(false);
+    })();
+}, [rul]);
 
     return (
         <>
@@ -350,37 +354,6 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                     scores={yatzysheetState.scores || {}}
                     previews={ YatzyPreview(diceNumbersState[0], diceNumbersState[1], diceNumbersState[2], diceNumbersState[3], diceNumbersState[4]) }
                     onCellClick={(category, playerIndex) => {
-
-                        switch(playerIndex) {
-                            case 0:
-                                if (playersState[0]===user) {
-                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
-                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category })
-                                    })
-                                }
-                            case 1:
-                                if (playersState[0]===user) {
-                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
-                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category })
-                                    })
-                                }
-                            case 2:
-                                if (bestPlayerState===user && playersState[0]===user) {
-                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
-                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category })
-                                    })
-                                }
-                            case 3:
-                                if (worstPlayerState===user && playersState[0]===user) {
-                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
-                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category })
-                                    })
-                                }
-                        }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
                     }}
                 />
