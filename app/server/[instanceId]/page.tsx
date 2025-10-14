@@ -32,6 +32,6 @@ export default async function Server({ params }: PageProps) {
     }
 
     return (
-        <Yatsy instanceId={instanceId}/>
+        <Yatsy instanceId={instanceId} playerName=''/>
     )
 }
