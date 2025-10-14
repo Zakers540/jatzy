@@ -15,6 +15,7 @@ import { createClient } from '@supabase/supabase-js'
 
 type YatsyProps = {
     instanceId: string
+    playerName: string
 }
 
 type YatzyCategory =
@@ -36,8 +37,8 @@ type YatzyCategory =
     | "total";
 
 // Use NEXT_PUBLIC environment variables on the client
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://whaiekidzkrnqiyykhjr.supabase.co'
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoYWlla2lkemtybnFpeXlraGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2NjE0NTQsImV4cCI6MjA3MzIzNzQ1NH0.luGyAzMASyma0kYS2n8kZs6MUrzEyneJTuM3LbX3AXc'
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     console.warn('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY - realtime will not work')
 }
@@ -137,7 +138,7 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
     return result
 }
 
-export default function Yatsy({ instanceId }: YatsyProps) {
+export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     // laver variabler, som ville blive opdateret ift backend ved mindre det udelukkende er for udseende eller bare til frontend
     const [dice1, setDice1] = useState<boolean>(false)
     const [dice2, setDice2] = useState<boolean>(false)
@@ -250,6 +251,42 @@ export default function Yatsy({ instanceId }: YatsyProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [instanceId])
 
+        useEffect(() => {
+            if (!instanceId || !playerName) return;
+
+            const channel = supabase
+                .channel(`yatzy-${instanceId}`)
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'users', filter: `gameInstance=eq.${instanceId}` },
+                    async (payload) => {
+                        try {
+                            const res = await fetch(`${apiBase}/api/jatzySheet/${instanceId}/${encodeURIComponent(playerName)}`);
+                            if (!res.ok) throw new Error("Failed to fetch updated sheet");
+                            const data = await res.json();
+                            if (data?.yatzySheet) {
+                                console.log("updated sheet:", data.yatzySheet)
+                                setYatzysheetState(data.yatzySheet);
+                            }
+                        } catch (err) {
+                            console.error("Failed to refresh Yatzy sheet:", err);
+                        }
+                    }
+                )
+                .subscribe();
+
+            return () => {
+                try { supabase.removeChannel(channel); } catch {}
+            };
+        }, [instanceId, apiBase, playerName]);
+
+        const fields = [
+            "ettere", "toere", "treere", "firere", "femmere", "seksere",
+            "sum", "bonus", "1par", "2par", "treens", "fireens",
+            "lillestraight", "storstraight", "fuldthus", "chance", "yatzy", "total"
+        ];
+
+        const players = ["0", "1", "2", "3"];
         // read saved login from localStorage
         useEffect(() => {
             try {
@@ -354,6 +391,38 @@ export default function Yatsy({ instanceId }: YatsyProps) {
                     scores={yatzysheetState.scores || {}}
                     previews={ YatzyPreview(diceNumbersState[0], diceNumbersState[1], diceNumbersState[2], diceNumbersState[3], diceNumbersState[4]) }
                     onCellClick={(category, playerIndex) => {
+
+                        
+                        switch(playerIndex) {
+                            case 0:
+                                if (playersState[0]===user) {
+                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ category: category })
+                                    })
+                                }
+                            case 1:
+                                if (playersState[0]===user) {
+                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ category: category })
+                                    })
+                                }
+                            case 2:
+                                if (bestPlayerState===user && playersState[0]===user) {
+                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ category: category })
+                                    })
+                                }
+                            case 3:
+                                if (worstPlayerState===user && playersState[0]===user) {
+                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ category: category })
+                                    })
+                                }
+                        }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
                     }}
                 />

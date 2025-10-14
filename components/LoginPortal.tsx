@@ -1,6 +1,7 @@
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {useGSAP} from "@gsap/react";
 import gsap from "gsap";
+import Yatsy from "./Yatsy";
 
 type LoginPortalProps = {
     players?: string[];
@@ -180,6 +181,9 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                             <div className="mt-6"><span className="text-black/80">Ville du gå tilbage?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(false); setSelectedPlayer(false)}}>Gå tilbage</button> </div>
                         </div>
                     )}
+                </div>
+                <div>
+                    <Yatsy instanceId={instanceId} playerName={playerName} />
                 </div>
             </main>
             {loading && (

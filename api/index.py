@@ -158,10 +158,9 @@ def turn(instanceId):
         return jsonify({"errorExists": True ,"error": "tur Failed", "detail": str(e)}), 500
 
 
-@app.route("/api/jatzySheet/<instanceId>/<clickedPlayerName>", methods=["GET", "POST"])
-def scoreSheet(instanceId, clickedPlayerName):
+@app.route("/api/jatzySheet/<instanceId>/<playerName>", methods=["GET", "POST"])
+def scoreSheet(instanceId, playerName):
     try:
-        data = request.get_json(silent=True) or {}
         rsp = supabase.table("users").select("score, username, turn").eq("gameInstance", str(instanceId)).order("score", desc=True).execute()
         rows = getattr(rsp, "data", []) or []
         if not rows:
@@ -170,9 +169,9 @@ def scoreSheet(instanceId, clickedPlayerName):
         bestPlayer = rows[0]
         worstPlayer = rows[-1]
 
-        srv_rsp = supabase.table("server").select("currentTurn").eq("instanceId", str(instanceId)).limit(1).execute()
-        srv_rows = getattr(srv_rsp, "data", []) or []
-        current_turn_val = srv_rows[0].get("currentTurn") if srv_rows else None
+        srv = supabase.table("server").select("turn").eq("instanceId", str(instanceId)).limit(1).execute()
+        Srows = getattr(srv, "data", []) or []
+        current_turn_val = Srows[0].get("Turn") if Srows else None
 
         current_index = 0
         if current_turn_val is not None:
@@ -182,13 +181,16 @@ def scoreSheet(instanceId, clickedPlayerName):
                     break
         currentPlayer = rows[current_index]
 
-        req_username = data.get("user") or request.args.get("user") or rows[0].get("username")
-        user_index = 0
-        for idx, r in enumerate(rows):
-            if r.get("username") == req_username:
-                user_index = idx
+        i = 0
+        user = None
+        while i < len(rows):
+            if rows[i].get("username") == playerName:
+                user = rows[i]
                 break
-        user = clickedPlayerName
+            i += 1
+
+        if user is None:
+            user = rows[0]
 
         def get_score_field(record, field):
             score_obj = record.get("score") or {}
@@ -199,7 +201,7 @@ def scoreSheet(instanceId, clickedPlayerName):
                 return 0
 
         players_list = [
-            user,
+            user.get("username"),
             currentPlayer.get("username"),
             bestPlayer.get("username"),
             worstPlayer.get("username"),
@@ -221,7 +223,8 @@ def scoreSheet(instanceId, clickedPlayerName):
             }
 
         result = {"players": players_list, "yatzySheet": sheet}
-        return jsonify({result})
+
+        return jsonify(result)
     except Exception as e:
         app.logger.exception("yatzySheet Failed")
         return jsonify({"errorExists": True, "error": "yatzySheet Failed", "detail": str(e)}), 500
@@ -248,7 +251,7 @@ def roll_die(which):
         app.logger.exception("Roll die failed")
         return jsonify({"error": str(e)}), 500
 
-@app.route("/api/tryk/<instanceId>/<name>")
+@app.route("/api/tryk/<instanceId>/<name>", methods=["POST"])
 def update(instanceId, name):
     try:
         data = request.get_json(silent=True) or {}
@@ -263,7 +266,7 @@ def update(instanceId, name):
         if not rows:
             return jsonify({"errorExists": True, "error": "User not found"}), 404
 
-        field = data.get("field")
+        field = data.get("category")
         i = 0
         score = rows[i].get("score") or {}
         while rows[i].get("username") != name:
