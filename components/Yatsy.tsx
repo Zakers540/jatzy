@@ -143,8 +143,7 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
     return result
 }
 
-function confettiTrigger () {
-    useEffect( ()=> {
+const confettiTrigger = () => {
     const duration = 5 * 1000
     const animationEnd = Date.now() + duration
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }
@@ -170,7 +169,7 @@ function confettiTrigger () {
             particleCount,
             origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
         })
-    }, 250)})
+    }, 250)
 }
 
 export default function Yatsy({ instanceId, playerName }: YatsyProps) {
@@ -415,7 +414,9 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     scores={yatzysheetState.scores || {}}
                     previews={ YatzyPreview(diceNumbersState[0], diceNumbersState[1], diceNumbersState[2], diceNumbersState[3], diceNumbersState[4]) }
                     onCellClick={(category, playerIndex) => {
-                        confettiTrigger()
+                        useEffect(() => {
+                            confettiTrigger()
+                        })
                         const previewResult: Partial<Record<YatzyCategory, Record<number, string | number>>> = YatzyPreview(
                             diceNumbersState[0],
                             diceNumbersState[1],
