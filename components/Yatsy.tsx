@@ -14,6 +14,8 @@ import ClickedPlayer from "@/components/ClickedPlayer";
 import { createClient } from '@supabase/supabase-js'
 import equal from 'fast-deep-equal';
 import { useRef } from "react";
+import { clearPreviewData } from "next/dist/server/api-utils";
+import confetti from "canvas-confetti"
 
 type YatsyProps = {
     instanceId: string
@@ -138,6 +140,35 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
     }
 
     return result
+}
+
+const confettiTrigger = () => {
+    const duration = 5 * 1000
+    const animationEnd = Date.now() + duration
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }
+
+    const randomInRange = (min: number, max: number) =>
+        Math.random() * (max - min) + min
+
+    const interval = window.setInterval(() => {
+        const timeLeft = animationEnd - Date.now()
+
+        if (timeLeft <= 0) {
+            return clearInterval(interval)
+        }
+
+        const particleCount = 50 * (timeLeft / duration)
+        confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        })
+        confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        })
+    }, 250)
 }
 
 export default function Yatsy({ instanceId, playerName }: YatsyProps) {
@@ -382,7 +413,6 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     scores={yatzysheetState || {}}
                     previews={ YatzyPreview(diceNumbersState[0], diceNumbersState[1], diceNumbersState[2], diceNumbersState[3], diceNumbersState[4]) }
                     onCellClick={(category, playerIndex) => {
-
                         const previewResult: Partial<Record<YatzyCategory, Record<number, string | number>>> = YatzyPreview(
                             diceNumbersState[0],
                             diceNumbersState[1],
@@ -408,22 +438,46 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                         switch(playerIndex) {
                             case 0:
                                 if (playersState[0]===user) {
-                                    handleScoreUpdate();
+                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ category: category, score: score })
+                                    })
+                                    if (category==="yatzy") {
+                                        confettiTrigger()
+                                    }
                                 }
                                 break;
                             case 1:
                                 if (playersState[0]===user) {
-                                    handleScoreUpdate();
+                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ category: category, score: score })
+                                    })
+                                    if (category === "yatzy" && ((typeof score === "string" ? parseInt(score) : score) ?? 0) > 0) {
+                                        confettiTrigger()
+                                    }
                                 }
                                 break;
                             case 2:
                                 if (bestPlayerState===user && playersState[0]===user) {
-                                    handleScoreUpdate();
+                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ category: category, score:score })
+                                    })
+                                    if (category === "yatzy" && ((typeof score === "string" ? parseInt(score) : score) ?? 0) > 0) {
+                                        confettiTrigger()
+                                    }
                                 }
                                 break;
                             case 3:
                                 if (worstPlayerState===user && playersState[0]===user) {
-                                    handleScoreUpdate();
+                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
+                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ category: category, score: score })
+                                    })
+                                    if (category === "yatzy" && ((typeof score === "string" ? parseInt(score) : score) ?? 0) > 0) {
+                                        confettiTrigger()
+                                    }
                                 }
                         }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
