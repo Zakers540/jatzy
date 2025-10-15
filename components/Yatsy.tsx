@@ -144,6 +144,7 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
 }
 
 function confettiTrigger () {
+    useEffect( ()=> {
     const duration = 5 * 1000
     const animationEnd = Date.now() + duration
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }
@@ -169,7 +170,7 @@ function confettiTrigger () {
             particleCount,
             origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
         })
-    }, 250)
+    }, 250)})
 }
 
 export default function Yatsy({ instanceId, playerName }: YatsyProps) {
