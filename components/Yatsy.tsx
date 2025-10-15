@@ -143,7 +143,7 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
     return result
 }
 
-function confetti () {
+function confettiTrigger () {
     const duration = 5 * 1000
     const animationEnd = Date.now() + duration
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }
@@ -439,7 +439,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
-                                    confetti()
+                                    confettiTrigger()
                                 }
                                 break;
                             case 1:
@@ -448,7 +448,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
-                                    confetti()
+                                    confettiTrigger()
                                 }
                                 break;
                             case 2:
@@ -457,7 +457,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score:score })
                                     })
-                                    confetti()
+                                    confettiTrigger()
                                 }
                                 break;
                             case 3:
@@ -466,7 +466,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
-                                    confetti()
+                                    confettiTrigger()
                                 }
                         }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
