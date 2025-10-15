@@ -414,9 +414,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     scores={yatzysheetState.scores || {}}
                     previews={ YatzyPreview(diceNumbersState[0], diceNumbersState[1], diceNumbersState[2], diceNumbersState[3], diceNumbersState[4]) }
                     onCellClick={(category, playerIndex) => {
-                        useEffect(() => {
                             confettiTrigger()
-                        })
                         const previewResult: Partial<Record<YatzyCategory, Record<number, string | number>>> = YatzyPreview(
                             diceNumbersState[0],
                             diceNumbersState[1],
