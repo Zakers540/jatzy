@@ -12,26 +12,28 @@ type PageProps = {
 export default async function Server({ params }: PageProps) {
     const { instanceId } = await params
 
-    const maxWaitMs = 4000
-    const retryDelayMs = 200
     const apiBase = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5328' : 'https://jatzy.vercel.app'
-    const start = Date.now()
-
-    while (Date.now() - start < maxWaitMs) {
-        const response = await fetch(`${apiBase}/api/tjek/${instanceId}`, { cache: 'no-store' })
+    
+    try {
+        const response = await fetch(`${apiBase}/api/tjek/${instanceId}`, { 
+            cache: 'no-store',
+            next: { revalidate: 0 }
+        })
+        
         if (response.ok) {
             const data = await response.json()
             if (data?.exists) {
-                break
-            } else {
-                redirect('/server/deltag')
+                return (
+                    <Yatsy instanceId={instanceId} playerName=''/>
+                )
             }
         }
-
-        await new Promise((resolve) => setTimeout(resolve, retryDelayMs))
+        
+        // If instance doesn't exist or API call failed, redirect to join page
+        redirect('/server/deltag')
+    } catch (error) {
+        console.error('Error checking instance:', error)
+        // On error, redirect to join page
+        redirect('/server/deltag')
     }
-
-    return (
-        <Yatsy instanceId={instanceId}/>
-    )
 }

@@ -12,6 +12,9 @@ import Dice from "@/components/Dice";
 import LoginPortal from "@/components/LoginPortal";
 import ClickedPlayer from "@/components/ClickedPlayer";
 import { createClient } from '@supabase/supabase-js'
+import { deepEqual } from "assert";
+import equal from 'fast-deep-equal';
+import { useRef } from "react";
 
 type YatsyProps = {
     instanceId: string
@@ -164,9 +167,11 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [currentTurnIndex, setCurrentTurnIndex] = useState<number>(0)
     const [currentTurnUser, setCurrentTurnUser] = useState<string>("")
 
+    const mountedRef = useRef(true);
+    
     // fetch initial data and subscribe to Supabase realtime updates for this instance
     useEffect(() => {
-        let mounted = true
+        mountedRef.current = true;
 
         const fetchInitial = async () => {
             try {
@@ -182,7 +187,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     .eq('instanceId', instanceId)
                     .single()
 
-                if (!mounted) return
+                if (!mountedRef.current) return
                 setPlayersState((users || []).map((u: any) => u.username))
                 if (users && users.length > 0) {
                     const sorted = [...users].sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
@@ -203,18 +208,20 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             .on('postgres_changes', { event: '*', schema: 'public', table: 'server', filter: `instanceId=eq.${instanceId}` }, (payload) => {
                 console.debug('supabase server change payload', payload)
                 const record = (payload as any).new || (payload as any).record || null
-                if (record) {
-                    console.debug('server record update', record)
-                    if (record.dice) setDiceNumbersState(record.dice)
-                    if (record.yatzysheet) setYatzysheetState(record.yatzysheet)
-                    if (record.currentTurn !== undefined) setCurrentTurnIndex(record.currentTurn)
-                }
+                
+                if(!mountedRef.current || !record) return
+                console.debug('server record update', record)
+                if (record.dice) setDiceNumbersState(record.dice)
+                if (record.yatzysheet) setYatzysheetState(record.yatzysheet)
+                if (record.currentTurn !== undefined) setCurrentTurnIndex(record.currentTurn)
+        
             })
             .subscribe()
 
         const usersChannel = supabase.channel(`users-instance-${instanceId}`)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'users', filter: `gameInstance=eq.${instanceId}` }, async (payload) => {
                 console.debug('supabase users change payload', payload)
+                if (!mountedRef.current) return;
                 try {
                     const { data: users } = await supabase
                         .from('users')
@@ -243,16 +250,15 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
         window.addEventListener('beforeunload', handleBeforeUnload)
 
         return () => {
-            mounted = false
+            mountedRef.current = false
             window.removeEventListener('beforeunload', handleBeforeUnload)
             try { serverChannel.unsubscribe() } catch (e) {}
             try { usersChannel.unsubscribe() } catch (e) {}
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [instanceId])
+    }, [instanceId, apiBase, user, password])
 
         useEffect(() => {
-            if (!instanceId || !playerName) return;
+            if (!instanceId) return;
 
             const channel = supabase
                 .channel(`yatzy-${instanceId}`)
@@ -264,8 +270,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                             const res = await fetch(`${apiBase}/api/jatzySheet/${instanceId}/${encodeURIComponent(playerName)}`);
                             if (!res.ok) throw new Error("Failed to fetch updated sheet");
                             const data = await res.json();
-                            if (data?.yatzySheet) {
-                                console.log("updated sheet:", data.yatzySheet)
+                            if (!equal(data.yatzySheet, yatzysheetState)) {
                                 setYatzysheetState(data.yatzySheet);
                             }
                         } catch (err) {
@@ -278,7 +283,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             return () => {
                 try { supabase.removeChannel(channel); } catch {}
             };
-        }, [instanceId, apiBase, playerName]);
+        }, [instanceId, apiBase, playerName, yatzysheetState]);
 
         const fields = [
             "ettere", "toere", "treere", "firere", "femmere", "seksere",
@@ -318,7 +323,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     //hver gang en af terningerne opdateres finder den total antal terninger
     useEffect(() => {
     if (!rul) return;
-
+    
     const fetchDie = async (which: number) => {
         try {
             const res = await fetch(`${apiBase}/api/rul/terning${which}`, {
@@ -401,6 +406,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         body: JSON.stringify({ category: category })
                                     })
                                 }
+                                break;
                             case 1:
                                 if (playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
@@ -408,6 +414,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         body: JSON.stringify({ category: category })
                                     })
                                 }
+                                break;
                             case 2:
                                 if (bestPlayerState===user && playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
@@ -415,6 +422,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         body: JSON.stringify({ category: category })
                                     })
                                 }
+                                break;
                             case 3:
                                 if (worstPlayerState===user && playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
@@ -422,6 +430,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         body: JSON.stringify({ category: category })
                                     })
                                 }
+                                break;
                         }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
                     }}
