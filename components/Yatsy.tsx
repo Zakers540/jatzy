@@ -414,7 +414,6 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     scores={yatzysheetState.scores || {}}
                     previews={ YatzyPreview(diceNumbersState[0], diceNumbersState[1], diceNumbersState[2], diceNumbersState[3], diceNumbersState[4]) }
                     onCellClick={(category, playerIndex) => {
-                            confettiTrigger()
                         const previewResult: Partial<Record<YatzyCategory, Record<number, string | number>>> = YatzyPreview(
                             diceNumbersState[0],
                             diceNumbersState[1],
@@ -439,7 +438,9 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
-                                    confettiTrigger()
+                                    if (category==="yatzy") {
+                                        confettiTrigger()
+                                    }
                                 }
                                 break;
                             case 1:
@@ -448,7 +449,9 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
-                                    confettiTrigger()
+                                    if (category==="yatzy") {
+                                        confettiTrigger()
+                                    }
                                 }
                                 break;
                             case 2:
@@ -457,7 +460,9 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score:score })
                                     })
-                                    confettiTrigger()
+                                    if (category==="yatzy") {
+                                        confettiTrigger()
+                                    }
                                 }
                                 break;
                             case 3:
@@ -466,7 +471,9 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
-                                    confettiTrigger()
+                                    if (category==="yatzy") {
+                                        confettiTrigger()
+                                    }
                                 }
                         }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
