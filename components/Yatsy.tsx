@@ -15,6 +15,7 @@ import { createClient } from '@supabase/supabase-js'
 import { deepEqual } from "assert";
 import equal from 'fast-deep-equal';
 import { useRef } from "react";
+import { clearPreviewData } from "next/dist/server/api-utils";
 
 type YatsyProps = {
     instanceId: string
@@ -40,8 +41,8 @@ type YatzyCategory =
     | "total";
 
 // Use NEXT_PUBLIC environment variables on the client
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://whaiekidzkrnqiyykhjr.supabase.co'
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoYWlla2lkemtybnFpeXlraGpyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzY2MTQ1NCwiZXhwIjoyMDczMjM3NDU0fQ.A1_HE8IYw-K1jyr0rygcsPMN7Nyv0WfvZqRvbTfj9vU'
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     console.warn('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY - realtime will not work')
 }
@@ -267,7 +268,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     { event: '*', schema: 'public', table: 'users', filter: `gameInstance=eq.${instanceId}` },
                     async (payload) => {
                         try {
-                            const res = await fetch(`${apiBase}/api/jatzySheet/${instanceId}/${encodeURIComponent(playerName)}`);
+                            const res = await fetch(`${apiBase}/api/jatzySheet/${instanceId}/${encodeURIComponent(user)}`);
                             if (!res.ok) throw new Error("Failed to fetch updated sheet");
                             const data = await res.json();
                             if (!equal(data.yatzySheet, yatzysheetState)) {
@@ -283,7 +284,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             return () => {
                 try { supabase.removeChannel(channel); } catch {}
             };
-        }, [instanceId, apiBase, playerName, yatzysheetState]);
+        }, [instanceId, apiBase, user]);
 
         const fields = [
             "ettere", "toere", "treere", "firere", "femmere", "seksere",
@@ -293,19 +294,6 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
 
         const players = ["0", "1", "2", "3"];
         // read saved login from localStorage
-        useEffect(() => {
-            try {
-                const savedUser = localStorage.getItem('jatzy_user') || ''
-                const savedPass = localStorage.getItem('jatzy_password') || ''
-                if (savedUser) {
-                    setUser(savedUser)
-                    setPassword(savedPass)
-                    setLoggedIn(true)
-                }
-            } catch (e) {
-                // ignore
-            }
-        }, [])
 
         const doLogout = async () => {
             try {
@@ -397,13 +385,29 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     previews={ YatzyPreview(diceNumbersState[0], diceNumbersState[1], diceNumbersState[2], diceNumbersState[3], diceNumbersState[4]) }
                     onCellClick={(category, playerIndex) => {
 
-                        
+                        const previewResult: Partial<Record<YatzyCategory, Record<number, string | number>>> = YatzyPreview(
+                            diceNumbersState[0],
+                            diceNumbersState[1],
+                            diceNumbersState[2],
+                            diceNumbersState[3],
+                            diceNumbersState[4]
+                        );
+
+                        const score = previewResult?.[category as keyof typeof previewResult]?.[playerIndex + 1];
+
+                        const allowed =
+                            (playerIndex === 0 && playersState[0] === user) ||
+                            (playerIndex === 1 && playersState[0] === user) ||
+                            (playerIndex === 2 && bestPlayerState === user && playersState[0] === user) ||
+                            (playerIndex === 3 && worstPlayerState === user && playersState[0] === user);
+
+                        if (!allowed) return;
                         switch(playerIndex) {
                             case 0:
                                 if (playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category })
+                                        body: JSON.stringify({ category: category, score: score })
                                     })
                                 }
                                 break;
@@ -411,7 +415,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                 if (playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category })
+                                        body: JSON.stringify({ category: category, score: score })
                                     })
                                 }
                                 break;
@@ -419,7 +423,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                 if (bestPlayerState===user && playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category })
+                                        body: JSON.stringify({ category: category, score:score })
                                     })
                                 }
                                 break;
@@ -427,10 +431,9 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                 if (worstPlayerState===user && playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category })
+                                        body: JSON.stringify({ category: category, score: score })
                                     })
                                 }
-                                break;
                         }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
                     }}

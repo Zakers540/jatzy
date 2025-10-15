@@ -158,8 +158,8 @@ def turn(instanceId):
         return jsonify({"errorExists": True ,"error": "tur Failed", "detail": str(e)}), 500
 
 
-@app.route("/api/jatzySheet/<instanceId>/<playerName>", methods=["GET", "POST"])
-def scoreSheet(instanceId, playerName):
+@app.route("/api/jatzySheet/<instanceId>/<name>", methods=["GET","POST"])
+def scoreSheet(instanceId, name):
     try:
         rsp = supabase.table("users").select("score, username, turn").eq("gameInstance", str(instanceId)).order("score", desc=True).execute()
         rows = getattr(rsp, "data", []) or []
@@ -171,20 +171,20 @@ def scoreSheet(instanceId, playerName):
 
         srv = supabase.table("server").select("turn").eq("instanceId", str(instanceId)).limit(1).execute()
         Srows = getattr(srv, "data", []) or []
-        current_turn_val = Srows[0].get("Turn") if Srows else None
+        currentTurnVal = Srows[0].get("Turn") if Srows else None
 
-        current_index = 0
-        if current_turn_val is not None:
+        currentIndex = 0
+        if currentTurnVal is not None:
             for idx, r in enumerate(rows):
-                if r.get("turn") == current_turn_val:
-                    current_index = idx
+                if r.get("turn") == currentTurnVal:
+                    currentIndex = idx
                     break
-        currentPlayer = rows[current_index]
+        currentPlayer = rows[currentIndex]
 
         i = 0
         user = None
         while i < len(rows):
-            if rows[i].get("username") == playerName:
+            if rows[i].get("username") == name:
                 user = rows[i]
                 break
             i += 1
@@ -192,9 +192,9 @@ def scoreSheet(instanceId, playerName):
         if user is None:
             user = rows[0]
 
-        def get_score_field(record, field):
-            score_obj = record.get("score") or {}
-            val = score_obj.get(field, 0)
+        def getScoreField(record, field):
+            scoreObj = record.get("score") or {}
+            val = scoreObj.get(field, 0)
             try:
                 return int(val)
             except Exception:
@@ -216,10 +216,10 @@ def scoreSheet(instanceId, playerName):
         sheet = {}
         for f in fields:
             sheet[f] = {
-                "0": get_score_field(user, f),
-                "1": get_score_field(currentPlayer, f),
-                "2": get_score_field(bestPlayer, f),
-                "3": get_score_field(worstPlayer, f),
+                "0": getScoreField(user, f),
+                "1": getScoreField(currentPlayer, f),
+                "2": getScoreField(bestPlayer, f),
+                "3": getScoreField(worstPlayer, f),
             }
 
         result = {"players": players_list, "yatzySheet": sheet}
@@ -280,7 +280,7 @@ def update(instanceId, name):
             updatedTurn = 0
 
         if field in score:
-            score[field] = data.get("fieldScore")
+            score[field] = data.get("score")
         else:
             return jsonify({"errorExists": True, "error": f"Invalid field: {field}"}), 400
         
