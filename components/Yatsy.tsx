@@ -16,6 +16,7 @@ import { deepEqual } from "assert";
 import equal from 'fast-deep-equal';
 import { useRef } from "react";
 import { clearPreviewData } from "next/dist/server/api-utils";
+import confetti from "canvas-confetti"
 
 type YatsyProps = {
     instanceId: string
@@ -140,6 +141,35 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
     }
 
     return result
+}
+
+function confetti () {
+    const duration = 5 * 1000
+    const animationEnd = Date.now() + duration
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }
+
+    const randomInRange = (min: number, max: number) =>
+        Math.random() * (max - min) + min
+
+    const interval = window.setInterval(() => {
+        const timeLeft = animationEnd - Date.now()
+
+        if (timeLeft <= 0) {
+            return clearInterval(interval)
+        }
+
+        const particleCount = 50 * (timeLeft / duration)
+        confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        })
+        confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        })
+    }, 250)
 }
 
 export default function Yatsy({ instanceId, playerName }: YatsyProps) {
@@ -409,6 +439,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
+                                    confetti()
                                 }
                                 break;
                             case 1:
@@ -417,6 +448,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
+                                    confetti()
                                 }
                                 break;
                             case 2:
@@ -425,6 +457,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score:score })
                                     })
+                                    confetti()
                                 }
                                 break;
                             case 3:
@@ -433,6 +466,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
+                                    confetti()
                                 }
                         }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
