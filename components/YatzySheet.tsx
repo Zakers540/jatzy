@@ -2,8 +2,6 @@
 
 "use client";
 
-import { useState } from "react";
-
 type YatzyCategory =
     | "ettere"
     | "toere"

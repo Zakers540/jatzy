@@ -22,8 +22,8 @@ except Exception:
 
 cryptKey = b"dvawdbabdkawje802v354u0ba+d23u82nmyvn30cn2039xm234vn7"
 
-url: str = os.environ.get('DATABASE_URL', 'https://whaiekidzkrnqiyykhjr.supabase.co')
-key: str = os.environ.get('DATABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoYWlla2lkemtybnFpeXlraGpyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzY2MTQ1NCwiZXhwIjoyMDczMjM3NDU0fQ.A1_HE8IYw-K1jyr0rygcsPMN7Nyv0WfvZqRvbTfj9vU')
+url: str = os.environ.get('DATABASE_URL', '')
+key: str = os.environ.get('DATABASE_KEY', '')
 if not url or not key:
     print("Warning: Using default Supabase credentials. Set DATABASE_URL and DATABASE_KEY environment variables for production.")
 
@@ -287,7 +287,6 @@ def update(instanceId, name):
         supabase.table("users").update({"score": score}).eq("username", name).eq("gameInstance", str(instanceId)).execute()
         supabase.table("server").update({"turn": updatedTurn}).eq("instanceId", str(instanceId)).execute()
 
-        return jsonify({"errorExists": False, "error": ""})
     except Exception as e:
         app.logger.exception("score update Failed")
         return jsonify({"errorExists": True, "error": "score update Failed", "detail": str(e)}), 500
@@ -378,7 +377,7 @@ def addUser():
             "total": 0
         }
         
-        insert_rsp = supabase.table("users").insert({
+        insertRsp = supabase.table("users").insert({
             "username": userClean,
             "password": stored,
             "gameInstance": instanceId,

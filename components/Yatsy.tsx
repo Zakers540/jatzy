@@ -12,10 +12,8 @@ import Dice from "@/components/Dice";
 import LoginPortal from "@/components/LoginPortal";
 import ClickedPlayer from "@/components/ClickedPlayer";
 import { createClient } from '@supabase/supabase-js'
-import { deepEqual } from "assert";
 import equal from 'fast-deep-equal';
 import { useRef } from "react";
-import { clearPreviewData } from "next/dist/server/api-utils";
 
 type YatsyProps = {
     instanceId: string
@@ -259,7 +257,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     }, [instanceId, apiBase, user, password])
 
         useEffect(() => {
-            if (!instanceId) return;
+            if (!instanceId || !user) return;
 
             const channel = supabase
                 .channel(`yatzy-${instanceId}`)
@@ -381,7 +379,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 <YatzySheet
                     size={1}
                     currentPlayers={[`Dig (${user || "Poul"})`,`Nuværende (${playersState[0] || "Peter"})`, `Bedste (${bestPlayerState || "Poul"})`, `Værste (${worstPlayerState || "Pil"})`]}
-                    scores={yatzysheetState.scores || {}}
+                    scores={yatzysheetState || {}}
                     previews={ YatzyPreview(diceNumbersState[0], diceNumbersState[1], diceNumbersState[2], diceNumbersState[3], diceNumbersState[4]) }
                     onCellClick={(category, playerIndex) => {
 
@@ -394,45 +392,38 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                         );
 
                         const score = previewResult?.[category as keyof typeof previewResult]?.[playerIndex + 1];
-
-                        const allowed =
-                            (playerIndex === 0 && playersState[0] === user) ||
-                            (playerIndex === 1 && playersState[0] === user) ||
-                            (playerIndex === 2 && bestPlayerState === user && playersState[0] === user) ||
-                            (playerIndex === 3 && worstPlayerState === user && playersState[0] === user);
-
-                        if (!allowed) return;
+                        
+                        const handleScoreUpdate = async () => {
+                            try {
+                                    await fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
+                                    method: 'POST', 
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ category: category, score: score })
+                                });
+                            } catch (error) {
+                                console.error('Failed to update score:', error);
+                            }
+                        };
+                        
                         switch(playerIndex) {
                             case 0:
                                 if (playersState[0]===user) {
-                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
-                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category, score: score })
-                                    })
+                                    handleScoreUpdate();
                                 }
                                 break;
                             case 1:
                                 if (playersState[0]===user) {
-                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
-                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category, score: score })
-                                    })
+                                    handleScoreUpdate();
                                 }
                                 break;
                             case 2:
                                 if (bestPlayerState===user && playersState[0]===user) {
-                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
-                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category, score:score })
-                                    })
+                                    handleScoreUpdate();
                                 }
                                 break;
                             case 3:
                                 if (worstPlayerState===user && playersState[0]===user) {
-                                    fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
-                                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ category: category, score: score })
-                                    })
+                                    handleScoreUpdate();
                                 }
                         }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
