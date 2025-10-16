@@ -200,6 +200,8 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [currentTurnUser, setCurrentTurnUser] = useState<string>("")
 
     const mountedRef = useRef(true);
+    const currentPlayer = playersState[currentTurnIndex]
+    const myTurn = user === currentPlayer
     
     // fetch initial data and subscribe to Supabase realtime updates for this instance
     useEffect(() => {
@@ -393,19 +395,19 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 <div className="grid grid-rows-[3fr_4fr] justify-center">
                     <Players currentPlayers={playersState} setClickedPlayer={setClickedPlayer} setClickedPlayerName={setClickedPlayerName} />
                     <div className="grid grid-cols-2 gap-x-2 p-4 pl-0">
-                        <Dice realDiceNumber={diceNumbersState[0]} selected={dice1} setSelected={setDice1} currentPlayers={playersState} user={user}/>
-                        <Dice realDiceNumber={diceNumbersState[1]} selected={dice2} setSelected={setDice2} currentPlayers={playersState} user={user}/>
-                        <Dice realDiceNumber={diceNumbersState[2]} selected={dice3} setSelected={setDice3} currentPlayers={playersState} user={user}/>
-                        <Dice realDiceNumber={diceNumbersState[3]} selected={dice4} setSelected={setDice4} currentPlayers={playersState} user={user}/>
-                        <Dice realDiceNumber={diceNumbersState[4]} selected={dice5} setSelected={setDice5} currentPlayers={playersState} user={user}/>
+                        <Dice realDiceNumber={diceNumbersState[0]} selected={dice1} setSelected={setDice1} currentPlayers={playersState} user={user} myTurn={myTurn} setTotalDice={setTotalDice}/>
+                        <Dice realDiceNumber={diceNumbersState[1]} selected={dice2} setSelected={setDice2} currentPlayers={playersState} user={user} myTurn={myTurn} setTotalDice={setTotalDice}/>
+                        <Dice realDiceNumber={diceNumbersState[2]} selected={dice3} setSelected={setDice3} currentPlayers={playersState} user={user} myTurn={myTurn} setTotalDice={setTotalDice}/>
+                        <Dice realDiceNumber={diceNumbersState[3]} selected={dice4} setSelected={setDice4} currentPlayers={playersState} user={user} myTurn={myTurn} setTotalDice={setTotalDice}/>
+                        <Dice realDiceNumber={diceNumbersState[4]} selected={dice5} setSelected={setDice5} currentPlayers={playersState} user={user} myTurn={myTurn} setTotalDice={setTotalDice}/>
                     </div>
                     <div className="flex justify-center items-center h-12 w-46">
-                        {totalDice > 1 && user===playersState[0] ? (
+                        {myTurn && totalDice > 1 ? (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
-            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul)}}>Rul {totalDice} terninger</button>
-                        ): totalDice > 0 && user===playersState[0] && (
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul)}}>Rul {totalDice/2} terninger</button>
+                        ): myTurn && totalDice > 0 && (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
-            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul)}}>Rul {totalDice} terning</button>
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul)}}>Rul {totalDice/2} terning</button>
                         )}
                     </div>
                 </div>

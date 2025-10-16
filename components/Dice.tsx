@@ -5,15 +5,17 @@ import gsap from "gsap";
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 
 type DiceProps = {
-    realDiceNumber: number
-    size?: number
-    selected?: boolean
-    setSelected?: Dispatch<SetStateAction<boolean>>
-    user?: string
-    currentPlayers?: string[]
+    realDiceNumber: number;
+    size?: number;
+    selected?: boolean;
+    setSelected?: Dispatch<SetStateAction<boolean>>;
+    user?: string;
+    currentPlayers?: string[];
+    myTurn?: boolean;
+    setTotalDice?: Dispatch<SetStateAction<number>>;
 }
 
-export default function Dice({ realDiceNumber, size, selected, setSelected, user, currentPlayers }: DiceProps) {
+export default function Dice({ realDiceNumber, size, selected, setSelected, user, currentPlayers, myTurn, setTotalDice }: DiceProps) {
     const [gamblingEffect, setGamblingEffect] = useState(true)
     const [diceNumber, setDiceNumber] = useState(6)
     useEffect(() => {
@@ -34,7 +36,7 @@ export default function Dice({ realDiceNumber, size, selected, setSelected, user
     }, [realDiceNumber]);
 
     return (
-        <> { currentPlayers && user && user === currentPlayers[0] ? (
+        <> { currentPlayers && user && !myTurn ? (
             <div className={`flex justify-center items-center border-2 rounded-lg w-16 h-16 group ${selected ? "bg-blue-200/40" : "bg-neutral-50 hover:cursor-not-allowed hover:bg-red-200/40"}`} style={{transform: `scale(${size})`}}>
                 {(() => {
                     switch (diceNumber) {
@@ -103,7 +105,19 @@ export default function Dice({ realDiceNumber, size, selected, setSelected, user
                 })()}
             </div>
             ) :(
-            <div className={`flex justify-center items-center border-2 rounded-lg w-16 h-16 group ${selected ? "bg-blue-200/40" : "bg-neutral-50 hover:bg-blue-200/40 "}`} style={{transform: `scale(${size})`}} onClick={() => {setGamblingEffect(false); setSelected && setSelected(!selected)}}>
+            <div className={`flex justify-center items-center border-2 rounded-lg w-16 h-16 group ${selected ? "bg-blue-200/40" : "bg-neutral-50 hover:bg-blue-200/40 "} ${myTurn ? "hover:bg-blue-200/40 cursor-pointer" : "opacity-50 cursor-not-allowed"}`} style={{transform: `scale(${size})`}} onClick={() => {
+                if (!myTurn) return;
+                setGamblingEffect(false); 
+                if (setSelected) {
+                    setSelected((prev) => {
+                        const newVal = !prev;
+                        if (setTotalDice) {
+                            setTotalDice((old) => old + (newVal ? 1 : -1)); // 👈 add/subtract
+                        }
+                        return newVal;
+                    });
+                }
+            }}>
                 {(() => {
                     switch (diceNumber) {
                         case 1:
