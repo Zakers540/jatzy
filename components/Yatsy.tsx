@@ -181,6 +181,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [dice4, setDice4] = useState<boolean>(false)
     const [dice5, setDice5] = useState<boolean>(false)
     const [rul, setRul] = useState<boolean>(false)
+    const [rulCounter, setRulCounter] = useState<number>(0)
     //URL til hjemmeside skal være absolut dev server har andet url end prod.
     const apiBase = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5328' : 'https://jatzy.vercel.app'
     const [totalDice, setTotalDice] = useState<number>(0)
@@ -316,7 +317,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                             if (!equal(data.worstPlayer, worstPlayerState)) {
                                 setWorstPlayerState(data.worstPlayer);
                             }
-
+                            setRulCounter(0)
                         } catch (err) {
                             console.error("Failed to refresh Yatzy sheet:", err);
                         }
@@ -402,12 +403,12 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                         <Dice realDiceNumber={diceNumbersState[4]} selected={dice5} setSelected={setDice5} currentPlayers={playersState} user={user} myTurn={myTurn} setTotalDice={setTotalDice}/>
                     </div>
                     <div className="flex justify-center items-center h-12 w-46">
-                        {myTurn && totalDice > 1 ? (
+                        {myTurn && totalDice > 1 && rulCounter < 3 ? (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
-            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul)}}>Rul {totalDice/2} terninger</button>
-                        ): myTurn && totalDice > 0 && (
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1)}}>Rul {totalDice/2} terninger</button>
+                        ): myTurn && totalDice > 0 && rulCounter < 3 && (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
-            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul)}}>Rul {totalDice/2} terning</button>
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1)}}>Rul {totalDice/2} terning</button>
                         )}
                     </div>
                 </div>
