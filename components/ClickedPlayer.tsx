@@ -32,14 +32,26 @@ type YatzyCategory =
     | "total";
 
 export default function ClickedPlayer({clickedPlayerName, setClickedPlayer, apiBase, instanceId}: ClickedPlayerProps) {
-    const [playerNameScores, setPlayerNameScores] = useState<Record<YatzyCategory, Record<number, number>>>();
+    const [playerNameScores, setPlayerNameScores] = useState<Record<YatzyCategory, Record<string, number>>>();
     useEffect(() => {
-        fetch(`${apiBase}/api/yatzysheet/${instanceId}/${clickedPlayerName}`)
-            .then((response) => response.json())
-            .then((data) => {
-                setPlayerNameScores(data.yatzyscore)
+        if (!clickedPlayerName) return;
+        console.log("Fetching from:", `${apiBase}/api/yatzyScore/${instanceId}/${encodeURIComponent(clickedPlayerName)}`);
+        fetch(`${apiBase}/api/yatzyScore/${instanceId}/${encodeURIComponent(clickedPlayerName)}`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
             })
-    }, [clickedPlayerName]);
+            .then((data) => {
+                console.log('Fetched user score data:', data);
+                setPlayerNameScores(data.userScore || {});
+            })
+            .catch((error) => {
+                console.error('Failed to fetch user score:', error);
+                setPlayerNameScores(undefined);
+            });
+    }, [clickedPlayerName, apiBase, instanceId]);
     return (
         <div className="fixed inset-0 flex flex-col z-50 items-center justify-center backdrop-blur-sm bg-black/5">
             <div className="relative bg-white/64 max-w-lg w-full rounded-md max-h-180 border-1 border-white/80">

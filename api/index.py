@@ -22,8 +22,8 @@ except Exception:
 
 cryptKey = b"dvawdbabdkawje802v354u0ba+d23u82nmyvn30cn2039xm234vn7"
 
-url: str = os.environ.get('DATABASE_URL', '')
-key: str = os.environ.get('DATABASE_KEY', '')
+url: str = os.environ.get('DATABASE_URL')
+key: str = os.environ.get('DATABASE_KEY')
 if not url or not key:
     print("Warning: Using default Supabase credentials. Set DATABASE_URL and DATABASE_KEY environment variables for production.")
 
@@ -157,6 +157,16 @@ def turn(instanceId):
     except Exception as e:
         return jsonify({"errorExists": True ,"error": "tur Failed", "detail": str(e)}), 500
 
+@app.route("/api/yatzyScore/<instanceId>/<clickedPlayerName>", methods=["GET","POST"])
+def playerScore(instanceId, clickedPlayerName):
+    rsp = supabase.table("users").select("score, username, gameInstance").eq("gameInstance", str(instanceId)).eq("username", clickedPlayerName).execute()
+    rows = getattr(rsp, "data", []) or []
+    if not rows:
+        return jsonify({"error": "no users for instance", "players": []}), 404
+    
+    userScore = rows[0].get("score", {})
+
+    return jsonify({"userScore": userScore})
 
 @app.route("/api/jatzySheet/<instanceId>/<name>", methods=["GET","POST"])
 def scoreSheet(instanceId, name):
@@ -169,16 +179,17 @@ def scoreSheet(instanceId, name):
         bestPlayer = rows[0]
         worstPlayer = rows[-1]
 
-        srv = supabase.table("server").select("turn").eq("instanceId", str(instanceId)).limit(1).execute()
+        srv = supabase.table("server").select("turn").eq("instanceId", str(instanceId)).execute()
         Srows = getattr(srv, "data", []) or []
-        currentTurnVal = Srows[0].get("Turn") if Srows else None
+        if not Srows:
+            return jsonify({"error": "instanceId does not have a turn", "players": []}), 404
+        currentTurnVal = Srows[0].get("turn")
 
         currentIndex = 0
-        if currentTurnVal is not None:
-            for idx, r in enumerate(rows):
-                if r.get("turn") == currentTurnVal:
-                    currentIndex = idx
-                    break
+        while currentIndex < len(rows):
+            if rows[currentIndex].get("turn") == currentTurnVal:
+                break
+            currentIndex += 1
         currentPlayer = rows[currentIndex]
 
         i = 0
@@ -200,7 +211,7 @@ def scoreSheet(instanceId, name):
             except Exception:
                 return 0
 
-        players_list = [
+        playersList = [
             user.get("username"),
             currentPlayer.get("username"),
             bestPlayer.get("username"),
@@ -221,8 +232,16 @@ def scoreSheet(instanceId, name):
                 "2": getScoreField(bestPlayer, f),
                 "3": getScoreField(worstPlayer, f),
             }
-
-        result = {"players": players_list, "yatzySheet": sheet}
+        
+        Plist = [playersList[1]]
+        j = 0
+        while j < len(rows):
+            print(rows[j].get("username"))
+            if rows[j].get("username") != playersList[1]:
+                Plist.append(rows[j].get("username"))
+            j += 1
+        print(Plist)
+        result = {"currentPlayer":Plist,"bestPlayer":playersList[2],"worstPlayer":playersList[3], "yatzySheet": sheet}
 
         return jsonify(result)
     except Exception as e:
@@ -286,7 +305,8 @@ def update(instanceId, name):
         
         supabase.table("users").update({"score": score}).eq("username", name).eq("gameInstance", str(instanceId)).execute()
         supabase.table("server").update({"turn": updatedTurn}).eq("instanceId", str(instanceId)).execute()
-
+ 
+        return jsonify({"errorExists": False, "error":""})
     except Exception as e:
         app.logger.exception("score update Failed")
         return jsonify({"errorExists": True, "error": "score update Failed", "detail": str(e)}), 500
@@ -380,12 +400,12 @@ def addUser():
         insertRsp = supabase.table("users").insert({
             "username": userClean,
             "password": stored,
-            "gameInstance": instanceId,
+            "gameInstance": str(instanceId),
             "score": score
         }).execute()
         rsp2 = supabase.table("users").select("id").eq("gameInstance", str(instanceId)).order("id", desc=True).execute()
         rows2 = getattr(rsp2, "data", []) or []
-        for i in range(len(rows2) - 1):
+        for i in range(len(rows2)):
             supabase.table("users").update({"turn": i }).eq("id", rows2[i].get("id")).execute()
         return jsonify({"login": True, "errorExists": False, "error": ""})
     except Exception as e:
