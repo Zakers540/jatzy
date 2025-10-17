@@ -112,7 +112,7 @@ export default function Dice({ realDiceNumber, size, selected, setSelected, user
                     setSelected((prev) => {
                         const newVal = !prev;
                         if (setTotalDice) {
-                            setTotalDice((old) => old + (newVal ? 1 : -1)); // 👈 add/subtract
+                            setTotalDice((old) => old + (newVal ? 1 : -1));
                         }
                         return newVal;
                     });
