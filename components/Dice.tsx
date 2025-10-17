@@ -92,7 +92,7 @@ export default function Dice({ realDiceNumber, size, selected, setSelected, user
                             )
                         case 6:
                             return (
-                                <div className="w-full h-full grid grid-cols-2 gap-y-1.5 p-2 py-2 place-items-center">
+                                <div className="w-full h-full grid grid-cols-2 gap-y-1.5 p-2 py-1.5 place-items-center">
                                     <div className={`${gamblingEffect ? "w-3 h-3 bg-black rounded-full" : "dot w-3 h-3 bg-black rounded-full"}`} />
                                     <div className={`${gamblingEffect ? "w-3 h-3 bg-black rounded-full" : "dot w-3 h-3 bg-black rounded-full"}`} />
                                     <div className={`${gamblingEffect ? "w-3 h-3 bg-black rounded-full" : "dot w-3 h-3 bg-black rounded-full"}`} />
@@ -172,7 +172,7 @@ export default function Dice({ realDiceNumber, size, selected, setSelected, user
                             )
                         case 6:
                             return (
-                                <div className="w-full h-full grid grid-cols-2 gap-y-2 p-2 py-1.5 place-items-center">
+                                <div className="w-full h-full grid grid-cols-2 gap-y-1.5 p-2 py-1.5 place-items-center">
                                     <div className={`${gamblingEffect ? "w-3 h-3 bg-black rounded-full" : "dot w-3 h-3 bg-black rounded-full"}`} />
                                     <div className={`${gamblingEffect ? "w-3 h-3 bg-black rounded-full" : "dot w-3 h-3 bg-black rounded-full"}`} />
                                     <div className={`${gamblingEffect ? "w-3 h-3 bg-black rounded-full" : "dot w-3 h-3 bg-black rounded-full"}`} />
