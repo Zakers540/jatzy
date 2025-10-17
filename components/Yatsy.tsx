@@ -361,12 +361,11 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ instanceId, user })
             });
-
             if (!res.ok) {
                 console.error(`Failed to fetch die ${which}:`, res.statusText);
                 return null;
             }
-
+    
             const data = await res.json();
             return data?.dice ?? null;
         } catch (e) {
@@ -417,10 +416,10 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     <div className="flex justify-center items-center h-12 w-46">
                         {myTurn && totalDice > 1 && rulCounter < 3 ? (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
-            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1)}}>Rul {totalDice} terninger</button>
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1);setDice1(false);setDice2(false);setDice3(false);setDice4(false);setDice5(false);}}>Rul {totalDice} terninger</button>
                         ): myTurn && totalDice > 0 && rulCounter < 3 && (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
-            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1)}}>Rul {totalDice} terning</button>
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1);setDice1(false);setDice2(false);setDice3(false);setDice4(false);setDice5(false);}}>Rul {totalDice} terning</button>
                         )}
                     </div>
                 </div>

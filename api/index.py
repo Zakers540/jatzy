@@ -32,6 +32,12 @@ supabase: Client = create_client(url, key)
 app = Flask(__name__)
 CORS(app)
 
+fields = [
+            "ettere","toere","treere","firere","femmere","seksere",
+            "sum","bonus","1par","2par","treens","fireens",
+            "lillestraight","storstraight","fuldthus","chance","yatzy","total"
+        ]
+
 def rndURL(length: int = 6) -> str:
     return ''.join(random.choices(string.digits, k=length))
 
@@ -176,8 +182,15 @@ def scoreSheet(instanceId, name):
         if not rows:
             return jsonify({"error": "no users for instance", "players": []}), 404
 
+        j = 1
         bestPlayer = rows[0]
-        worstPlayer = rows[-1]
+        worstPlayer = rows[0]
+        while j < len(rows):
+            if rows[j].get("score").get("total") > bestPlayer.get("score").get("total"):
+                bestPlayer = rows[j]
+            if rows[j].get("score").get("total") < worstPlayer.get("score").get("total"):
+                worstPlayer = rows[j]
+            j += 1
 
         srv = supabase.table("server").select("turn").eq("instanceId", str(instanceId)).execute()
         Srows = getattr(srv, "data", []) or []
@@ -216,12 +229,6 @@ def scoreSheet(instanceId, name):
             currentPlayer.get("username"),
             bestPlayer.get("username"),
             worstPlayer.get("username"),
-        ]
-
-        fields = [
-            "ettere","toere","treere","firere","femmere","seksere",
-            "sum","bonus","1par","2par","treens","fireens",
-            "lillestraight","storstraight","fuldthus","chance","yatzy","total"
         ]
 
         sheet = {}
@@ -302,7 +309,17 @@ def update(instanceId, name):
             score[field] = data.get("score")
         else:
             return jsonify({"errorExists": True, "error": f"Invalid field: {field}"}), 400
+
+        total = 0
+        j = 0
+        for f in fields:
+            if f != "total": 
+                t = int(score.get(f))
+                total += t
+            j += 1
         
+        score[j] = total
+
         supabase.table("users").update({"score": score}).eq("username", name).eq("gameInstance", str(instanceId)).execute()
         supabase.table("server").update({"turn": updatedTurn}).eq("instanceId", str(instanceId)).execute()
  
