@@ -204,11 +204,12 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const currentPlayer = playersState[currentTurnIndex]
     const myTurn = user === currentPlayer
 
+    useEffect(()=>{
     document.addEventListener('keydown', function(event) {
         if (event.key === 'R' && (dice1 || dice2 || dice3 || dice4 || dice5)) {
             setRul(true)
         }
-    });
+    })})
 
     // fetch initial data and subscribe to Supabase realtime updates for this instance
     useEffect(() => {
