@@ -180,7 +180,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [dice3, setDice3] = useState<boolean>(false)
     const [dice4, setDice4] = useState<boolean>(false)
     const [dice5, setDice5] = useState<boolean>(false)
-    const [rul, setRul] = useState<boolean>(false)
+    const [rul, setRul] = useState<boolean>(true)
     const [rulCounter, setRulCounter] = useState<number>(0)
     //URL til hjemmeside skal være absolut dev server har andet url end prod.
     const apiBase = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5328' : 'https://jatzy.vercel.app'
