@@ -192,7 +192,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [clickedPlayerName, setClickedPlayerName] = useState<string>("")
 
     // app state (moved from module-level mutable variables)
-    const [playersState, setPlayersState] = useState<string[]>([])
+    const [playersState, setPlayersState] = useState<string[]>([""])
     const [bestPlayerState, setBestPlayerState] = useState<string>("")
     const [worstPlayerState, setWorstPlayerState] = useState<string>("")
     const [diceNumbersState, setDiceNumbersState] = useState<number[]>([6,6,6,6,6])
