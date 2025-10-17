@@ -324,8 +324,10 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                             if (!equal(data.worstPlayer, worstPlayerState)) {
                                 setWorstPlayerState(data.worstPlayer);
                             }
-                            setRulCounter(0)
-                            setDiceNumbersState([1,2,3,4,5])
+
+                            setRulCounter(0);
+                            
+
                         } catch (err) {
                             console.error("Failed to refresh Yatzy sheet:", err);
                         }

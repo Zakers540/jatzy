@@ -185,9 +185,7 @@ def scoreSheet(instanceId, name):
         j = 1
         bestPlayer = rows[0]
         worstPlayer = rows[0]
-        while j < len(rows):
-            print(f"first:{rows[j].get("score")["total"]} secend:{bestPlayer.get("score").get("total")}")
-            
+        while j < len(rows):           
             if rows[j].get("score").get("total") > bestPlayer.get("score").get("total"):
                 bestPlayer = rows[j]
             if rows[j].get("score").get("total") < worstPlayer.get("score").get("total"):
@@ -250,7 +248,12 @@ def scoreSheet(instanceId, name):
                 Plist.append(rows[j].get("username"))
             j += 1
         print(Plist)
+
+        resetDice = [1,2,3,4,5]
+
         result = {"currentPlayer":Plist,"bestPlayer":playersList[2],"worstPlayer":playersList[3], "yatzySheet": sheet}
+
+        supabase.table("server").update({"dice": resetDice }).eq("instanceId", str(instanceId)).execute()
 
         return jsonify(result)
     except Exception as e:
@@ -268,7 +271,7 @@ def roll_die(which):
             return jsonify({"error": "Missing instanceId or user"}), 400
 
         rsp = supabase.table("server").select("dice").eq("instanceId", str(instanceId)).single().execute()
-        dice = rsp.data.get("dice", [1, 1, 1, 1, 1])  # default 5 dice
+        dice = rsp.data.get("dice", [1, 2, 3, 4, 5])  # default 5 dice
 
         dice[which - 1] = random.randint(1, 6)
         supabase.table("server").update({"dice": dice}).eq("instanceId", str(instanceId)).execute()

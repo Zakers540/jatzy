@@ -20,7 +20,8 @@ export default function Dice({ realDiceNumber, size, selected, setSelected, user
     const [diceNumber, setDiceNumber] = useState(6)
     useEffect(() => {
         const randomInterval: number = Math.floor(Math.random() * 50) + 200;
-        const randomTimeout: number = (250 - randomInterval) * 100;
+        const randomTimeout: number = (350 - randomInterval)*20;
+
         setGamblingEffect(true)
 
         const interval = setInterval(() => {
@@ -28,11 +29,15 @@ export default function Dice({ realDiceNumber, size, selected, setSelected, user
         }, randomInterval);
 
         const timeout = setTimeout(() => {
-            clearInterval(interval);
+            clearInterval(interval)
             setGamblingEffect(false)
             setDiceNumber(realDiceNumber);
-            clearTimeout(timeout)
         }, randomTimeout);
+
+        return () => {
+            clearInterval(interval);
+            clearTimeout(timeout);
+        }
     }, [realDiceNumber]);
 
     return (
