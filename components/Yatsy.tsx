@@ -180,7 +180,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [dice3, setDice3] = useState<boolean>(false)
     const [dice4, setDice4] = useState<boolean>(false)
     const [dice5, setDice5] = useState<boolean>(false)
-    const [rul, setRul] = useState<boolean>(false)
+    const [rul, setRul] = useState<boolean>(true)
     const [rulCounter, setRulCounter] = useState<number>(0)
     //URL til hjemmeside skal være absolut dev server har andet url end prod.
     const apiBase = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5328' : 'https://jatzy.vercel.app'
@@ -206,7 +206,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
 
     useEffect(()=>{
     document.addEventListener('keydown', function(event) {
-        if (event.key === 'R' && (dice1 || dice2 || dice3 || dice4 || dice5)) {
+        if (event.key === 'R' && (dice1 || dice2 || dice3 || dice4 || dice5) && rulCounter>3) {
             setRul(true)
         }
     })})
@@ -393,6 +393,11 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
         });
 
         setRul(false);
+        setDice1(false);
+        setDice2(false);
+        setDice3(false);
+        setDice4(false);
+        setDice5(false);
     })();
 }, [rul]);
 
