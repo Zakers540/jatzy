@@ -43,8 +43,8 @@ type YatzyCategory =
     | "total";
 
 // Use NEXT_PUBLIC environment variables on the client
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://whaiekidzkrnqiyykhjr.supabase.co'
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoYWlla2lkemtybnFpeXlraGpyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzY2MTQ1NCwiZXhwIjoyMDczMjM3NDU0fQ.A1_HE8IYw-K1jyr0rygcsPMN7Nyv0WfvZqRvbTfj9vU'
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     console.warn('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY - realtime will not work')
 }
@@ -412,10 +412,10 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     <div className="flex justify-center items-center h-12 w-46">
                         {myTurn && totalDice > 1 && rulCounter < 3 ? (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
-            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1)}}>Rul {totalDice/2} terninger</button>
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1)}}>Rul {totalDice} terninger</button>
                         ): myTurn && totalDice > 0 && rulCounter < 3 && (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
-            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1)}}>Rul {totalDice/2} terning</button>
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1)}}>Rul {totalDice} terning</button>
                         )}
                     </div>
                 </div>
