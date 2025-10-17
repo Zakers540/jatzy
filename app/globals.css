@@ -7,7 +7,7 @@
 }
 
 body {
-  @apply bg-gradient-to-tr from-white via-blue-50 to-green-50  dark:from-black dark:via-[#050A1F] dark:to-[#041F12];
+  @apply bg-blue-50 md:bg-gradient-to-tr md:from-white md:via-blue-50 md:to-green-50  dark:from-black dark:via-[#050A1F] dark:to-[#041F12];
   font-family: Inter;
 }
 
