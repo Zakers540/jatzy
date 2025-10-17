@@ -206,7 +206,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
 
     useEffect(()=>{
     document.addEventListener('keydown', function(event) {
-        if (event.key === 'R' && (dice1 || dice2 || dice3 || dice4 || dice5)) {
+        if (event.key === 'R' && (dice1 || dice2 || dice3 || dice4 || dice5) && rulCounter>3) {
             setRul(true)
         }
     })})
