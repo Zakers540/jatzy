@@ -44,7 +44,7 @@ type YatzyCategory =
 
 // Use NEXT_PUBLIC environment variables on the client
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ' '
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     console.warn('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY - realtime will not work')
 }
@@ -325,6 +325,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                 setWorstPlayerState(data.worstPlayer);
                             }
                             setRulCounter(0)
+                            setDiceNumbersState([1,2,3,4,5])
                         } catch (err) {
                             console.error("Failed to refresh Yatzy sheet:", err);
                         }
@@ -416,10 +417,10 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     <div className="flex justify-center items-center h-12 w-46">
                         {myTurn && totalDice > 1 && rulCounter < 3 ? (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
-            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1);setDice1(false);setDice2(false);setDice3(false);setDice4(false);setDice5(false);}}>Rul {totalDice} terninger</button>
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1); setTotalDice(0)}}>Rul {totalDice} terninger</button>
                         ): myTurn && totalDice > 0 && rulCounter < 3 && (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
-            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1);setDice1(false);setDice2(false);setDice3(false);setDice4(false);setDice5(false);}}>Rul {totalDice} terning</button>
+            font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1); setTotalDice(0)}}>Rul {totalDice} terning</button>
                         )}
                     </div>
                 </div>

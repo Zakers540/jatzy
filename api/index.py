@@ -186,6 +186,8 @@ def scoreSheet(instanceId, name):
         bestPlayer = rows[0]
         worstPlayer = rows[0]
         while j < len(rows):
+            print(f"first:{rows[j].get("score")["total"]} secend:{bestPlayer.get("score").get("total")}")
+            
             if rows[j].get("score").get("total") > bestPlayer.get("score").get("total"):
                 bestPlayer = rows[j]
             if rows[j].get("score").get("total") < worstPlayer.get("score").get("total"):
@@ -311,14 +313,12 @@ def update(instanceId, name):
             return jsonify({"errorExists": True, "error": f"Invalid field: {field}"}), 400
 
         total = 0
-        j = 0
         for f in fields:
             if f != "total": 
                 t = int(score.get(f))
                 total += t
-            j += 1
         
-        score[j] = total
+        score["total"] = total
 
         supabase.table("users").update({"score": score}).eq("username", name).eq("gameInstance", str(instanceId)).execute()
         supabase.table("server").update({"turn": updatedTurn}).eq("instanceId", str(instanceId)).execute()
@@ -403,7 +403,7 @@ def addUser():
             "sum": 0,
             "bonus": 0,
             "1par": 0,
-            "2par": 8,
+            "2par": 0,
             "treens": 0,
             "fireens": 0,
             "lillestraight": 0,
