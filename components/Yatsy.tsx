@@ -393,6 +393,11 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
         });
 
         setRul(false);
+        setDice1(false);
+        setDice2(false);
+        setDice3(false);
+        setDice4(false);
+        setDice5(false);
     })();
 }, [rul]);
 
