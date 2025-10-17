@@ -404,8 +404,8 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     return (
         <>
         <main className="min-h-screen lg:h-screen w-full flex flex-col p-12">
-            <div className="grid grid-cols-[1fr_4fr]">
-                <div className="grid grid-rows-[3fr_4fr] justify-center">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_4fr]">
+                <div className="flex flex-col md:grid md:grid-rows-[3fr_4fr] justify-center">
                     <Players currentPlayers={playersState} setClickedPlayer={setClickedPlayer} setClickedPlayerName={setClickedPlayerName} />
                     <div className="grid grid-cols-2 gap-x-2 p-4 pl-0">
                         <Dice realDiceNumber={diceNumbersState[0]} selected={dice1} setSelected={setDice1} currentPlayers={playersState} user={user} myTurn={myTurn} setTotalDice={setTotalDice}/>
