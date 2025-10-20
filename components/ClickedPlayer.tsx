@@ -44,8 +44,8 @@ export default function ClickedPlayer({clickedPlayerName, setClickedPlayer, apiB
                 return response.json();
             })
             .then((data) => {
-                console.log('Fetched user score data:', data);
                 setPlayerNameScores(data.userScore || {});
+                console.log('Fetched user score data:', playerNameScores);
             })
             .catch((error) => {
                 console.error('Failed to fetch user score:', error);
