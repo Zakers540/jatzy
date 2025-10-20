@@ -220,6 +220,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 const { data: users } = await supabase
                     .from('users')
                     .select('*')
+                    .eq("online", true)
                     .eq('gameInstance', instanceId)
                     .order('turn', { ascending: true })
 
