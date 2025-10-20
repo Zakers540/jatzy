@@ -61,7 +61,7 @@ export default function ClickedPlayer({clickedPlayerName, setClickedPlayer, apiB
                 <div className=" pt-4 flex justify-center -mb-12">
                     <h2 className="text-center text-xl font-medium mb-6 cursor-default">{clickedPlayerName}</h2>
                 </div>
-                <YatzySheet size={0.8} currentPlayers={[clickedPlayerName]} scores={playerNameScores}/>
+                <YatzySheet size={1} currentPlayers={[clickedPlayerName]} scores={playerNameScores}/>
             </div>
         </div>
     )
