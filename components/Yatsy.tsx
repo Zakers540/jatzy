@@ -376,14 +376,13 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             return null;
         }
     };
-
     (async () => {
         const results = await Promise.all([
-            dice1 ? fetchDie(1) : null,
-            dice2 ? fetchDie(2) : null,
-            dice3 ? fetchDie(3) : null,
-            dice4 ? fetchDie(4) : null,
-            dice5 ? fetchDie(5) : null,
+            dice1 ? fetchDie(1) : diceNumbersState[0],
+            dice2 ? fetchDie(2) : diceNumbersState[1],
+            dice3 ? fetchDie(3) : diceNumbersState[2],
+            dice4 ? fetchDie(4) : diceNumbersState[3],
+            dice5 ? fetchDie(5) : diceNumbersState[4],
         ]);
 
         setDiceNumbersState((prev) => {
