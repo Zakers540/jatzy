@@ -289,9 +289,9 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
 
         const makeAPICall = () => {
             if (navigator.sendBeacon) {
-                navigator.sendBeacon(`${apiBase}/api/logud/`)
+                navigator.sendBeacon(`${apiBase}/api/logud`)
             } else {
-                fetch(`${apiBase}/api/logud/`, {
+                fetch(`${apiBase}/api/logud`, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ instanceId: instanceId, user: user, password: password }), keepalive: true
                 })
