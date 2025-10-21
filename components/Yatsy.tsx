@@ -214,6 +214,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
 
     // fetch initial data and subscribe to Supabase realtime updates for this instance
     useEffect(() => {
+        if (!instanceId) return;
 
         const fetchInitial = async () => {
             try {
@@ -237,14 +238,15 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     .eq('gameInstance', instanceId)
                     .order('turn', { ascending: true })
 
- //               if (!mountedRef.current) return
                 setPlayersState((users || []).map((u: any) => u.username))
                 setOfflinePlayersState((usersb || []).map((u: any) => u.username))
+
                 if (users && users.length > 0) {
                     const sorted = [...users].sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
                     setBestPlayerState(sorted[0]?.username || "")
                     setWorstPlayerState(sorted[sorted.length-1]?.username || "")
                 }
+
                 if (serverData?.dice) setDiceNumbersState(serverData.dice)
                 if (serverData?.yatzysheet) setYatzysheetState(serverData.yatzysheet)
                 if (serverData?.currentTurn !== undefined) setCurrentTurnIndex(serverData.currentTurn)
@@ -256,29 +258,31 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
         fetchInitial()
 
         const serverChannel = supabase.channel(`server-instance-${instanceId}`)
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'server', filter: `instanceId=eq.${instanceId}` }, (payload) => {
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'server',
+                filter: `instanceId=eq.${instanceId}`
+            }, (payload) => {
                 console.debug('supabase server change payload', payload)
                 const record = (payload as any).new || (payload as any).record || null
-                
+
                 if(!record) return
                 console.debug('server record update', record)
                 if (record.dice) setDiceNumbersState(record.dice)
                 if (record.yatzysheet) setYatzysheetState(record.yatzysheet)
                 if (record.currentTurn !== undefined) setCurrentTurnIndex(record.currentTurn)
-        
             })
             .subscribe()
 
-        const usersChannel = supabase.channel(`users-instance-${instanceId}`, {
-            config: {
-                presence: {
-                    key: user
-                }
-            }
-        })
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'users', filter: `gameInstance=eq.${instanceId}` }, async (payload) => {
+        const usersChannel = supabase.channel(`users-instance-${instanceId}`)
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'users',
+                filter: `gameInstance=eq.${instanceId}`
+            }, async (payload) => {
                 console.debug('supabase users change payload', payload)
-  //              if (!mountedRef.current) return;
                 try {
                     const { data: users } = await supabase
                         .from('users')
@@ -291,31 +295,119 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 }
             })
             .subscribe()
-            usersChannel
+
+        let presenceChannel: any = null;
+
+        if (user) {
+            presenceChannel = supabase.channel(`room_${instanceId}`, {
+                config: {
+                    presence: {
+                        key: user,
+                    },
+                },
+            })
+
+            presenceChannel
                 .on('presence', { event: 'sync' }, () => {
-                    const newState = usersChannel.presenceState()
+                    const newState = presenceChannel.presenceState()
                     console.log('sync', newState)
                 })
-                .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .on('presence', { event: 'join' }, ({ key, newPresences }: any) => {
                     console.log('join', key, newPresences)
+                    updateUserOnlineStatus(key, true)
                 })
-                .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .on('presence', { event: 'leave' }, ({ key, leftPresences }: any) => {
                     console.log('leave', key, leftPresences)
+                    updateUserOnlineStatus(key, false)
+                })
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .subscribe(async (status: any) => {
+                    if (status === 'SUBSCRIBED') {
+                        await presenceChannel.track({
+                            user: user,
+                            online_at: new Date().toISOString(),
+                        })
+                    }
+                })
+        }
+
+        const updateUserOnlineStatus = async (username: string, isOnline: boolean) => {
+            try {
+                const { error } = await supabase
+                    .from('users')
+                    .update({
+                        online: isOnline,
+                        last_seen: isOnline ? new Date().toISOString() : null
+                    })
+                    .eq('username', username)
+                    .eq('gameInstance', instanceId)
+
+                if (error) {
+                    console.error('Error updating online status:', error)
+                } else {
+                    console.log(`Updated ${username} online status to: ${isOnline}`)
+                }
+            } catch (error) {
+                console.error('Failed to update online status:', error)
+            }
+        }
+
+        let yatzyChannel: any = null;
+
+        if (user) {
+            yatzyChannel = supabase.channel(`yatzy-${instanceId}`)
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'users',
+                    filter: `gameInstance=eq.${instanceId}`
+                }, async (payload) => {
+                    try {
+                        const res = await fetch(`${apiBase}/api/jatzySheet/${instanceId}/${encodeURIComponent(user)}`)
+                        if (!res.ok) throw new Error("Failed to fetch updated sheet")
+                        const data = await res.json()
+
+                        if (!equal(data.yatzySheet, yatzysheetState)) {
+                            setYatzysheetState(data.yatzySheet)
+                        }
+                        if (!equal(data.currentPlayer, playersState)) {
+                            setPlayersState(data.currentPlayer)
+                        }
+                        if (!equal(data.bestPlayer, bestPlayerState)) {
+                            setBestPlayerState(data.bestPlayer)
+                        }
+                        if (!equal(data.worstPlayer, worstPlayerState)) {
+                            setWorstPlayerState(data.worstPlayer)
+                        }
+
+                        setRulCounter(0)
+                        setDice1(true)
+                        setDice2(true)
+                        setDice3(true)
+                        setDice4(true)
+                        setDice5(true)
+                        setRul(true)
+                    } catch (err) {
+                        console.error("Failed to refresh Yatzy sheet:", err)
+                    }
                 })
                 .subscribe()
+        }
 
         const makeAPICall = () => {
             try {
-                const logoutData = { instanceId, user, password };
+                const logoutData = { instanceId, user, password }
 
                 if (navigator.sendBeacon) {
                     const blob = new Blob([JSON.stringify(logoutData)], {
                         type: 'application/json'
-                    });
-                    const success = navigator.sendBeacon(`${apiBase}/api/logud`, blob);
+                    })
+                    const success = navigator.sendBeacon(`${apiBase}/api/logud`, blob)
                     if (!success) {
-                        console.warn('sendBeacon failed, falling back to fetch');
-                        throw new Error('sendBeacon failed');
+                        console.warn('sendBeacon failed, falling back to fetch')
+                        throw new Error('sendBeacon failed')
                     }
                 } else {
                     fetch(`${apiBase}/api/logud`, {
@@ -323,10 +415,10 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify(logoutData),
                         keepalive: true
-                    }).catch(err => console.error('Fetch failed:', err));
+                    }).catch(err => console.error('Fetch failed:', err))
                 }
             } catch (error) {
-                console.error('API call failed:', error);
+                console.error('API call failed:', error)
             }
         }
 
@@ -337,18 +429,18 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
         window.addEventListener('beforeunload', handleBeforeUnload)
 
         return () => {
-       //     mountedRef.current = false
-            // Cleanup: remove event listener and unsubscribe from channels
             window.removeEventListener('beforeunload', handleBeforeUnload)
-            try {
-                serverChannel.unsubscribe()
-            } catch (e) {
-                console.error('Error unsubscribing server channel:', e)
+
+            serverChannel.unsubscribe()
+            usersChannel.unsubscribe()
+
+            if (presenceChannel) {
+                presenceChannel.unsubscribe()
+                presenceChannel.untrack()
             }
-            try {
-                usersChannel.unsubscribe()
-            } catch (e) {
-                console.error('Error unsubscribing users channel:', e)
+
+            if (yatzyChannel) {
+                yatzyChannel.unsubscribe()
             }
         }
     }, [instanceId, apiBase, user, password])
