@@ -309,16 +309,29 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 }
             } catch (error) {
                 console.error('API call failed:', error);
-        }}
+            }
+        }
 
-        const handleBeforeUnload = () => makeAPICall()
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+            makeAPICall()
+        }
+
         window.addEventListener('beforeunload', handleBeforeUnload)
 
         return () => {
        //     mountedRef.current = false
-            window.addEventListener('beforeunload', handleBeforeUnload)
-            try { serverChannel.unsubscribe() } catch (e) {}
-            try { usersChannel.unsubscribe() } catch (e) {}
+            // Cleanup: remove event listener and unsubscribe from channels
+            window.removeEventListener('beforeunload', handleBeforeUnload)
+            try {
+                serverChannel.unsubscribe()
+            } catch (e) {
+                console.error('Error unsubscribing server channel:', e)
+            }
+            try {
+                usersChannel.unsubscribe()
+            } catch (e) {
+                console.error('Error unsubscribing users channel:', e)
+            }
         }
     }, [instanceId, apiBase, user, password])
 
