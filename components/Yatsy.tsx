@@ -199,6 +199,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [yatzysheetState, setYatzysheetState] = useState<any>({scores:{}, previews:{}})
     const [currentTurnIndex, setCurrentTurnIndex] = useState<number>(0)
     const [currentTurnUser, setCurrentTurnUser] = useState<string>("")
+    const [offlinePlayersState, setOfflinePlayersState] = useState<string[]>([""])
 
     const mountedRef = useRef(true);
     const currentPlayer = playersState[currentTurnIndex]
@@ -230,8 +231,16 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     .eq('instanceId', instanceId)
                     .single()
 
+                const { data: usersb } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq("online", false)
+                    .eq('gameInstance', instanceId)
+                    .order('turn', { ascending: true })
+
                 if (!mountedRef.current) return
                 setPlayersState((users || []).map((u: any) => u.username))
+                setOfflinePlayersState((usersb || []).map((u: any) => u.username))
                 if (users && users.length > 0) {
                     const sorted = [...users].sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
                     setBestPlayerState(sorted[0]?.username || "")
@@ -501,7 +510,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             </div>
         </main>
             {!loggedIn && (
-                <LoginPortal players={playersState} setLogin={setLoggedIn} apiBase={apiBase} instanceId={instanceId} setUser={setUser} setUserPassword={setPassword} />
+                <LoginPortal players={offlinePlayersState} setLogin={setLoggedIn} apiBase={apiBase} instanceId={instanceId} setUser={setUser} setUserPassword={setPassword} />
             )}
             {clickedPlayer && clickedPlayer && (
                 <ClickedPlayer instanceId={instanceId} apiBase={apiBase} clickedPlayerName={clickedPlayerName} setClickedPlayer={setClickedPlayer} players={playersState} />
