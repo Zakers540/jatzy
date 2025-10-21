@@ -309,14 +309,14 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 }
             } catch (error) {
                 console.error('API call failed:', error);
-        }
+        }}
 
         const handleBeforeUnload = () => makeAPICall()
         window.addEventListener('beforeunload', handleBeforeUnload)
 
         return () => {
        //     mountedRef.current = false
-            window.removeEventListener('beforeunload', handleBeforeUnload)
+            window.addEventListener('beforeunload', handleBeforeUnload)
             try { serverChannel.unsubscribe() } catch (e) {}
             try { usersChannel.unsubscribe() } catch (e) {}
         }
