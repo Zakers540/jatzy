@@ -318,7 +318,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
 
         return () => {
             mountedRef.current = false
-            window.removeEventListener('beforeunload', handleBeforeUnload)
+            window.addEventListener('beforeunload', handleBeforeUnload)
             try { serverChannel.unsubscribe() } catch (e) {}
             try { usersChannel.unsubscribe() } catch (e) {}
         }
