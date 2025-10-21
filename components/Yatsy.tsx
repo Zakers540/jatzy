@@ -447,7 +447,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                             diceNumbersState[4]
                         );
 
-                        const score = previewResult?.[category as keyof typeof previewResult]?.[playerIndex + 1];
+                        const score = previewResult?.[category as keyof typeof previewResult]?.[1];
 
                         switch(playerIndex) {
                             case 0:
@@ -456,7 +456,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
-                                    if (category==="yatzy") {
+                                    if (category==="yatzy" && ((typeof score === "string" ? parseInt(score) : score) ?? 0) > 0) {
                                         confettiTrigger()
                                     }
                                 }
