@@ -175,11 +175,11 @@ const confettiTrigger = () => {
 
 export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     // laver variabler, som ville blive opdateret ift backend ved mindre det udelukkende er for udseende eller bare til frontend
-    const [dice1, setDice1] = useState<boolean>(false)
-    const [dice2, setDice2] = useState<boolean>(false)
-    const [dice3, setDice3] = useState<boolean>(false)
-    const [dice4, setDice4] = useState<boolean>(false)
-    const [dice5, setDice5] = useState<boolean>(false)
+    const [dice1, setDice1] = useState<boolean>(true)
+    const [dice2, setDice2] = useState<boolean>(true)
+    const [dice3, setDice3] = useState<boolean>(true)
+    const [dice4, setDice4] = useState<boolean>(true)
+    const [dice5, setDice5] = useState<boolean>(true)
     const [rul, setRul] = useState<boolean>(true)
     const [rulCounter, setRulCounter] = useState<number>(0)
     //URL til hjemmeside skal være absolut dev server har andet url end prod.
@@ -220,6 +220,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 const { data: users } = await supabase
                     .from('users')
                     .select('*')
+                    .eq("online", true)
                     .eq('gameInstance', instanceId)
                     .order('turn', { ascending: true })
 
@@ -326,6 +327,12 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                             }
 
                             setRulCounter(0);
+                            setDice1(true)
+                            setDice2(true)
+                            setDice3(true)
+                            setDice4(true)
+                            setDice5(true)
+                            setRul(true)
                             
 
                         } catch (err) {
@@ -376,14 +383,13 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             return null;
         }
     };
-
     (async () => {
         const results = await Promise.all([
-            dice1 ? fetchDie(1) : null,
-            dice2 ? fetchDie(2) : null,
-            dice3 ? fetchDie(3) : null,
-            dice4 ? fetchDie(4) : null,
-            dice5 ? fetchDie(5) : null,
+            dice1 ? fetchDie(1) : diceNumbersState[0],
+            dice2 ? fetchDie(2) : diceNumbersState[1],
+            dice3 ? fetchDie(3) : diceNumbersState[2],
+            dice4 ? fetchDie(4) : diceNumbersState[3],
+            dice5 ? fetchDie(5) : diceNumbersState[4],
         ]);
 
         setDiceNumbersState((prev) => {
