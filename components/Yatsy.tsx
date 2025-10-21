@@ -312,11 +312,13 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     const newState = presenceChannel.presenceState()
                     console.log('sync', newState)
                 })
-                .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .on('presence', { event: 'join' }, ({ key, newPresences }: any) => {
                     console.log('join', key, newPresences)
                     updateUserOnlineStatus(key, true)
                 })
-                .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .on('presence', { event: 'leave' }, ({ key, leftPresences }: any) => {
                     console.log('leave', key, leftPresences)
                     updateUserOnlineStatus(key, false)
                 })
