@@ -134,6 +134,32 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                             .then(function (data) {setLoading(false)})
                                         } else {setErrorExists(true); setError("Adgangskode og bekræftet adgangskode er ikke det samme.");}
                                     }}
+                                    onKeyDown={(key) => {
+                                        if (key.key === "Enter") {
+                                            if (password === confirmPassword) {
+                                                setLoading(true)
+                                                fetch(`${apiBase}/api/tilfoej`, {
+                                                    method: "POST",
+                                                    headers: {"Content-Type": "application/json"},
+                                                    body: JSON.stringify({
+                                                        instanceId: instanceId,
+                                                        user: playerName,
+                                                        password: password,
+                                                    })
+                                                })
+                                                    .then((response) => response.json())
+                                                    .then((data) => {
+                                                        setLogin(data.login)
+                                                        setErrorExists(data.errorExists)
+                                                        setError(data.error)
+                                                        if (data.login) {
+                                                            try { setUser && setUser(playerName); setUserPassword && setUserPassword(password); } catch (e) {}
+                                                        }
+                                                    })
+                                                    .then(function (data) {setLoading(false)})
+                                            } else {setErrorExists(true); setError("Adgangskode og bekræftet adgangskode er ikke det samme.");}
+                                        }
+                                    }}
                                 >
                                     Opret
                                 </button>
@@ -174,6 +200,22 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                                 }
                                             })
                                             .then(function (data) {setLoading(false)})
+                                    }}
+                                    onKeyDown={(key) => {
+                                        if (key.key === "Enter") {
+                                            setLoading(true)
+                                            fetch(`${apiBase}/api/tjek/${instanceId}/${encodeURIComponent(playerName)}`)
+                                                .then((response) => response.json())
+                                                .then((data) => {
+                                                    setLogin(data.login)
+                                                    setErrorExists(data.errorExists)
+                                                    setError(data.error)
+                                                    if (data.login) {
+                                                        try { setUser && setUser(playerName); setUserPassword && setUserPassword(password); } catch (e) {}
+                                                    }
+                                                })
+                                                .then(function (data) {setLoading(false)})
+                                        }
                                     }}
                                 >
                                     Deltag
