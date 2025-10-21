@@ -287,14 +287,28 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             .subscribe()
 
         const makeAPICall = () => {
-            if (navigator.sendBeacon) {
-                navigator.sendBeacon(`${apiBase}/api/logud`)
-            } else {
-                fetch(`${apiBase}/api/logud`, {
-                    method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ instanceId: instanceId, user: user, password: password }), keepalive: true
-                })
-            }
+            try {
+                const logoutData = { instanceId, user, password };
+
+                if (navigator.sendBeacon) {
+                    const blob = new Blob([JSON.stringify(logoutData)], {
+                        type: 'application/json'
+                    });
+                    const success = navigator.sendBeacon(`${apiBase}/api/logud`, blob);
+                    if (!success) {
+                        console.warn('sendBeacon failed, falling back to fetch');
+                        throw new Error('sendBeacon failed');
+                    }
+                } else {
+                    fetch(`${apiBase}/api/logud`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(logoutData),
+                        keepalive: true
+                    }).catch(err => console.error('Fetch failed:', err));
+                }
+            } catch (error) {
+                console.error('API call failed:', error);
         }
 
         const handleBeforeUnload = () => makeAPICall()
