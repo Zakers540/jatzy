@@ -322,7 +322,8 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     console.log('leave', key, leftPresences)
                     updateUserOnlineStatus(key, false)
                 })
-                .subscribe(async (status) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .subscribe(async (status: any) => {
                     if (status === 'SUBSCRIBED') {
                         await presenceChannel.track({
                             user: user,
