@@ -96,11 +96,18 @@ def logud():
     try:
         # support JSON POST or query param for convenience
         data = request.get_json(silent=True) or {}
-        user = data.get("username") or request.args.get("username") or ""
-        if not user:
-            return jsonify({"error": "username required"}), 400
+        user = data.get("username") or ""
+        passwd = data.get("password") or ""
+        id = data.get("instanceId") or ""
+        if not data:
+            return jsonify({"error": "json required"}), 400
+        rsp = supabase.table("users").select("password").eq("gameInstance", str(id)).eq("username", user).execute()
+        dataRSP = getattr(rsp, "data", []) or []
+        if not dataRSP:
+            return jsonify({"error": "req failed"}), 430
+
         supabase.table("users").update({"online": False}).eq("username", user).execute()
-        return jsonify({"loggedOut": True})
+        return jsonify({"loggedIn": False})
     except Exception as e:
         app.logger.exception("error logout")
         return jsonify({"error": "failed to logout", "detail": str(e)}), 500
