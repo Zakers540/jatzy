@@ -201,7 +201,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [currentTurnUser, setCurrentTurnUser] = useState<string>("")
     const [offlinePlayersState, setOfflinePlayersState] = useState<string[]>([""])
 
-    const mountedRef = useRef(true);
+    //const mountedRef = useRef(true);
     const currentPlayer = playersState[currentTurnIndex]
     const myTurn = user === currentPlayer
 
@@ -214,7 +214,6 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
 
     // fetch initial data and subscribe to Supabase realtime updates for this instance
     useEffect(() => {
-        mountedRef.current = true;
 
         const fetchInitial = async () => {
             try {
@@ -227,7 +226,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
 
                 const { data: serverData } = await supabase
                     .from('server')
-                    .select('dice,yatzysheet,currentTurn,instanceId')
+                    .select('*')
                     .eq('instanceId', instanceId)
                     .single()
 
@@ -238,7 +237,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     .eq('gameInstance', instanceId)
                     .order('turn', { ascending: true })
 
-                if (!mountedRef.current) return
+ //               if (!mountedRef.current) return
                 setPlayersState((users || []).map((u: any) => u.username))
                 setOfflinePlayersState((usersb || []).map((u: any) => u.username))
                 if (users && users.length > 0) {
@@ -261,7 +260,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 console.debug('supabase server change payload', payload)
                 const record = (payload as any).new || (payload as any).record || null
                 
-                if(!mountedRef.current || !record) return
+                if(!record) return
                 console.debug('server record update', record)
                 if (record.dice) setDiceNumbersState(record.dice)
                 if (record.yatzysheet) setYatzysheetState(record.yatzysheet)
@@ -273,7 +272,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
         const usersChannel = supabase.channel(`users-instance-${instanceId}`)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'users', filter: `gameInstance=eq.${instanceId}` }, async (payload) => {
                 console.debug('supabase users change payload', payload)
-                if (!mountedRef.current) return;
+  //              if (!mountedRef.current) return;
                 try {
                     const { data: users } = await supabase
                         .from('users')
@@ -288,28 +287,13 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             .subscribe()
 
         const makeAPICall = () => {
-            try {
-                const logoutData = { instanceId, user, password };
-
-                if (navigator.sendBeacon) {
-                    const blob = new Blob([JSON.stringify(logoutData)], {
-                        type: 'application/json'
-                    });
-                    const success = navigator.sendBeacon(`${apiBase}/api/logud`, blob);
-                    if (!success) {
-                        console.warn('sendBeacon failed, falling back to fetch');
-                        throw new Error('sendBeacon failed');
-                    }
-                } else {
-                    fetch(`${apiBase}/api/logud`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify(logoutData),
-                        keepalive: true
-                    }).catch(err => console.error('Fetch failed:', err));
-                }
-            } catch (error) {
-                console.error('API call failed:', error);
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(`${apiBase}/api/logud`)
+            } else {
+                fetch(`${apiBase}/api/logud`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ instanceId: instanceId, user: user, password: password }), keepalive: true
+                })
             }
         }
 
@@ -317,8 +301,8 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
         window.addEventListener('beforeunload', handleBeforeUnload)
 
         return () => {
-            mountedRef.current = false
-            window.addEventListener('beforeunload', handleBeforeUnload)
+       //     mountedRef.current = false
+            window.removeEventListener('beforeunload', handleBeforeUnload)
             try { serverChannel.unsubscribe() } catch (e) {}
             try { usersChannel.unsubscribe() } catch (e) {}
         }
