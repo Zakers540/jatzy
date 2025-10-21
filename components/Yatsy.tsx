@@ -288,8 +288,14 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             .subscribe()
 
         const makeAPICall = () => {
+            const logoutData = JSON.stringify({
+                instanceId: instanceId,
+                user: user,
+                password: password
+            });
+
             if (navigator.sendBeacon) {
-                navigator.sendBeacon(`${apiBase}/api/logud`)
+                navigator.sendBeacon(`${apiBase}/api/logud`, logoutData)
             } else {
                 fetch(`${apiBase}/api/logud`, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
