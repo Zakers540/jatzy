@@ -204,71 +204,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     //const mountedRef = useRef(true);
     const currentPlayer = playersState[currentTurnIndex]
     const myTurn = user === currentPlayer
-    useEffect(() => {
-        const userRef = user;
-        const passwordRef = password;
-        const instanceIdRef = instanceId;
 
-        const makeAPICall = () => {
-            try {
-                const logoutData = {
-                    instanceId: instanceIdRef,
-                    user: userRef || localStorage.getItem('jatzy_user'),
-                    password: passwordRef || localStorage.getItem('jatzy_password')
-                };
-
-                console.log('Sending logout request:', { instanceId: instanceIdRef, user: userRef });
-
-                if (navigator.sendBeacon) {
-                    const blob = new Blob([JSON.stringify(logoutData)], {
-                        type: 'application/json'
-                    });
-                    const beaconSuccess = navigator.sendBeacon(`${apiBase}/api/logud`, blob);
-                    console.log('sendBeacon success:', beaconSuccess);
-                }
-
-                fetch(`${apiBase}/api/logud`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(logoutData),
-                    keepalive: true,
-                }).catch(err => console.log('Background fetch failed (expected)', err));
-
-            } catch (error) {
-                console.log('Logout API call failed', error);
-            }
-        };
-
-        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-            event.preventDefault();
-            event.returnValue = '';
-
-            const confirmed = window.confirm('Er du sikker på at du vil forlade spillet? Dit logout vil blive behandlet.');
-
-            if (confirmed) {
-                makeAPICall();
-                event.returnValue = undefined;
-                return true;
-            } else {
-                event.preventDefault();
-                return false;
-            }
-        };
-
-        const handleUnload = () => {
-            console.log('Page unloading - sending final logout');
-            makeAPICall();
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        window.addEventListener('unload', handleUnload);
-
-        return () => {
-            console.log('Cleaning up logout listeners');
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-            window.removeEventListener('unload', handleUnload);
-        };
-    }, [instanceId, user, password, apiBase]);
     useEffect(()=>{
     document.addEventListener('keydown', function(event) {
         if (event.key === 'R' && (dice1 || dice2 || dice3 || dice4 || dice5) && rulCounter>3) {
@@ -349,6 +285,18 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 }
             })
             .subscribe()
+            usersChannel
+                .on('presence', { event: 'sync' }, () => {
+                    const newState = usersChannel.presenceState()
+                    console.log('sync', newState)
+                })
+                .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+                    console.log('join', key, newPresences)
+                })
+                .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+                    console.log('leave', key, leftPresences)
+                })
+                .subscribe()
 
         const makeAPICall = () => {
             try {
