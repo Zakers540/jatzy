@@ -106,6 +106,9 @@ def logud():
         if not dataRSP:
             return jsonify({"error": "req failed"}), 430
 
+        if not bcrypt.checkpw(passwd, dataRSP.get("password")):
+            return jsonify({"error": "wrong password"}), 440
+
         supabase.table("users").update({"online": False}).eq("username", user).execute()
         return jsonify({"loggedIn": False})
     except Exception as e:
