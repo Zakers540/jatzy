@@ -269,7 +269,13 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             })
             .subscribe()
 
-        const usersChannel = supabase.channel(`users-instance-${instanceId}`)
+        const usersChannel = supabase.channel(`users-instance-${instanceId}`, {
+            config: {
+                presence: {
+                    key: user
+                }
+            }
+        })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'users', filter: `gameInstance=eq.${instanceId}` }, async (payload) => {
                 console.debug('supabase users change payload', payload)
   //              if (!mountedRef.current) return;
