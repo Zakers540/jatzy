@@ -246,7 +246,9 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     .eq("online", false)
                     .eq('gameInstance', instanceId)
                     .order('turn', { ascending: true })
-
+                
+                
+                
                 setPlayersState((users || []).map((u: any) => u.username))
                 if (usersb) {
                     setOfflinePlayersState((usersb || []).map((u: any) => u.username))
@@ -300,6 +302,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                         .select('*')
                         .eq('gameInstance', instanceId)
                         .order('turn', { ascending: true })
+                    
                     setPlayersState((users || []).map((u: any) => u.username))
                 } catch (e) {
                     console.error('Failed to refresh users on change', e)
@@ -350,7 +353,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     .from('users')
                     .update({
                         online: isOnline,
-                        last_seen: isOnline ? new Date().toISOString() : null
+                        lastOnline: new Date().toISOString() || null
                     })
                     .eq('username', username)
                     .eq('gameInstance', instanceId)
