@@ -3,12 +3,34 @@
 import Link from "next/link";
 import {useEffect, useState} from "react";
 import { useRouter } from 'next/navigation'
+import {useGSAP} from "@gsap/react";
+import gsap from "gsap";
+import {ScrollTrigger} from "gsap/all"
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function Navbar () {
     const [open, setOpen] = useState("");
     const router = useRouter()
     useEffect(()=> {
         router.prefetch('/hvordandetvirker')
+    })
+    useGSAP(()=>{
+        gsap.to(".navbarlayer", {
+            backdropFilter: "blur(8px)",
+            borderBottom: "1px solid rgba(17, 24, 39, 0.1)",
+            backgroundColor: "rgba(17, 24, 39, 0.02)",
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: "body",
+                start: "top+=50 top",
+                end: "+=200",
+                scrub: true,
+                toggleActions: "play none none reverse",
+            },
+        });
+
     })
     return (
         <>
@@ -24,7 +46,7 @@ export default function Navbar () {
                     </div>
                 </div>
             </nav>
-            <nav className="backdrop-blur-lg fixed w-full bg-white/10 dark:bg-black/10 z-100">
+            <nav className="fixed w-full z-100 navbarlayer">
                 <div className="invisible flex flex-col md:flex-row items-center justify-between w-full px-4 py-4">
                     <p className="italic text-3xl font-semibold">yatzy</p>
                     <div className="invisible space-x-5 z-10 items-center flex-wrap justify-center flex pt-6 md:pb-0 md:pt-0 -my-8">
