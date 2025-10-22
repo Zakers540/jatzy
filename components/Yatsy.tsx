@@ -353,7 +353,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     .from('users')
                     .update({
                         online: isOnline,
-                        lastOnline: isOnline ? new Date().toISOString() : null
+                        lastOnline: new Date().toISOString() || null
                     })
                     .eq('username', username)
                     .eq('gameInstance', instanceId)
