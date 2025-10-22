@@ -12,7 +12,7 @@ export default function Navbar () {
     })
     return (
         <>
-            <nav className="z-100 fixed w-full">
+            <nav className="z-1000 fixed w-full">
                 <div className="flex flex-col md:flex-row items-center justify-between w-full px-4 py-4">
                     <Link href="/">
                         <p className="italic text-3xl dark:text-white font-semibold">yatzy</p>
