@@ -69,14 +69,14 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                     )
                                 )}
                             </div>
-                            <div className="mt-6"><span className="text-black/80">Har du ikke en gruppe?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(true)}}>Opret en</button> </div>
+                            <div className="mt-6"><span className="text-black/80">Har du/I ikke en gruppe?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(true)}}>Opret en</button> </div>
                         </div>
                     ) : selectedOpret || players && players[0]==="" || !players ? (
                         <div>
                             <h2 className="text-center text-xl font-medium mb-6 cursor-default">Opret en gruppe</h2>
                             <div className="w-full flex flex-col gap-4">
                                 <div className="flex flex-col">
-                                    <label htmlFor="name" className="text-black/60 mb-2">Hvad ville du blive kaldt?</label>
+                                    <label htmlFor="name" className="text-black/60 mb-2">Hvad ville du/I blive kaldt?</label>
                                     <input
                                         type="text"
                                         placeholder="Brugernavn"
@@ -86,7 +86,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                     />
                                 </div>
                                 <div className="flex flex-col">
-                                    <label htmlFor="name" className="text-black/60 mb-2">Hvad skal din adgangskode være?</label>
+                                    <label htmlFor="name" className="text-black/60 mb-2">Hvad skal din/jeres adgangskode være?</label>
                                     <input
                                         type="password"
                                         placeholder="Adgangskode"
@@ -96,7 +96,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                     />
                                 </div>
                                 <div className="flex flex-col">
-                                    <label htmlFor="name" className="text-black/60 mb-2">Bekræft din adgangskode.</label>
+                                    <label htmlFor="name" className="text-black/60 mb-2">Bekræft din/jeres adgangskode.</label>
                                     <input
                                         type="password"
                                         placeholder="Bekræft adgangskode"
@@ -165,7 +165,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                 </button>
                             </div>
                             { players && !(players[0]==="") && (
-                            <div className="mt-6"><span className="text-black/80">Ville du gå tilbage?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(false); setSelectedPlayer(false)}}>Gå tilbage</button> </div>
+                            <div className="mt-6"><span className="text-black/80">Ville du/I gå tilbage?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(false); setSelectedPlayer(false)}}>Gå tilbage</button> </div>
                             )}
                         </div>
                     ) : (
