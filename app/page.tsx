@@ -5,6 +5,7 @@ import {useEffect, useState} from "react";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Card from "@/components/Card";
+import AttentionSpan from "@/components/ui/Attention";
 
 export default function Home() {
     const [diceNumber, setDiceNumber] = useState(6);
@@ -26,9 +27,10 @@ export default function Home() {
     return (
         <>
             <Navbar/>
-            <div className="min-h-screen w-full flex flex-col items-center justify-center">
+            <div className="min-h-screen w-full flex flex-col items-center justify-center pt-24">
+                <AttentionSpan className="" color="blue" size="lg">🎉 DU KAN NU SPILLE YATZY I GRUPPER 🎉</AttentionSpan>
                 <main
-                    className="min-h-screen w-full max-w-[1200px] flex flex-col pt-40 px-20 md:grid md:grid-cols-2 md:items-start">
+                    className="min-h-screen w-full max-w-[1200px] flex flex-col pt-16 px-20 md:grid md:grid-cols-2 md:items-start">
                     <div className="flex flex-col items-center -mt-8 md:mt-8">
                         <div className="md:hidden flex justify-center mb-12 md:mt-0">
                             <BigDice diceNumber={diceNumber}/>
