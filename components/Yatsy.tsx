@@ -415,6 +415,11 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                             }
 
                             setRulCounter(0);
+                            setDice1(false)
+                            setDice2(false)
+                            setDice3(false)
+                            setDice4(false)
+                            setDice5(false)
                             
 
                         } catch (err) {
