@@ -79,7 +79,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                     <label htmlFor="name" className="text-black/60 mb-2">Hvad ville du blive kaldt?</label>
                                     <input
                                         type="text"
-                                        placeholder="Poul"
+                                        placeholder="Brugernavn"
                                         value={playerName}
                                         className="input"
                                         onChange={(e) => setPlayerName(e.target.value)}
