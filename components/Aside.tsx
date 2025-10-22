@@ -74,7 +74,7 @@ export default function Aside({position, digit, title, text}: AsideProps) {
                 <div className="flex flex-col w-full"></div>
             )}
             <div className={`-z-10 flex flex-col box ${position === "left" ? "items-end" : "items-start"}`}>
-                <h2 className="font-mono font-semibold text-6xl text-black/80 mb-6 p-2 bg-white/80 rounded-md border-1 border-black/20 shadow-sm">{digit}</h2>
+                <h2 className="font-mono font-semibold text-6xl mb-6 p-2 rounded-md border-1 shadow-sm bg-blue-50 border-blue-200 text-blue-800">{digit}</h2>
                 <div className="bg-white/80 p-8 rounded-md shadow-sm border-1 border-black/20">
                     <h3 className="-z-10 text-6xl tracking-tighter font-medium mb-4 text-shadow-xs text-shadow-current">{title}</h3>
                     <p className={`-z-10 text-3xl text-black/72 ${position === "left" ? "w-160" : "w-160"}` }>{text}</p>
