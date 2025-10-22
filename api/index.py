@@ -145,11 +145,29 @@ def get_data(instanceId):
             "players": [""]
         })
 
-        bestPlayer = rows[0].get("username")
-        worstPlayer = rows[len(rows) - 1].get("username")
-        for i in range(len(rows) - 1):
-            if rows[i].get("online") == True:
-                currentPlayers.append(rows[i].get("username"))
+         j = 1
+        bestPlayer = rows[0]
+        worstPlayer = rows[0]
+        while j < len(rows):           
+            if rows[j].get("score").get("total") > bestPlayer.get("score").get("total"):
+                bestPlayer = rows[j]
+            if rows[j].get("score").get("total") < worstPlayer.get("score").get("total"):
+                worstPlayer = rows[j]
+            j += 1
+
+        srv = supabase.table("server").select("turn").eq("instanceId", str(instanceId)).execute()
+        Srows = getattr(srv, "data", []) or []
+        if not Srows:
+            return jsonify({"error": "instanceId does not have a turn", "players": []}), 404
+        currentTurnVal = Srows[0].get("turn")
+
+        currentIndex = 0
+        while currentIndex < len(rows):
+            if rows[currentIndex].get("turn") == currentTurnVal:
+                break
+            currentIndex += 1
+        currentPlayer = rows[currentIndex]
+        
         return jsonify({
             "bestPlayer": bestPlayer,
             "worstPlayer": worstPlayer,
