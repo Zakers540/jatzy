@@ -22,6 +22,14 @@ type YatsyProps = {
     playerName: string
 }
 
+type playerProps = {
+    username: string;
+    score?: number;
+    turn?: number;
+    online?: boolean;
+    lastOnline?: any;
+}
+
 type YatzyCategory =
     | "ettere"
     | "toere"
@@ -43,8 +51,8 @@ type YatzyCategory =
     | "total";
 
 // Use NEXT_PUBLIC environment variables on the client
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://whaiekidzkrnqiyykhjr.supabase.co'
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoYWlla2lkemtybnFpeXlraGpyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzY2MTQ1NCwiZXhwIjoyMDczMjM3NDU0fQ.A1_HE8IYw-K1jyr0rygcsPMN7Nyv0WfvZqRvbTfj9vU'
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     console.warn('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY - realtime will not work')
 }
@@ -192,6 +200,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [clickedPlayerName, setClickedPlayerName] = useState<string>("")
 
     // app state (moved from module-level mutable variables)
+    const [playerRecord, setPlayerRecord] = useState<playerRecord[]>([])
     const [playersState, setPlayersState] = useState<string[]>([""])
     const [bestPlayerState, setBestPlayerState] = useState<string>("")
     const [worstPlayerState, setWorstPlayerState] = useState<string>("")
@@ -201,7 +210,8 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [currentTurnUser, setCurrentTurnUser] = useState<string>("")
     const [offlinePlayersState, setOfflinePlayersState] = useState<string[]>([""])
 
-    //const mountedRef = useRef(true);
+    const mountedRef = useRef(true);
+    const lastBeatRef = useRef<number>(0)
     const currentPlayer = playersState[currentTurnIndex]
     const myTurn = user === currentPlayer
 
@@ -215,13 +225,13 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     // fetch initial data and subscribe to Supabase realtime updates for this instance
     useEffect(() => {
         if (!instanceId) return;
+        mountedRef.current = true;
 
         const fetchInitial = async () => {
             try {
                 const { data: users } = await supabase
                     .from('users')
                     .select('*')
-                    .eq("online", true)
                     .eq('gameInstance', instanceId)
                     .order('turn', { ascending: true })
 
@@ -231,17 +241,8 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     .eq('instanceId', instanceId)
                     .single()
 
-                const { data: usersb } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq("online", false)
-                    .eq('gameInstance', instanceId)
-                    .order('turn', { ascending: true })
 
                 setPlayersState((users || []).map((u: any) => u.username))
-                if (usersb) {
-                    setOfflinePlayersState((usersb || []).map((u: any) => u.username))
-                }
 
                 if (users && users.length > 0) {
                     const sorted = [...users].sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
@@ -264,11 +265,11 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 event: '*',
                 schema: 'public',
                 table: 'server',
-                filter: `instanceId=eq.${instanceId}`
+                filter: `instanceId=eq.${instanceId}` 
             }, (payload) => {
                 console.debug('supabase server change payload', payload)
                 const record = (payload as any).new || (payload as any).record || null
-
+                
                 if(!record) return
                 console.debug('server record update', record)
                 if (record.dice) setDiceNumbersState(record.dice)
@@ -281,59 +282,36 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             .on('postgres_changes', {
                 event: '*',
                 schema: 'public',
-                table: 'users',
-                filter: `gameInstance=eq.${instanceId}`
+                table: 'users', 
+                filter: `gameInstance=eq.${instanceId}` 
             }, async (payload) => {
                 console.debug('supabase users change payload', payload)
+                if (!mountedRef.current) return;
                 try {
                     const { data: users } = await supabase
                         .from('users')
                         .select('*')
                         .eq('gameInstance', instanceId)
                         .order('turn', { ascending: true })
-                    setPlayersState((users || []).map((u: any) => u.username))
+                setPlayersState((users || []).map((u: any) => u.username))
                 } catch (e) {
                     console.error('Failed to refresh users on change', e)
                 }
             })
             .subscribe()
 
-        let presenceChannel: any = null;
-
-        if (user) {
-            presenceChannel = supabase.channel(`room_${instanceId}`, {
-                config: {
-                    presence: {
-                        key: user,
-                    },
-                },
-            })
-
-            presenceChannel
-                .on('presence', { event: 'sync' }, () => {
-                    const newState = presenceChannel.presenceState()
-                    console.log('sync', newState)
-                })
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .on('presence', { event: 'join' }, ({ key, newPresences }: any) => {
-                    console.log('join', key, newPresences)
-                    updateUserOnlineStatus(key, true)
-                })
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .on('presence', { event: 'leave' }, ({ key, leftPresences }: any) => {
-                    console.log('leave', key, leftPresences)
-                    updateUserOnlineStatus(key, false)
-                })
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .subscribe(async (status: any) => {
-                    if (status === 'SUBSCRIBED') {
-                        await presenceChannel.track({
-                            user: user,
-                            online_at: new Date().toISOString(),
-                        })
-                    }
-                })
+        return () => {
+            mountedRef.current = false
+            try { serverChannel.unsubscribe() } catch (e) {}
+            try { usersChannel.unsubscribe() } catch (e) {}
         }
+    }, [instanceId, apiBase, user, password])
+
+    useEffect(() => {
+        if(!instanceId || !user) return;
+
+        let beatInterval: number | undefined;
+        let unmounting = false;
 
         const updateUserOnlineStatus = async (username: string, isOnline: boolean) => {
             try {
@@ -341,7 +319,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     .from('users')
                     .update({
                         online: isOnline,
-                        last_seen: isOnline ? new Date().toISOString() : null
+                        lastOnline: isOnline ? new Date().toISOString() : null
                     })
                     .eq('username', username)
                     .eq('gameInstance', instanceId)
@@ -356,50 +334,31 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             }
         }
 
-        let yatzyChannel: any = null;
+        const sendBeat = async () => {
+            const now = Date.now();
 
-        if (user) {
-            yatzyChannel = supabase.channel(`yatzy-${instanceId}`)
-                .on('postgres_changes', {
-                    event: '*',
-                    schema: 'public',
-                    table: 'users',
-                    filter: `gameInstance=eq.${instanceId}`
-                }, async (payload) => {
-                    try {
-                        const res = await fetch(`${apiBase}/api/jatzySheet/${instanceId}/${encodeURIComponent(user)}`)
-                        if (!res.ok) throw new Error("Failed to fetch updated sheet")
-                        const data = await res.json()
+            if (now - (lastBeatRef.current || 0) < 9 * 1000) return;
+            lastBeatRef.current = now;
 
-                        if (!equal(data.yatzySheet, yatzysheetState)) {
-                            setYatzysheetState(data.yatzySheet)
-                        }
-                        if (!equal(data.currentPlayer, playersState)) {
-                            setPlayersState(data.currentPlayer)
-                        }
-                        if (!equal(data.bestPlayer, bestPlayerState)) {
-                            setBestPlayerState(data.bestPlayer)
-                        }
-                        if (!equal(data.worstPlayer, worstPlayerState)) {
-                            setWorstPlayerState(data.worstPlayer)
-                        }
-
-                        setRulCounter(0)
-                        setDice1(true)
-                        setDice2(true)
-                        setDice3(true)
-                        setDice4(true)
-                        setDice5(true)
-                        setRul(true)
-                    } catch (err) {
-                        console.error("Failed to refresh Yatzy sheet:", err)
-                    }
+            await supabase
+                .from("users")
+                .update({
+                     lastOnline: new Date().toDateString,
+                     online: true
                 })
-                .subscribe()
+                .eq("username", user)
+                .eq("gameInstance", instanceId);
+            
         }
 
+        updateUserOnlineStatus(user, true);
+        sendBeat();
+
+
+        beatInterval = window.setInterval(() => { sendBeat }, 10*1000)
+
         const makeAPICall = () => {
-            try {
+                        try {
                 const logoutData = { instanceId, user, password }
 
                 if (navigator.sendBeacon) {
@@ -431,19 +390,10 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
         window.addEventListener('beforeunload', handleBeforeUnload)
 
         return () => {
+            unmounting = true
             window.removeEventListener('beforeunload', handleBeforeUnload)
-
-            serverChannel.unsubscribe()
-            usersChannel.unsubscribe()
-
-            if (presenceChannel) {
-                presenceChannel.unsubscribe()
-                presenceChannel.untrack()
-            }
-
-            if (yatzyChannel) {
-                yatzyChannel.unsubscribe()
-            }
+            if (beatInterval) clearInterval(beatInterval)
+            updateUserOnlineStatus(user, false)
         }
     }, [instanceId, apiBase, user, password])
 
@@ -474,12 +424,6 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                             }
 
                             setRulCounter(0);
-                            setDice1(true)
-                            setDice2(true)
-                            setDice3(true)
-                            setDice4(true)
-                            setDice5(true)
-                            setRul(true)
                             
 
                         } catch (err) {
@@ -509,7 +453,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
 
     //hver gang en af terningerne opdateres finder den total antal terninger
     useEffect(() => {
-    if (!rul) return;
+    if (!rul && !user && !instanceId) return;
     
     const fetchDie = async (which: number) => {
         try {
@@ -532,11 +476,11 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     };
     (async () => {
         const results = await Promise.all([
-            dice1 ? fetchDie(1) : diceNumbersState[0],
-            dice2 ? fetchDie(2) : diceNumbersState[1],
-            dice3 ? fetchDie(3) : diceNumbersState[2],
-            dice4 ? fetchDie(4) : diceNumbersState[3],
-            dice5 ? fetchDie(5) : diceNumbersState[4],
+            dice1 ? fetchDie(1) : null,
+            dice2 ? fetchDie(2) : null,
+            dice3 ? fetchDie(3) : null,
+            dice4 ? fetchDie(4) : null,
+            dice5 ? fetchDie(5) : null,
         ]);
 
         setDiceNumbersState((prev) => {
@@ -570,10 +514,10 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                         <Dice realDiceNumber={diceNumbersState[4]} selected={dice5} setSelected={setDice5} currentPlayers={playersState} user={user} myTurn={myTurn} setTotalDice={setTotalDice}/>
                     </div>
                     <div className="flex justify-center items-center h-12 w-46">
-                        {myTurn && totalDice > 1 && rulCounter < 3 ? (
+                        {myTurn && totalDice > 1 && rulCounter < 2 ? (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
             font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1); setTotalDice(0)}}>Rul {totalDice} terninger</button>
-                        ): myTurn && totalDice > 0 && rulCounter < 3 && (
+                        ): myTurn && totalDice > 0 && rulCounter < 2 && (
                             <button className="p-2 px-4 border-2 border-blue-500 rounded-2xl text-xl text-black/80
             font-semibold shadow-sm hover:shadow-md hover:bg-blue-500 hover:text-blue-50" onClick={()=> {setRul(!rul); setRulCounter(rulCounter + 1); setTotalDice(0)}}>Rul {totalDice} terning</button>
                         )}
@@ -648,7 +592,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             </div>
         </main>
             {!loggedIn && (
-                <LoginPortal players={offlinePlayersState} setLogin={setLoggedIn} apiBase={apiBase} instanceId={instanceId} setUser={setUser} setUserPassword={setPassword} />
+                <LoginPortal players={playersState} setLogin={setLoggedIn} apiBase={apiBase} instanceId={instanceId} setUser={setUser} setUserPassword={setPassword} />
             )}
             {clickedPlayer && clickedPlayer && (
                 <ClickedPlayer instanceId={instanceId} apiBase={apiBase} clickedPlayerName={clickedPlayerName} setClickedPlayer={setClickedPlayer} players={playersState} />

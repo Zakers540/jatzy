@@ -259,7 +259,7 @@ def scoreSheet(instanceId, name):
             j += 1
         print(Plist)
 
-        resetDice = [1,2,3,4,5]
+        resetDice = [random.randint(1, 6),random.randint(1, 6),random.randint(1, 6),random.randint(1, 6),random.randint(1, 6)]
 
         result = {"currentPlayer":Plist,"bestPlayer":playersList[2],"worstPlayer":playersList[3], "yatzySheet": sheet}
 

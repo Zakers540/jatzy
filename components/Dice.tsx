@@ -113,7 +113,15 @@ export default function Dice({ realDiceNumber, size, selected, setSelected, user
             <div className={`flex justify-center items-center border-2 rounded-lg w-16 h-16 group ${selected ? "bg-blue-200/40" : "bg-neutral-50 hover:bg-blue-200/40 "} ${myTurn ? "hover:bg-blue-200/40 cursor-pointer" : "opacity-50 cursor-not-allowed"}`} style={{transform: `scale(${size})`}} onClick={() => {
                 if (!myTurn) return;
                 setGamblingEffect(false); 
-                setSelected && setSelected(!selected)
+                if (setSelected) {
+                    setSelected((prev) => {
+                        const newVal = !prev;
+                        if (setTotalDice) {
+                            setTotalDice((old) => old + (newVal ? 1 : -1));
+                        }
+                        return newVal;
+                    });
+                }
             }}>
                 {(() => {
                     switch (diceNumber) {
