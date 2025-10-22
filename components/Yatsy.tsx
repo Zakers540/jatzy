@@ -22,6 +22,15 @@ type YatsyProps = {
     playerName: string
 }
 
+type playerProps = {
+    username: string,
+    password: string,
+    score: Partial<Record<YatzyCategory, Record<number, string | number>>>,
+    online: boolean,
+    turn: number,
+    lastOnline: any
+}
+
 type YatzyCategory =
     | "ettere"
     | "toere"
