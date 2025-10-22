@@ -145,7 +145,7 @@ def get_data(instanceId):
             "players": [""]
         })
 
-         j = 1
+        j = 1
         bestPlayer = rows[0]
         worstPlayer = rows[0]
         while j < len(rows):           
@@ -167,7 +167,7 @@ def get_data(instanceId):
                 break
             currentIndex += 1
         currentPlayer = rows[currentIndex]
-        
+
         return jsonify({
             "bestPlayer": bestPlayer,
             "worstPlayer": worstPlayer,
