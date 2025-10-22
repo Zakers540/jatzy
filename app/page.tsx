@@ -28,7 +28,7 @@ export default function Home() {
         <>
             <Navbar/>
             <div className="min-h-screen w-full flex flex-col items-center justify-center pt-24">
-                <AttentionSpan className="" color="blue" size="lg">🎉 DU KAN NU SPILLE YATZY I GRUPPER 🎉</AttentionSpan>
+                <a href="/api/opret"><AttentionSpan className="" color="blue" size="lg">🎉 DU KAN NU SPILLE YATZY I GRUPPER 🎉</AttentionSpan></a>
                 <main
                     className="min-h-screen w-full max-w-[1200px] flex flex-col pt-16 px-20 md:grid md:grid-cols-2 md:items-start">
                     <div className="flex flex-col items-center -mt-8 md:mt-8">
