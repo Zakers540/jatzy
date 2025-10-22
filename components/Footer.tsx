@@ -19,10 +19,10 @@ export default function Footer () {
                         </div>
                     </div>
                     <div className="flex flex-col space-y-4 mt-8 md:mt-0 justify-center md:justify-start">
-                        <a className="cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-50 text-lg font-semibold text-center md:text-start" href="/kontakt">Yatsy regler</a>
+                        <a className="cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-50 text-lg font-semibold text-center md:text-start" href="/regler">Yatsy regler</a>
                     </div>
                     <div className="flex flex-col space-y-4 mt-8 md:mt-0 justify-center md:justify-start">
-                        <a className="cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-50 text-lg font-semibold text-center md:text-start" href="/kontakt">Hvordan det virker</a>
+                        <a className="cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-50 text-lg font-semibold text-center md:text-start" href="/hvordandetvirker">Hvordan det virker</a>
                     </div>
                 </div>
             </div>
