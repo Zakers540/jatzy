@@ -61,7 +61,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                     { players && !(players[0]==="") && !selectedOpret && !selectedPlayer ? (
                         <div className="flex flex-col px-4">
                             <div>
-                                <h2 className="font-medium text-center text-xl mb-6 cursor-default">Vælg bruger</h2>
+                                <h2 className="font-medium text-center text-xl mb-6 cursor-default">Vælg en gruppe</h2>
                             </div>
                             <div className="grid grid-cols-3 gap-4">
                                 {players.map((player, i) => (
@@ -69,14 +69,14 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                     )
                                 )}
                             </div>
-                            <div className="mt-6"><span className="text-black/80">Har du ikke en bruger?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(true)}}>Opret en</button> </div>
+                            <div className="mt-6"><span className="text-black/80">Har I ikke en gruppe?</span> <button className="text-black/80 font-medium hover:text-blue-500" onClick={()=> {setSelectedOpret(true)}}>Opret en</button> </div>
                         </div>
                     ) : selectedOpret || players && players[0]==="" || !players ? (
                         <div>
-                            <h2 className="text-center text-xl font-medium mb-6 cursor-default">Opret en spiller</h2>
+                            <h2 className="text-center text-xl font-medium mb-6 cursor-default">Opret en gruppe</h2>
                             <div className="w-full flex flex-col gap-4">
                                 <div className="flex flex-col">
-                                    <label htmlFor="name" className="text-black/60 mb-2">Hvad ville du blive kaldt?</label>
+                                    <label htmlFor="name" className="text-black/60 mb-2">Hvad ville I blive kaldt?</label>
                                     <input
                                         type="text"
                                         placeholder="Poul"
@@ -86,7 +86,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                     />
                                 </div>
                                 <div className="flex flex-col">
-                                    <label htmlFor="name" className="text-black/60 mb-2">Hvad skal din adgangskode være?</label>
+                                    <label htmlFor="name" className="text-black/60 mb-2">Hvad skal jeres adgangskode være?</label>
                                     <input
                                         type="password"
                                         placeholder="Adgangskode"
@@ -96,7 +96,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                                     />
                                 </div>
                                 <div className="flex flex-col">
-                                    <label htmlFor="name" className="text-black/60 mb-2">Bekræft din adgangskode.</label>
+                                    <label htmlFor="name" className="text-black/60 mb-2">Bekræft jeres adgangskode.</label>
                                     <input
                                         type="password"
                                         placeholder="Bekræft adgangskode"
@@ -173,7 +173,7 @@ export default function LoginPortal({players, apiBase, instanceId, setLogin, set
                             <h2 className="text-center text-xl font-medium mb-16 cursor-default">Deltag som {playerName}</h2>
                             <div className="w-full flex flex-col gap-4">
                                 <div className="flex flex-col">
-                                    <label htmlFor="name" className="text-black/60 mb-2">Hvad er din adgangskode?</label>
+                                    <label htmlFor="name" className="text-black/60 mb-2">Hvad er jeres adgangskode?</label>
                                     <input
                                         type="password"
                                         placeholder="Adgangskode"
