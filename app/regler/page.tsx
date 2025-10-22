@@ -23,9 +23,9 @@ const regler = [
 
 export default function Page() {
     return (
-        <main className="min-h-screen w-full flex flex-col items-center pt-24">
-            <div className="max-w-3xl w-full">
-                <h1 className="text-center text-black/80 text-4xl font-semibold bg-white/80 rounded-md p-2 mb-12">
+        <main className="min-h-screen w-full flex flex-col items-center pt-24 md:pt-16">
+            <div className="max-w-3xl p-4 w-full">
+                <h1 className="text-center text-black/80 text-4xl font-semibold rounded-md p-2 mb-12">
                     Regler for Yatzy (gruppespil)
                 </h1>
 
