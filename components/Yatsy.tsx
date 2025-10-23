@@ -556,12 +556,12 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                     setError(true)
                                     setTimeout(()=>{
                                         setError(false)
-                                    }, 10000)
+                                    }, 5000)
                                 }}catch {
                                     setError(true)
                                     setTimeout(()=>{
                                         setError(false)
-                                    }, 1000)
+                                    }, 5000)
                                 }
                                 break;
                             case 1:
@@ -578,12 +578,12 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                     setError(true)
                                     setTimeout(()=>{
                                         setError(false)
-                                    }, 10000)
+                                    }, 5000)
                                 }} catch {
                                     setError(true)
                                     setTimeout(()=>{
                                         setError(false)
-                                    }, 10000)
+                                    }, 5000)
                                 }
                                 break;
                             case 2:
@@ -600,12 +600,12 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                     setError(true)
                                     setTimeout(()=>{
                                         setError(false)
-                                    }, 10000)
+                                    }, 5000)
                                 }} catch {
                                     setError(true)
                                     setTimeout(()=>{
                                         setError(false)
-                                    }, 10000)
+                                    }, 5000)
                                     }
                                 break;
                             case 3:
@@ -622,12 +622,12 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                     setError(true)
                                     setTimeout(()=>{
                                         setError(false)
-                                    }, 10000)
+                                    }, 5000)
                                 }} catch {
                                     setError(true)
                                     setTimeout(()=>{
                                         setError(false)
-                                    }, 10000)
+                                    }, 5000)
                                 }
                         }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
@@ -643,7 +643,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 <ClickedPlayer instanceId={instanceId} apiBase={apiBase} clickedPlayerName={clickedPlayerName} setClickedPlayer={setClickedPlayer} players={playersState} />
             )}
             {error && (
-                <div className="fixed w-full h-screen bg-red-500/20"></div>
+                <div className="fixed w-full h-screen bg-red-500/20 z-10000"></div>
             )}
         </>
 )
