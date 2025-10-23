@@ -200,6 +200,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [currentTurnIndex, setCurrentTurnIndex] = useState<number>(0)
     const [currentTurnUser, setCurrentTurnUser] = useState<string>("")
     const [offlinePlayersState, setOfflinePlayersState] = useState<string[]>([""])
+    const [error, setError] = useState<boolean>(false)
 
     const mountedRef = useRef(true);
     const lastBeatRef = useRef<number>(0)
@@ -534,10 +535,11 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                             diceNumbersState[4]
                         );
 
-                        const score: string = previewResult?.[category as keyof typeof previewResult]?.[1] || "0";
+                        const score: string = String(previewResult?.[category as keyof typeof previewResult]?.[1]) || "0";
 
                         switch(playerIndex) {
                             case 0:
+                                try {
                                 if (playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -546,39 +548,62 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                     if (category==="yatzy" && ((typeof score === "string" ? parseInt(score) : score) ?? 0) > 0) {
                                         confettiTrigger()
                                     }
+                                }}catch {
+                                    setError(true)
+                                    setTimeout(()=>{
+                                        setError(false)
+                                    }, 1000)
                                 }
                                 break;
                             case 1:
+                                try {
                                 if (playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
-                                    if (category === "yatzy" && ((typeof score === "string" ? parseInt(score) : score) ?? 0) > 0) {
+                                    if (category === "yatzy" && (parseInt(score) ?? 0) > 0) {
                                         confettiTrigger()
                                     }
+                                }} catch {
+                                    setError(true)
+                                    setTimeout(()=>{
+                                        setError(false)
+                                    }, 1000)
                                 }
                                 break;
                             case 2:
+                                try {
                                 if (bestPlayerState===user && playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score:score })
                                     })
-                                    if (category === "yatzy" && ((typeof score === "string" ? parseInt(score) : score) ?? 0) > 0) {
+                                    if (category === "yatzy" && (parseInt(score) ?? 0) > 0) {
                                         confettiTrigger()
                                     }
-                                }
+                                }} catch {
+                                    setError(true)
+                                    setTimeout(()=>{
+                                        setError(false)
+                                    }, 1000)
+                                    }
                                 break;
                             case 3:
+                                try {
                                 if (worstPlayerState===user && playersState[0]===user) {
                                     fetch(`${apiBase}/api/tryk/${instanceId}/${user}`, {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
-                                    if (category === "yatzy" && ((typeof score === "string" ? parseInt(score) : score) ?? 0) > 0) {
+                                    if (category === "yatzy" && (parseInt(score) ?? 0) > 0) {
                                         confettiTrigger()
                                     }
+                                }} catch {
+                                    setError(true)
+                                    setTimeout(()=>{
+                                        setError(false)
+                                    }, 1000)
                                 }
                         }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
@@ -592,6 +617,9 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             )}
             {clickedPlayer && clickedPlayer && (
                 <ClickedPlayer instanceId={instanceId} apiBase={apiBase} clickedPlayerName={clickedPlayerName} setClickedPlayer={setClickedPlayer} players={playersState} />
+            )}
+            {error && (
+                <div className="fixed w-full h-screen bg-red-500/20"></div>
             )}
         </>
 )
