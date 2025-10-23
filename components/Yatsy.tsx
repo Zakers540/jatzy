@@ -552,6 +552,11 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                     if (category==="yatzy" && ((typeof score === "string" ? parseInt(score) : score) ?? 0) > 0) {
                                         confettiTrigger()
                                     }
+                                } else{
+                                    setError(true)
+                                    setTimeout(()=>{
+                                        setError(false)
+                                    }, 10000)
                                 }}catch {
                                     setError(true)
                                     setTimeout(()=>{
@@ -569,11 +574,16 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                     if (category === "yatzy" && (parseInt(score) ?? 0) > 0) {
                                         confettiTrigger()
                                     }
+                                } else {
+                                    setError(true)
+                                    setTimeout(()=>{
+                                        setError(false)
+                                    }, 10000)
                                 }} catch {
                                     setError(true)
                                     setTimeout(()=>{
                                         setError(false)
-                                    }, 1000)
+                                    }, 10000)
                                 }
                                 break;
                             case 2:
@@ -586,11 +596,16 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                     if (category === "yatzy" && (parseInt(score) ?? 0) > 0) {
                                         confettiTrigger()
                                     }
+                                } else{
+                                    setError(true)
+                                    setTimeout(()=>{
+                                        setError(false)
+                                    }, 10000)
                                 }} catch {
                                     setError(true)
                                     setTimeout(()=>{
                                         setError(false)
-                                    }, 1000)
+                                    }, 10000)
                                     }
                                 break;
                             case 3:
@@ -603,11 +618,16 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                     if (category === "yatzy" && (parseInt(score) ?? 0) > 0) {
                                         confettiTrigger()
                                     }
+                                } else{
+                                    setError(true)
+                                    setTimeout(()=>{
+                                        setError(false)
+                                    }, 10000)
                                 }} catch {
                                     setError(true)
                                     setTimeout(()=>{
                                         setError(false)
-                                    }, 1000)
+                                    }, 10000)
                                 }
                         }
                         console.log(`Clicked ${category} for player ${playerIndex}`);
