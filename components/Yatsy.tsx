@@ -534,7 +534,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                             diceNumbersState[4]
                         );
 
-                        const score = previewResult?.[category as keyof typeof previewResult]?.[1];
+                        const score: string = previewResult?.[category as keyof typeof previewResult]?.[1] || "0";
 
                         switch(playerIndex) {
                             case 0:
