@@ -643,7 +643,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                 <ClickedPlayer instanceId={instanceId} apiBase={apiBase} clickedPlayerName={clickedPlayerName} setClickedPlayer={setClickedPlayer} players={playersState} />
             )}
             {error && (
-                <div className="fixed w-full h-screen bg-red-500/20 z-10000"></div>
+                <div className="fixed w-full h-screen inset-0 bg-red-500/20 z-10000 backdrop-blur-sm"></div>
             )}
         </>
 )
