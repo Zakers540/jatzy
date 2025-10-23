@@ -51,6 +51,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number, dice4Number:number, dice5Number:number) {
+    // variabler
     const playerIndex = 1
     const allDice: number[] = [dice1Number, dice2Number, dice3Number, dice4Number, dice5Number]
     const numberOfNumbers: number[] = [0, 0, 0, 0,0, 0]
@@ -63,17 +64,18 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
     let chance = 0;
     let hasYatzy = false;
     let hasYatzyVariable = 6;
-
+    //tæller hvor mange tal der er af hvert tal f.eks hvis der er 2 1ere [2, 0, 0, 0, 0, 0]
     for (let i=0; i<5; i++) {
         const value = allDice[i]
         numberOfNumbers[value-1] = numberOfNumbers[value-1] + 1;
     }
+    // finder værdien af chancen
     for (let i=0; i<5; i++) {
         chance = chance + allDice[i]
     }
-
+    //sætter resultat værdien
     const result: Partial<Record<YatzyCategory, Record<number, string | number>>> = {};
-
+    //finder den første sektion ved hjælp af numberofnumbers
     if (numberOfNumbers[0] > 0) {
         result.ettere = {[playerIndex]: (numberOfNumbers[0]).toString()}
     }
@@ -92,7 +94,7 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
     if (numberOfNumbers[5] > 0) {
         result.seksere = {[playerIndex]: (numberOfNumbers[5] * 6).toString()}
     }
-
+    //ser om der er tre ens, og hvis der er finder den værdien
     while (!hasThree && hasThreeVariable > 0) {
         if (numberOfNumbers[hasThreeVariable-1] > 2) {
             result.treens = {[playerIndex]: hasThreeVariable*3}
@@ -101,6 +103,7 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
             hasThreeVariable = hasThreeVariable - 1;
         }
     }
+    // ser om de har fire ens og hvis de har sætter den værdien
     while (!hasFour && hasFourVariable > 0) {
         if (numberOfNumbers[hasFourVariable-1] > 3) {
             result.fireens = {[playerIndex]: hasFourVariable*4}
@@ -109,14 +112,15 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
             hasFourVariable = hasFourVariable - 1;
         }
     }
-
+    // tjekker om numrene er der for at få lille straight
     if (numberOfNumbers[0] && numberOfNumbers[1] && numberOfNumbers[2] && numberOfNumbers[3] && numberOfNumbers[4]) {
         result.lillestraight = {[playerIndex]: "15"}
     }
+    //tjekker om numrene for stor straight er der
     if (numberOfNumbers[1] && numberOfNumbers[2] && numberOfNumbers[3] && numberOfNumbers[4] && numberOfNumbers[5]) {
         result.storstraight = {[playerIndex]: "20"}
     }
-
+    //finder fuldt hus og sætter værdien hvis du har det
     while (!hasTwo && hasTwoVariable > 0) {
         if (numberOfNumbers[hasTwoVariable-1] > 1 && hasThreeVariable !== hasTwoVariable) {
             hasTwo = true
@@ -127,11 +131,11 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
     if (hasTwo && hasThree && hasTwoVariable > 0 && hasThreeVariable > 0) {
         result.fuldthus = {[playerIndex]: hasTwoVariable*2+hasThreeVariable*3}
     }
-
+    //sætter chancen udregnet tidligere ind i result, hvis den er der
     if (chance > 0) {
         result.chance = {[playerIndex]: chance.toString()}
     }
-
+    //hvis de har yatzy sætter den yatzy værdien
     while (!hasYatzy && hasYatzyVariable > 0) {
         if (numberOfNumbers[hasYatzyVariable-1] > 4) {
             result.yatzy = {[playerIndex]: hasYatzyVariable*6+50}
@@ -140,7 +144,7 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
             hasYatzyVariable = hasYatzyVariable - 1;
         }
     }
-
+    //returnere resultatet, som er preview
     return result
 }
 
