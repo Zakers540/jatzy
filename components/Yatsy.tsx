@@ -540,8 +540,8 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                             diceNumbersState[4]
                         );
 
-                        const score: string = String(previewResult?.[category as keyof typeof previewResult]?.[1]) || "0";
-
+                        const score: string = String(previewResult?.[category as keyof typeof previewResult]?.[1] || 0);
+                        console.log("score for felt:", score)
                         switch(playerIndex) {
                             case 0:
                                 try {
