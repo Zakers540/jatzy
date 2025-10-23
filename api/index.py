@@ -349,7 +349,7 @@ def update(instanceId, name):
                 t = int(score.get(f))
                 total += t
         
-        score["total"] = total
+        score["total"] = str(total)
 
         supabase.table("users").update({"score": score}).eq("username", name).eq("gameInstance", str(instanceId)).execute()
         supabase.table("server").update({"turn": updatedTurn}).eq("instanceId", str(instanceId)).execute()
