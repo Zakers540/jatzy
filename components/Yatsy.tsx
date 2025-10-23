@@ -204,7 +204,8 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     const [currentTurnIndex, setCurrentTurnIndex] = useState<number>(0)
     const [currentTurnUser, setCurrentTurnUser] = useState<string>("")
     const [offlinePlayersState, setOfflinePlayersState] = useState<string[]>([""])
-    const [error, setError] = useState<boolean>(false)
+    const [showError, setShowError] = useState<boolean>(false)
+    const [error, setError] = useState<string>("")
 
     const mountedRef = useRef(true);
     const lastBeatRef = useRef<number>(0)
@@ -549,18 +550,20 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ category: category, score: score })
                                     })
-                                    if (category==="yatzy" && ((typeof score === "string" ? parseInt(score) : score) ?? 0) > 0) {
+                                    if (category==="yatzy" && (parseInt(score) ?? 0) > 0) {
                                         confettiTrigger()
                                     }
                                 } else{
-                                    setError(true)
+                                    setShowError(true)
+                                    setError("Du kan ikke trykke på det felt.")
                                     setTimeout(()=>{
-                                        setError(false)
+                                        setShowError(false)
                                     }, 5000)
                                 }}catch {
-                                    setError(true)
+                                    setError("Du kan ikke trykke på det felt.")
+                                    setShowError(true)
                                     setTimeout(()=>{
-                                        setError(false)
+                                        setShowError(false)
                                     }, 5000)
                                 }
                                 break;
@@ -575,14 +578,16 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         confettiTrigger()
                                     }
                                 } else {
-                                    setError(true)
+                                    setError("Du kan ikke trykke på det felt.")
+                                    setShowError(true)
                                     setTimeout(()=>{
-                                        setError(false)
+                                        setShowError(false)
                                     }, 5000)
                                 }} catch {
-                                    setError(true)
+                                    setError("Du kan ikke trykke på det felt.")
+                                    setShowError(true)
                                     setTimeout(()=>{
-                                        setError(false)
+                                        setShowError(false)
                                     }, 5000)
                                 }
                                 break;
@@ -597,14 +602,16 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         confettiTrigger()
                                     }
                                 } else{
-                                    setError(true)
+                                    setError("Du kan ikke trykke på det felt.")
+                                    setShowError(true)
                                     setTimeout(()=>{
-                                        setError(false)
+                                        setShowError(false)
                                     }, 5000)
                                 }} catch {
-                                    setError(true)
+                                    setError("Du kan ikke trykke på det felt.")
+                                    setShowError(true)
                                     setTimeout(()=>{
-                                        setError(false)
+                                        setShowError(false)
                                     }, 5000)
                                     }
                                 break;
@@ -619,14 +626,16 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                                         confettiTrigger()
                                     }
                                 } else{
-                                    setError(true)
+                                    setError("Du kan ikke trykke på det felt.")
+                                    setShowError(true)
                                     setTimeout(()=>{
-                                        setError(false)
+                                        setShowError(false)
                                     }, 5000)
                                 }} catch {
-                                    setError(true)
+                                    setError("Du kan ikke trykke på det felt.")
+                                    setShowError(true)
                                     setTimeout(()=>{
-                                        setError(false)
+                                        setShowError(false)
                                     }, 5000)
                                 }
                         }
@@ -642,8 +651,12 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             {clickedPlayer && clickedPlayer && (
                 <ClickedPlayer instanceId={instanceId} apiBase={apiBase} clickedPlayerName={clickedPlayerName} setClickedPlayer={setClickedPlayer} players={playersState} />
             )}
-            {error && (
-                <div className="fixed w-full h-screen inset-0 bg-red-500/20 z-10000 backdrop-blur-sm"></div>
+            {showError && (
+                <div className="fixed w-full h-screen inset-0 bg-red-500/5 z-10000 backdrop-blur-sm items-center justify-center">
+                    <div className="bg-white/80 shadow-md text-lg text-black/80 border-1 border-black/80 text-center items-center justify-center">
+                        <p>{error}</p>
+                    </div>
+                </div>
             )}
         </>
 )
