@@ -239,7 +239,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                     .single()
 
 
-                setPlayersState((users || []).map((u: any) => u.username))
+                setPlayersState((users || [""]).map((u: any) => u.username))
 
                 if (users && users.length > 0) {
                     const sorted = [...users].sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
