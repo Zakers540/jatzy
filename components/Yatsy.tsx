@@ -1,6 +1,5 @@
 //TODO: hvis også offline spillere evt eller gør de kan leave eller så kun online kan spille
 //TODO: modal hvor man enten kan tilmelde sig spillet eller klikke på en af de røde navne (betyder det ikke er optaget) blå er optaget og spiller lige nu
-//TODO: fyrværkeri hvis jatsy eller spil er slut
 //TODO: estimeret tid og når det er din tur så en lydeffekt
 //TODO: tilføj reload til logud
 "use client"
@@ -291,6 +290,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
                         .eq('gameInstance', instanceId)
                         .order('turn', { ascending: true })
                 setPlayersState((users || []).map((u: any) => u.username))
+                console.log(playersState)
                 } catch (e) {
                     console.error('Failed to refresh users on change', e)
                 }
