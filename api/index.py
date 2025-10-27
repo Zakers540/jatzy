@@ -213,10 +213,13 @@ def scoreSheet(instanceId, name):
         j = 1
         bestPlayer = rows[0]
         worstPlayer = rows[0]
-        while j < len(rows):           
-            if rows[j].get("score").get("total") > bestPlayer.get("score").get("total"):
-                bestPlayer = rows[j]
-            if rows[j].get("score").get("total") < worstPlayer.get("score").get("total"):
+        while j < len(rows):
+            if rows[j].get("score").get("total") is not None:          
+                if int(rows[j].get("score").get("total")) > int(bestPlayer.get("score").get("total")):
+                    bestPlayer = rows[j]
+                if int(rows[j].get("score").get("total")) < int(worstPlayer.get("score").get("total")):
+                    worstPlayer = rows[j]
+            else:
                 worstPlayer = rows[j]
             j += 1
 
@@ -314,7 +317,7 @@ def roll_die(which):
 def update(instanceId, name):
     try:
         data = request.get_json(silent=True) or {}
-        rsp = supabase.table("users").select("score, username").eq("gameInstance", str(instanceId)).execute()
+        rsp = supabase.table("users").select("score, username").eq("gameInstance", str(instanceId)).eq("username", name).execute()
         srv = supabase.table("server").select("turn").eq("instanceId", str(instanceId)).execute()
         
         sRows = getattr(srv, "data", []) or []
@@ -326,28 +329,45 @@ def update(instanceId, name):
             return jsonify({"errorExists": True, "error": "User not found"}), 404
 
         field = data.get("category")
-        i = 0
-        score = rows[i].get("score") or {}
-        while rows[i].get("username") != name:
-            score = rows[i].get("score") or {}
-            i += 1
+        score = rows[0].get("score") or {}
+
         
+        if score.get(field) is not None:
+            return jsonify({"errorExists": True, "error": f"Category '{field}' already set"}), 409
+
         turn = sRows[0].get("turn")
-        if turn < len(rows) - 1:
+        if turn < len(rows):
             updatedTurn = turn + 1
         else:
             updatedTurn = 0
+
+        print(f"updated turn{updatedTurn}")
 
         if field in score:
             score[field] = data.get("score")
         else:
             return jsonify({"errorExists": True, "error": f"Invalid field: {field}"}), 400
 
+        halfField = ["ettere","toere","treere","firere","femmere","seksere"]
+
+        scoreSum = 0
+        for hf in halfField:
+            if score.get(hf) is not None:
+                scoreSum += int(score.get(hf))
+            else:
+                scoreSum += 0
+
+        score["sum"] = scoreSum
+        if int(score.get("sum")) == 63:
+            score["bonus"] = 35
+
         total = 0
         for f in fields:
-            if f != "total": 
+            if f != "total" and score.get(f) is not None: 
                 t = int(score.get(f))
                 total += t
+            else:
+                total += 0
         
         score["total"] = str(total)
 
@@ -425,24 +445,24 @@ def addUser():
             stored = encrypt(cryptKey, password.encode('utf-8'))
         
         score = {
-            "ettere": 0,
-            "toere": 0,
-            "treere": 0,
-            "firere": 0,
-            "femmere": 0,
-            "seksere": 0,
-            "sum": 0,
-            "bonus": 0,
-            "1par": 0,
-            "2par": 0,
-            "treens": 0,
-            "fireens": 0,
-            "lillestraight": 0,
-            "storstraight": 0,
-            "fuldthus": 0,
-            "chance": 0,
-            "yatzy": 0,
-            "total": 0
+            "ettere": None,
+            "toere": None,
+            "treere": None,
+            "firere": None,
+            "femmere": None,
+            "seksere": None,
+            "sum": None,
+            "bonus": None,
+            "1par": None,
+            "2par": None,
+            "treens": None,
+            "fireens": None,
+            "lillestraight": None,
+            "storstraight": None,
+            "fuldthus": None,
+            "chance": None,
+            "yatzy": None,
+            "total": None
         }
         
         insertRsp = supabase.table("users").insert({
