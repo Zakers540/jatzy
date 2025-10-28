@@ -15,12 +15,12 @@ import equal from 'fast-deep-equal';
 import { useRef } from "react";
 import { clearPreviewData } from "next/dist/server/api-utils";
 import confetti from "canvas-confetti"
-
+//typer den tager som component
 type YatsyProps = {
     instanceId: string
     playerName: string
 }
-
+//yatzy kategorier
 type YatzyCategory =
     | "ettere"
     | "toere"
@@ -49,6 +49,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 }
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+//den som render mulige kombinationer
 function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number, dice4Number:number, dice5Number:number) {
     // variabler
     const playerIndex = 1
@@ -146,7 +147,7 @@ function YatzyPreview(dice1Number:number, dice2Number:number, dice3Number:number
     //returnere resultatet, som er preview
     return result
 }
-
+//konfetti effekt
 const confettiTrigger = () => {
     const duration = 5 * 1000
     const animationEnd = Date.now() + duration
@@ -163,6 +164,7 @@ const confettiTrigger = () => {
         }
 
         const particleCount = 50 * (timeLeft / duration)
+        //confetti er det som render confetti
         confetti({
             ...defaults,
             particleCount,
@@ -223,6 +225,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
         if (!instanceId) return;
         mountedRef.current = true;
 
+        //initial data
         const fetchInitial = async () => {
             try {
                 const { data: users } = await supabase
@@ -303,7 +306,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
             try { usersChannel.unsubscribe() } catch (e) {}
         }
     }, [instanceId, apiBase, user, password])
-
+    //forsøg på at opdatere online status med realtime kanal
     useEffect(() => {
         if(!instanceId || !user) return;
 
@@ -394,6 +397,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
         }
     }, [instanceId, apiBase, user, password])
 
+    //opdatere ting hvis de ændre sig
         useEffect(() => {
             if (!instanceId || !user) return;
 
@@ -456,7 +460,7 @@ export default function Yatsy({ instanceId, playerName }: YatsyProps) {
     //hver gang en af terningerne opdateres finder den total antal terninger
     useEffect(() => {
     if (!rul && !user && !instanceId) return;
-    
+    //handler terninger
     const fetchDie = async (which: number) => {
         try {
             const res = await fetch(`${apiBase}/api/rul/terning${which}`, {

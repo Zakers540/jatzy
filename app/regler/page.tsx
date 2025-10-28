@@ -1,5 +1,6 @@
 //TODO: evt tilføj tips som at tilføje sociale regler
 
+//declarer const regler som er et array med dataet
 const regler = [
     {
         regel: "Spillet bliver spillet med 5 terninger."

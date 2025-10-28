@@ -10,6 +10,7 @@ type PageProps = {
 }
 
 export default async function Server({ params }: PageProps) {
+    //finder instanceId som ligger i urlet [] er params.
     const { instanceId } = await params
 
     const apiBase = process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5328' : 'https://jatzy.vercel.app'
