@@ -41,7 +41,7 @@ export default function Navbar () {
                     </Link>
                     <div className="h-24 space-x-5 z-10 items-center justify-center flex flex-wrap pt-12 pb-8 md:pb-0 md:pt-0 -my-8">
                         <a className="navlink" href="/api/opret">Opret server</a>
-                        <a className="navlink" href="/regler">Yatsy regler/regler</a>
+                        <a className="navlink" href="/regler">Regler</a>
                         <a className="navlink" href="/hvordandetvirker">Hvordan det virker</a>
                     </div>
                 </div>
@@ -51,7 +51,7 @@ export default function Navbar () {
                     <p className="italic text-3xl font-semibold">yatzy</p>
                     <div className="invisible space-x-5 z-10 items-center flex-wrap justify-center flex pt-6 md:pb-0 md:pt-0 -my-8">
                         <a className="navlink" href="/opret">Opret server</a>
-                        <a className="navlink" href="/regler">Yatsy regler</a>
+                        <a className="navlink" href="/regler">Regler</a>
                         <a className="navlink" href="/hvordandetvirker">Hvordan det virker</a>
                     </div>
                 </div>
