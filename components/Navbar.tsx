@@ -46,11 +46,13 @@ export default function Navbar () {
                     </div>
                 </div>
             </nav>
-            <nav className="fixed w-full z-100 navbarlayer">
+            <nav className="z-100 fixed w-full navbarlayer">
                 <div className="invisible flex flex-col md:flex-row items-center justify-between w-full px-4 py-4">
-                    <p className="italic text-3xl font-semibold">yatzy</p>
-                    <div className="invisible space-x-5 z-10 items-center flex-wrap justify-center flex pt-6 md:pb-0 md:pt-0 -my-8">
-                        <a className="navlink" href="/opret">Opret server</a>
+                    <Link href="/">
+                        <p className="invisible italic text-3xl dark:text-white font-semibold">yatzy</p>
+                    </Link>
+                    <div className="invisible h-24 space-x-5 z-10 items-center justify-center flex flex-wrap pt-12 pb-8 md:pb-0 md:pt-0 -my-8">
+                        <a className="navlink" href="/api/opret">Opret server</a>
                         <a className="navlink" href="/regler">Regler</a>
                         <a className="navlink" href="/hvordandetvirker">Hvordan det virker</a>
                     </div>
